@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Clock - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="View the current time in multiple cities around the world. Analog and digital clocks, meeting planner, day/night indicator. Free online world clock tool.">
+  <meta property="og:title" content="World Clock - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="View the current time in multiple cities around the world with analog clocks, meeting planner, and timezone comparison.">
+  <meta property="og:url" content="https://imseankim.com/tools/world-clock">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/world-clock">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Controls bar */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .controls select,
+    .controls input,
+    .controls button {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .controls select:hover,
+    .controls input:hover,
+    .controls button:hover {
+      border-color: var(--border-hover);
+    }
+
+    .controls select:focus,
+    .controls input:focus {
+      border-color: var(--accent);
+    }
+
+    .controls button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 500;
+    }
+
+    .controls button:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .add-city-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .add-city-wrap input {
+      width: 100%;
+    }
+
+    .city-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      margin-top: 4px;
+      box-shadow: var(--shadow);
+    }
+
+    .city-dropdown.open {
+      display: block;
+    }
+
+    .city-dropdown-item {
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-secondary);
+    }
+
+    .city-dropdown-item:hover,
+    .city-dropdown-item.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .sort-wrap label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Meeting planner */
+    .meeting-planner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .meeting-planner label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .meeting-planner input[type="time"] {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      outline: none;
+    }
+
+    .meeting-planner input[type="time"]:focus {
+      border-color: var(--accent);
+    }
+
+    .meeting-planner .meeting-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .meeting-planner .clear-meeting {
+      font-size: 0.78rem;
+      color: var(--accent);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-sans);
+    }
+
+    .meeting-planner .clear-meeting:hover {
+      color: var(--accent-hover);
+    }
+
+    /* Clock grid */
+    .clock-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 1024px) {
+      .clock-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .clock-grid { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; }
+      .sort-wrap { margin-left: 0; width: 100%; }
+      .meeting-planner { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* Clock card */
+    .clock-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .clock-card:hover {
+      border-color: var(--border-light);
+    }
+
+    .clock-card.is-local {
+      border-color: var(--accent);
+      order: -1;
+    }
+
+    .clock-card.is-local .city-name::after {
+      content: 'YOU';
+      font-size: 0.55rem;
+      background: var(--accent);
+      color: #000;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .clock-card .remove-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .clock-card .remove-btn:hover {
+      color: var(--danger);
+    }
+
+    .city-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .city-flag {
+      font-size: 1.2rem;
+    }
+
+    .city-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .day-night-icon {
+      font-size: 0.9rem;
+      margin-left: 2px;
+    }
+
+    .time-diff {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .time-diff .tz-abbr {
+      margin-left: 6px;
+      color: var(--text-dim);
+    }
+
+    /* Analog clock */
+    .analog-clock {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+    }
+
+    .analog-clock svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .clock-face {
+      fill: #1a1a1a;
+      stroke: #333;
+      stroke-width: 2;
+    }
+
+    .clock-tick {
+      stroke: #444;
+      stroke-width: 1;
+    }
+
+    .clock-tick.major {
+      stroke: #666;
+      stroke-width: 2;
+    }
+
+    .clock-center {
+      fill: var(--accent);
+    }
+
+    .hand-hour {
+      stroke: #ccc;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .hand-minute {
+      stroke: #eee;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .hand-second {
+      stroke: var(--accent);
+      stroke-width: 1;
+      stroke-linecap: round;
+    }
+
+    /* Digital time */
+    .digital-time {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+    }
+
+    .digital-time .ampm {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-left: 4px;
+      letter-spacing: 1px;
+    }
+
+    .digital-date {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Meeting time overlay */
+    .meeting-time {
+      display: none;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    .meeting-time.show {
+      display: inline-block;
+    }
+
+    .meeting-time.business {
+      background: rgba(67, 233, 123, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(67, 233, 123, 0.2);
+    }
+
+    .meeting-time.off-hours {
+      background: rgba(255, 85, 85, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 85, 85, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">World Clock</h1>
+    <p class="tool-subtitle">Current time across the globe</p>
+
+    <div class="controls">
+      <div class="add-city-wrap">
+        <input type="text" id="citySearch" placeholder="Search and add a city..." autocomplete="off">
+        <div class="city-dropdown" id="cityDropdown"></div>
+      </div>
+      <div class="sort-wrap">
+        <label>Sort</label>
+        <select id="sortSelect">
+          <option value="name">By Name</option>
+          <option value="time">By Time</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="meeting-planner">
+      <label>Meeting Planner</label>
+      <input type="time" id="meetingTime" step="60">
+      <span class="meeting-hint">Pick a time to compare across all cities</span>
+      <button class="clear-meeting" id="clearMeeting">Clear</button>
+    </div>
+
+    <div class="clock-grid" id="clockGrid"></div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    const ALL_CITIES = [
+      { name: 'New York', tz: 'America/New_York', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Los Angeles', tz: 'America/Los_Angeles', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Chicago', tz: 'America/Chicago', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Denver', tz: 'America/Denver', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Anchorage', tz: 'America/Anchorage', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Honolulu', tz: 'Pacific/Honolulu', flag: '\u{1F1FA}\u{1F1F8}', country: 'USA' },
+      { name: 'Toronto', tz: 'America/Toronto', flag: '\u{1F1E8}\u{1F1E6}', country: 'Canada' },
+      { name: 'Vancouver', tz: 'America/Vancouver', flag: '\u{1F1E8}\u{1F1E6}', country: 'Canada' },
+      { name: 'Mexico City', tz: 'America/Mexico_City', flag: '\u{1F1F2}\u{1F1FD}', country: 'Mexico' },
+      { name: 'S\u00e3o Paulo', tz: 'America/Sao_Paulo', flag: '\u{1F1E7}\u{1F1F7}', country: 'Brazil' },
+      { name: 'Buenos Aires', tz: 'America/Argentina/Buenos_Aires', flag: '\u{1F1E6}\u{1F1F7}', country: 'Argentina' },
+      { name: 'London', tz: 'Europe/London', flag: '\u{1F1EC}\u{1F1E7}', country: 'UK' },
+      { name: 'Paris', tz: 'Europe/Paris', flag: '\u{1F1EB}\u{1F1F7}', country: 'France' },
+      { name: 'Berlin', tz: 'Europe/Berlin', flag: '\u{1F1E9}\u{1F1EA}', country: 'Germany' },
+      { name: 'Madrid', tz: 'Europe/Madrid', flag: '\u{1F1EA}\u{1F1F8}', country: 'Spain' },
+      { name: 'Rome', tz: 'Europe/Rome', flag: '\u{1F1EE}\u{1F1F9}', country: 'Italy' },
+      { name: 'Amsterdam', tz: 'Europe/Amsterdam', flag: '\u{1F1F3}\u{1F1F1}', country: 'Netherlands' },
+      { name: 'Zurich', tz: 'Europe/Zurich', flag: '\u{1F1E8}\u{1F1ED}', country: 'Switzerland' },
+      { name: 'Stockholm', tz: 'Europe/Stockholm', flag: '\u{1F1F8}\u{1F1EA}', country: 'Sweden' },
+      { name: 'Oslo', tz: 'Europe/Oslo', flag: '\u{1F1F3}\u{1F1F4}', country: 'Norway' },
+      { name: 'Helsinki', tz: 'Europe/Helsinki', flag: '\u{1F1EB}\u{1F1EE}', country: 'Finland' },
+      { name: 'Warsaw', tz: 'Europe/Warsaw', flag: '\u{1F1F5}\u{1F1F1}', country: 'Poland' },
+      { name: 'Athens', tz: 'Europe/Athens', flag: '\u{1F1EC}\u{1F1F7}', country: 'Greece' },
+      { name: 'Istanbul', tz: 'Europe/Istanbul', flag: '\u{1F1F9}\u{1F1F7}', country: 'Turkey' },
+      { name: 'Moscow', tz: 'Europe/Moscow', flag: '\u{1F1F7}\u{1F1FA}', country: 'Russia' },
+      { name: 'Dubai', tz: 'Asia/Dubai', flag: '\u{1F1E6}\u{1F1EA}', country: 'UAE' },
+      { name: 'Riyadh', tz: 'Asia/Riyadh', flag: '\u{1F1F8}\u{1F1E6}', country: 'Saudi Arabia' },
+      { name: 'Mumbai', tz: 'Asia/Kolkata', flag: '\u{1F1EE}\u{1F1F3}', country: 'India' },
+      { name: 'Delhi', tz: 'Asia/Kolkata', flag: '\u{1F1EE}\u{1F1F3}', country: 'India' },
+      { name: 'Bangkok', tz: 'Asia/Bangkok', flag: '\u{1F1F9}\u{1F1ED}', country: 'Thailand' },
+      { name: 'Jakarta', tz: 'Asia/Jakarta', flag: '\u{1F1EE}\u{1F1E9}', country: 'Indonesia' },
+      { name: 'Singapore', tz: 'Asia/Singapore', flag: '\u{1F1F8}\u{1F1EC}', country: 'Singapore' },
+      { name: 'Hong Kong', tz: 'Asia/Hong_Kong', flag: '\u{1F1ED}\u{1F1F0}', country: 'Hong Kong' },
+      { name: 'Shanghai', tz: 'Asia/Shanghai', flag: '\u{1F1E8}\u{1F1F3}', country: 'China' },
+      { name: 'Beijing', tz: 'Asia/Shanghai', flag: '\u{1F1E8}\u{1F1F3}', country: 'China' },
+      { name: 'Tokyo', tz: 'Asia/Tokyo', flag: '\u{1F1EF}\u{1F1F5}', country: 'Japan' },
+      { name: 'Seoul', tz: 'Asia/Seoul', flag: '\u{1F1F0}\u{1F1F7}', country: 'South Korea' },
+      { name: 'Taipei', tz: 'Asia/Taipei', flag: '\u{1F1F9}\u{1F1FC}', country: 'Taiwan' },
+      { name: 'Manila', tz: 'Asia/Manila', flag: '\u{1F1F5}\u{1F1ED}', country: 'Philippines' },
+      { name: 'Sydney', tz: 'Australia/Sydney', flag: '\u{1F1E6}\u{1F1FA}', country: 'Australia' },
+      { name: 'Melbourne', tz: 'Australia/Melbourne', flag: '\u{1F1E6}\u{1F1FA}', country: 'Australia' },
+      { name: 'Auckland', tz: 'Pacific/Auckland', flag: '\u{1F1F3}\u{1F1FF}', country: 'New Zealand' },
+      { name: 'Cairo', tz: 'Africa/Cairo', flag: '\u{1F1EA}\u{1F1EC}', country: 'Egypt' },
+      { name: 'Lagos', tz: 'Africa/Lagos', flag: '\u{1F1F3}\u{1F1EC}', country: 'Nigeria' },
+      { name: 'Johannesburg', tz: 'Africa/Johannesburg', flag: '\u{1F1FF}\u{1F1E6}', country: 'South Africa' },
+      { name: 'Nairobi', tz: 'Africa/Nairobi', flag: '\u{1F1F0}\u{1F1EA}', country: 'Kenya' },
+      { name: 'Lima', tz: 'America/Lima', flag: '\u{1F1F5}\u{1F1EA}', country: 'Peru' },
+      { name: 'Bogot\u00e1', tz: 'America/Bogota', flag: '\u{1F1E8}\u{1F1F4}', country: 'Colombia' }
+    ];
+
+    const DEFAULT_CITY_NAMES = [
+      'New York', 'London', 'Tokyo', 'Seoul', 'Sydney',
+      'Dubai', 'Paris', 'Los Angeles', 'Singapore', 'Berlin'
+    ];
+
+    const STORAGE_KEY = 'worldclock_cities';
+    let activeCities = [];
+    let meetingTimeValue = null;
+    let localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let tickInterval = null;
+
+    function loadCities() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const names = JSON.parse(saved);
+          activeCities = names.map(n => ALL_CITIES.find(c => c.name === n)).filter(Boolean);
+          if (activeCities.length === 0) throw new Error();
+        } else {
+          throw new Error();
+        }
+      } catch {
+        activeCities = DEFAULT_CITY_NAMES.map(n => ALL_CITIES.find(c => c.name === n)).filter(Boolean);
+      }
+    }
+
+    function saveCities() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCities.map(c => c.name)));
+    }
+
+    function getTimeInTz(tz, date) {
+      date = date || new Date();
+      const parts = {};
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        hour12: false
+      }).formatToParts(date).forEach(p => { parts[p.type] = p.value; });
+      return {
+        h: parseInt(parts.hour, 10),
+        m: parseInt(parts.minute, 10),
+        s: parseInt(parts.second, 10)
+      };
+    }
+
+    function getOffsetMinutes(tz, date) {
+      date = date || new Date();
+      const str = date.toLocaleString('en-US', { timeZone: tz });
+      const tzDate = new Date(str);
+      const utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
+      const utcDate = new Date(utcStr);
+      return Math.round((tzDate - utcDate) / 60000);
+    }
+
+    function getTimeDiffLabel(tz) {
+      const now = new Date();
+      const localOffset = getOffsetMinutes(localTz, now);
+      const cityOffset = getOffsetMinutes(tz, now);
+      const diffMin = cityOffset - localOffset;
+      if (diffMin === 0) return 'Same time';
+      const sign = diffMin > 0 ? '+' : '';
+      const hours = diffMin / 60;
+      if (Number.isInteger(hours)) return sign + hours + 'h';
+      const h = Math.trunc(hours);
+      const m = Math.abs(diffMin % 60);
+      return sign + h + 'h ' + m + 'm';
+    }
+
+    function getTzAbbr(tz) {
+      try {
+        const str = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' }).format(new Date());
+        const match = str.match(/[A-Z]{2,5}[+-]?\d*$/);
+        if (match) return match[0];
+        const parts = str.split(' ');
+        return parts[parts.length - 1];
+      } catch { return ''; }
+    }
+
+    function isLocalTz(tz) {
+      return tz === localTz;
+    }
+
+    function isDaytime(h) {
+      return h >= 6 && h < 18;
+    }
+
+    function buildAnalogSVG(id) {
+      let ticks = '';
+      for (let i = 0; i < 60; i++) {
+        const angle = i * 6;
+        const isMajor = i % 5 === 0;
+        const r1 = isMajor ? 38 : 41;
+        const r2 = 44;
+        const rad = (angle - 90) * Math.PI / 180;
+        const x1 = 50 + r1 * Math.cos(rad);
+        const y1 = 50 + r1 * Math.sin(rad);
+        const x2 = 50 + r2 * Math.cos(rad);
+        const y2 = 50 + r2 * Math.sin(rad);
+        ticks += '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="clock-tick'+(isMajor?' major':'')+'"/>';
+      }
+      return '<svg viewBox="0 0 100 100">' +
+        '<circle cx="50" cy="50" r="48" class="clock-face"/>' +
+        ticks +
+        '<line id="hour-'+id+'" x1="50" y1="50" x2="50" y2="26" class="hand-hour"/>' +
+        '<line id="min-'+id+'" x1="50" y1="50" x2="50" y2="16" class="hand-minute"/>' +
+        '<line id="sec-'+id+'" x1="50" y1="50" x2="50" y2="14" class="hand-second"/>' +
+        '<circle cx="50" cy="50" r="2.5" class="clock-center"/>' +
+        '</svg>';
+    }
+
+    function setHand(el, angle) {
+      if (!el) return;
+      const rad = (angle - 90) * Math.PI / 180;
+      const len = parseFloat(el.getAttribute('y2')) < 50 ? 50 - parseFloat(el.getAttribute('y2')) : parseFloat(el.getAttribute('y2')) - 50;
+      el.setAttribute('x2', (50 + len * Math.cos(rad)).toFixed(2));
+      el.setAttribute('y2', (50 + len * Math.sin(rad)).toFixed(2));
+    }
+
+    function getMeetingTimeInTz(tz, localH, localM) {
+      const now = new Date();
+      const localOffset = getOffsetMinutes(localTz, now);
+      const cityOffset = getOffsetMinutes(tz, now);
+      const diffMin = cityOffset - localOffset;
+      let totalMin = localH * 60 + localM + diffMin;
+      while (totalMin < 0) totalMin += 1440;
+      totalMin = totalMin % 1440;
+      return { h: Math.floor(totalMin / 60), m: totalMin % 60 };
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('clockGrid');
+      grid.innerHTML = '';
+
+      let sorted = [...activeCities];
+      const sortVal = document.getElementById('sortSelect').value;
+      const now = new Date();
+
+      if (sortVal === 'name') {
+        sorted.sort((a, b) => {
+          if (isLocalTz(a.tz) && !isLocalTz(b.tz)) return -1;
+          if (!isLocalTz(a.tz) && isLocalTz(b.tz)) return 1;
+          return a.name.localeCompare(b.name);
+        });
+      } else {
+        sorted.sort((a, b) => {
+          if (isLocalTz(a.tz) && !isLocalTz(b.tz)) return -1;
+          if (!isLocalTz(a.tz) && isLocalTz(b.tz)) return 1;
+          const offA = getOffsetMinutes(a.tz, now);
+          const offB = getOffsetMinutes(b.tz, now);
+          return offA - offB;
+        });
+      }
+
+      sorted.forEach((city, i) => {
+        const card = document.createElement('div');
+        card.className = 'clock-card' + (isLocalTz(city.tz) ? ' is-local' : '');
+        card.dataset.tz = city.tz;
+        card.dataset.cityName = city.name;
+
+        const id = 'c' + i;
+        const t = getTimeInTz(city.tz, now);
+        const dayIcon = isDaytime(t.h) ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        const ampm = t.h >= 12 ? 'PM' : 'AM';
+        const h12 = t.h % 12 || 12;
+        const timeStr = String(h12).padStart(2, '0') + ':' + String(t.m).padStart(2, '0') + ':' + String(t.s).padStart(2, '0');
+        const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: city.tz, weekday: 'short', month: 'short', day: 'numeric' }).format(now);
+        const diff = getTimeDiffLabel(city.tz);
+        const abbr = getTzAbbr(city.tz);
+
+        let meetingHTML = '';
+        if (meetingTimeValue) {
+          const mt = getMeetingTimeInTz(city.tz, meetingTimeValue.h, meetingTimeValue.m);
+          const mh12 = mt.h % 12 || 12;
+          const mAP = mt.h >= 12 ? 'PM' : 'AM';
+          const isBiz = mt.h >= 9 && mt.h < 17;
+          meetingHTML = '<div class="meeting-time show ' + (isBiz ? 'business' : 'off-hours') + '">' +
+            (isBiz ? '\u2705 ' : '\u{1F315} ') +
+            String(mh12).padStart(2, '0') + ':' + String(mt.m).padStart(2, '0') + ' ' + mAP +
+            (isBiz ? ' \u2014 Business hours' : ' \u2014 Off hours') +
+            '</div>';
+        }
+
+        card.innerHTML =
+          '<button class="remove-btn" data-name="' + city.name + '" title="Remove">\u00D7</button>' +
+          '<div class="city-header">' +
+            '<span class="city-flag">' + city.flag + '</span>' +
+            '<span class="city-name">' + city.name + '</span>' +
+            '<span class="day-night-icon">' + dayIcon + '</span>' +
+          '</div>' +
+          '<div class="time-diff">' + diff + '<span class="tz-abbr">' + abbr + '</span></div>' +
+          '<div class="analog-clock" id="analog-' + id + '">' + buildAnalogSVG(id) + '</div>' +
+          '<div class="digital-time" id="digital-' + id + '">' + timeStr + '<span class="ampm">' + ampm + '</span></div>' +
+          '<div class="digital-date" id="date-' + id + '">' + dateStr + '</div>' +
+          meetingHTML;
+
+        grid.appendChild(card);
+
+        // Set initial hand positions
+        updateHands(id, t);
+      });
+
+      // Attach remove listeners
+      grid.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const name = this.dataset.name;
+          activeCities = activeCities.filter(c => c.name !== name);
+          saveCities();
+          renderGrid();
+        });
+      });
+    }
+
+    function updateHands(id, t) {
+      const secAngle = t.s * 6;
+      const minAngle = t.m * 6 + t.s * 0.1;
+      const hourAngle = (t.h % 12) * 30 + t.m * 0.5;
+      setHand(document.getElementById('sec-' + id), secAngle);
+      setHand(document.getElementById('min-' + id), minAngle);
+      setHand(document.getElementById('hour-' + id), hourAngle);
+    }
+
+    function tick() {
+      const now = new Date();
+      const cards = document.querySelectorAll('.clock-card');
+      cards.forEach((card, i) => {
+        const tz = card.dataset.tz;
+        const id = 'c' + i;
+        const t = getTimeInTz(tz, now);
+
+        // Update hands
+        updateHands(id, t);
+
+        // Update digital
+        const h12 = t.h % 12 || 12;
+        const ampm = t.h >= 12 ? 'PM' : 'AM';
+        const timeStr = String(h12).padStart(2, '0') + ':' + String(t.m).padStart(2, '0') + ':' + String(t.s).padStart(2, '0');
+        const digitalEl = document.getElementById('digital-' + id);
+        if (digitalEl) {
+          digitalEl.innerHTML = timeStr + '<span class="ampm">' + ampm + '</span>';
+        }
+
+        // Update day/night icon
+        const dayIcon = isDaytime(t.h) ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        const iconEl = card.querySelector('.day-night-icon');
+        if (iconEl) iconEl.textContent = dayIcon;
+
+        // Update date once per minute at second 0
+        if (t.s === 0) {
+          const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' }).format(now);
+          const dateEl = document.getElementById('date-' + id);
+          if (dateEl) dateEl.textContent = dateStr;
+        }
+      });
+    }
+
+    // City search dropdown
+    const searchInput = document.getElementById('citySearch');
+    const dropdown = document.getElementById('cityDropdown');
+    let dropdownIdx = -1;
+
+    function renderDropdown(filter) {
+      const activeNames = new Set(activeCities.map(c => c.name));
+      const filtered = ALL_CITIES.filter(c =>
+        !activeNames.has(c.name) &&
+        (c.name.toLowerCase().includes(filter) || c.country.toLowerCase().includes(filter))
+      );
+      dropdown.innerHTML = '';
+      dropdownIdx = -1;
+      if (filtered.length === 0 || !filter) {
+        dropdown.classList.remove('open');
+        return;
+      }
+      filtered.slice(0, 15).forEach((city, i) => {
+        const item = document.createElement('div');
+        item.className = 'city-dropdown-item';
+        item.textContent = city.flag + ' ' + city.name + ', ' + city.country;
+        item.dataset.index = i;
+        item.addEventListener('click', () => addCity(city));
+        dropdown.appendChild(item);
+      });
+      dropdown.classList.add('open');
+    }
+
+    function addCity(city) {
+      if (activeCities.find(c => c.name === city.name)) return;
+      activeCities.push(city);
+      saveCities();
+      searchInput.value = '';
+      dropdown.classList.remove('open');
+      renderGrid();
+    }
+
+    searchInput.addEventListener('input', function() {
+      renderDropdown(this.value.trim().toLowerCase());
+    });
+
+    searchInput.addEventListener('focus', function() {
+      if (this.value.trim()) renderDropdown(this.value.trim().toLowerCase());
+    });
+
+    searchInput.addEventListener('keydown', function(e) {
+      const items = dropdown.querySelectorAll('.city-dropdown-item');
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        dropdownIdx = Math.min(dropdownIdx + 1, items.length - 1);
+        items.forEach((it, i) => it.classList.toggle('active', i === dropdownIdx));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        dropdownIdx = Math.max(dropdownIdx - 1, 0);
+        items.forEach((it, i) => it.classList.toggle('active', i === dropdownIdx));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (dropdownIdx >= 0 && items[dropdownIdx]) items[dropdownIdx].click();
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.add-city-wrap')) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Sort
+    document.getElementById('sortSelect').addEventListener('change', renderGrid);
+
+    // Meeting planner
+    const meetingInput = document.getElementById('meetingTime');
+    meetingInput.addEventListener('input', function() {
+      if (this.value) {
+        const [h, m] = this.value.split(':').map(Number);
+        meetingTimeValue = { h, m };
+      } else {
+        meetingTimeValue = null;
+      }
+      renderGrid();
+    });
+
+    document.getElementById('clearMeeting').addEventListener('click', function() {
+      meetingInput.value = '';
+      meetingTimeValue = null;
+      renderGrid();
+    });
+
+    // Init
+    loadCities();
+    renderGrid();
+    tickInterval = setInterval(tick, 1000);
+  })();
+  </script>
+</body>
+</html>

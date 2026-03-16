@@ -51,6 +51,7 @@
     { "source": "/emoji", "destination": "/tools/emoji/" },
     { "source": "/word-counter", "destination": "/tools/word-counter/" },
     { "source": "/pomodoro", "destination": "/tools/pomodoro/" },
-    { "source": "/aspect-ratio", "destination": "/tools/aspect-ratio/" }
+    { "source": "/aspect-ratio", "destination": "/tools/aspect-ratio/" },
+    { "source": "/world-clock", "destination": "/tools/world-clock/" }
   ]
 }
