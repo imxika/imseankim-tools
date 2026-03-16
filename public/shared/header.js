@@ -2,6 +2,16 @@
    Shared Header — Auto-injected into all pages
    ============================================ */
 (function() {
+  // Google Analytics 4
+  if (!document.querySelector('script[src*="gtag"]')) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-1Z94C6KY5W';
+    document.head.appendChild(s);
+    const s2 = document.createElement('script');
+    s2.textContent = "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-1Z94C6KY5W');";
+    document.head.appendChild(s2);
+  }
   const tools = [
     { cat: 'Design', items: [
       { slug: 'colors', name: 'Color Palette', icon: '🎨' },
