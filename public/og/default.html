@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>OG Image — Sean's Tools</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 1200px;
+      height: 630px;
+      background: #0a0a0a;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Subtle background glow */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(79, 172, 254, 0.08) 0%, rgba(255, 107, 107, 0.04) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Top accent line */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+    }
+
+    /* Corner dots */
+    .corner { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #222; }
+    .corner.tl { top: 24px; left: 24px; }
+    .corner.tr { top: 24px; right: 24px; }
+    .corner.bl { bottom: 24px; left: 24px; }
+    .corner.br { bottom: 24px; right: 24px; }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .domain {
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 28px;
+    }
+
+    .title {
+      font-size: 72px;
+      font-weight: 200;
+      letter-spacing: 14px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      font-weight: 300;
+      color: #666;
+      letter-spacing: 3px;
+      margin-bottom: 56px;
+    }
+
+    .tools-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 900px;
+    }
+
+    .tool-icon {
+      width: 52px;
+      height: 52px;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: none;
+    }
+
+    .divider {
+      width: 1px;
+      height: 28px;
+      background: #222;
+      margin: 0 8px;
+    }
+
+    /* Bottom border line */
+    .bottom-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #222, transparent);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="content">
+      <div class="domain">tools.imseankim.com</div>
+      <div class="title">Sean's Tools</div>
+      <div class="subtitle">20+ Free Online Tools for Designers & Developers</div>
+
+      <div class="tools-row">
+        <div class="tool-icon">🎨</div>
+        <div class="tool-icon">🌈</div>
+        <div class="tool-icon">🔤</div>
+        <div class="tool-icon">🔲</div>
+        <div class="tool-icon">📐</div>
+        <div class="tool-icon">📦</div>
+        <div class="divider"></div>
+        <div class="tool-icon">{ }</div>
+        <div class="tool-icon">.*</div>
+        <div class="tool-icon">🔑</div>
+        <div class="tool-icon">🔗</div>
+        <div class="tool-icon">📝</div>
+        <div class="divider"></div>
+        <div class="tool-icon">📱</div>
+        <div class="tool-icon">🔒</div>
+        <div class="tool-icon">🖼️</div>
+        <div class="tool-icon">✏️</div>
+        <div class="tool-icon">⭐</div>
+      </div>
+    </div>
+
+    <div class="bottom-line"></div>
+  </div>
+</body>
+</html>

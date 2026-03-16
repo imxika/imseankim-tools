@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | tools.imseankim.com</title>
+  <meta name="description" content="The page you're looking for doesn't exist or has been moved.">
+  <meta property="og:title" content="404 - Page Not Found | tools.imseankim.com">
+  <meta property="og:description" content="The page you're looking for doesn't exist or has been moved.">
+  <meta property="og:url" content="https://tools.imseankim.com/404">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://tools.imseankim.com">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .error-section {
+      text-align: center;
+      padding: 100px 24px 60px;
+    }
+    .error-code {
+      font-size: 10rem;
+      font-weight: 200;
+      letter-spacing: 16px;
+      line-height: 1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .error-title {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .error-message {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 440px;
+      margin: 0 auto 40px;
+      letter-spacing: 0.5px;
+    }
+    .back-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .back-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .suggestions {
+      padding: 0 24px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .suggestions-title {
+      font-size: 0.8rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      padding-left: 4px;
+      text-align: center;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--card-accent, #4facfe), var(--card-accent2, #48dbfb));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tool-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-light);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .tool-card:hover::before { opacity: 1; }
+    .tool-card .tc-icon { font-size: 2rem; line-height: 1; }
+    .tool-card .tc-name { color: var(--text-primary); font-size: 1rem; font-weight: 500; letter-spacing: 1px; }
+    .tool-card .tc-desc { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .error-code { font-size: 6rem; letter-spacing: 8px; }
+      .error-title { font-size: 1.1rem; letter-spacing: 4px; }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .tool-card { padding: 16px; }
+      .tool-card .tc-icon { font-size: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .error-code { font-size: 4.5rem; }
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main>
+    <section class="error-section">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-message">The tool you're looking for doesn't exist or has been moved.</p>
+      <a href="/" class="back-btn">Back to All Tools</a>
+    </section>
+
+    <section class="suggestions">
+      <h2 class="suggestions-title">Popular Tools</h2>
+      <div class="tools-grid" id="suggestionsGrid"></div>
+    </section>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+
+  <script>
+    const allTools = [
+      { slug: 'colors', icon: '🎨', name: 'Color Palette Studio', desc: 'Create, customize, and export beautiful color palettes with harmony generation.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'gradient', icon: '🌈', name: 'Gradient Generator', desc: 'Design stunning CSS gradients with live preview and code export.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'fonts', icon: '🔤', name: 'Font Pairing Tool', desc: 'Find perfect Google Font combinations with live preview.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'shadow', icon: '🔲', name: 'Box Shadow Generator', desc: 'Create layered CSS box shadows with visual controls.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'grid', icon: '📐', name: 'CSS Grid Builder', desc: 'Build complex CSS Grid layouts with drag-and-drop.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'flexbox', icon: '📦', name: 'Flexbox Playground', desc: 'Learn and experiment with CSS Flexbox properties.', accent: ['#ff6b6b', '#feca57'] },
+      { slug: 'json', icon: '{ }', name: 'JSON Formatter', desc: 'Format, validate, and beautify JSON with syntax highlighting.', accent: ['#4facfe', '#00f2fe'] },
+      { slug: 'regex', icon: '.*', name: 'Regex Tester', desc: 'Test regular expressions with real-time matching and explanation.', accent: ['#4facfe', '#00f2fe'] },
+      { slug: 'base64', icon: '🔑', name: 'Base64 Encoder', desc: 'Encode and decode Base64 strings and files instantly.', accent: ['#4facfe', '#00f2fe'] },
+      { slug: 'markdown', icon: '📝', name: 'Markdown Preview', desc: 'Write markdown and see live rendered preview side by side.', accent: ['#4facfe', '#00f2fe'] },
+      { slug: 'qr', icon: '📱', name: 'QR Code Generator', desc: 'Create QR codes for URLs, text, WiFi, and more.', accent: ['#43e97b', '#38f9d7'] },
+      { slug: 'password', icon: '🔒', name: 'Password Generator', desc: 'Generate secure passwords with custom rules.', accent: ['#43e97b', '#38f9d7'] },
+      { slug: 'image-resize', icon: '🖼️', name: 'Image Resizer', desc: 'Resize images in your browser. No upload to servers.', accent: ['#ff9ff3', '#f093fb'] },
+      { slug: 'image-compress', icon: '🗜️', name: 'Image Compressor', desc: 'Compress images while maintaining quality.', accent: ['#ff9ff3', '#f093fb'] },
+      { slug: 'svg-editor', icon: '✏️', name: 'SVG Editor', desc: 'Edit and optimize SVG files visually.', accent: ['#ff9ff3', '#f093fb'] },
+      { slug: 'favicon', icon: '⭐', name: 'Favicon Generator', desc: 'Generate favicons in all sizes from any image.', accent: ['#ff9ff3', '#f093fb'] },
+    ];
+
+    // Shuffle and pick 4
+    const shuffled = allTools.sort(() => Math.random() - 0.5);
+    const picked = shuffled.slice(0, 4);
+
+    const grid = document.getElementById('suggestionsGrid');
+    picked.forEach(tool => {
+      const a = document.createElement('a');
+      a.href = '/' + tool.slug;
+      a.className = 'tool-card';
+      a.style.setProperty('--card-accent', tool.accent[0]);
+      a.style.setProperty('--card-accent2', tool.accent[1]);
+      a.innerHTML = `
+        <span class="tc-icon">${tool.icon}</span>
+        <span class="tc-name">${tool.name}</span>
+        <span class="tc-desc">${tool.desc}</span>
+      `;
+      grid.appendChild(a);
+    });
+  </script>
+</body>
+</html>

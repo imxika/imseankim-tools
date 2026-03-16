@@ -51,6 +51,15 @@
     <button class="hamburger" onclick="document.getElementById('mainNav').classList.toggle('open')" aria-label="Menu">☰</button>
   `;
 
+  // Add favicon if not present
+  if (!document.querySelector('link[rel="icon"]')) {
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/svg+xml';
+    link.href = '/favicon.svg';
+    document.head.appendChild(link);
+  }
+
   document.body.insertBefore(header, document.body.firstChild);
 
   // Ad banner below header
