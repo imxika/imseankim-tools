@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hash Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text or files. Compare hashes, copy results, and toggle case. Free online hash generator.">
+  <meta property="og:title" content="Hash Generator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Generate and compare MD5, SHA-1, SHA-256, SHA-384, SHA-512 hashes from text or files instantly.">
+  <meta property="og:url" content="https://imseankim.com/tools/hash">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/hash">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab:hover { color: var(--text-secondary); }
+    .tab.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Textarea */
+    .input-area {
+      width: 100%;
+      min-height: 120px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-area:focus { border-color: var(--border-hover); }
+    .input-area::placeholder { color: var(--text-dim); }
+
+    /* Options row */
+    .options-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .toggle-switch.active {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle-switch.active::after {
+      left: 20px;
+      background: #fff;
+    }
+
+    /* Hash results */
+    .hash-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .hash-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .hash-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .hash-algo {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .copy-btn {
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .hash-value {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+      line-height: 1.5;
+      min-height: 1.2em;
+    }
+
+    .hash-value.empty { color: var(--text-dim); font-style: italic; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(79, 172, 254, 0.04);
+    }
+
+    .drop-zone-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+
+    .drop-zone-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+
+    .drop-zone-text span {
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .file-input { display: none; }
+
+    .file-info {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .file-info .filename { color: var(--accent); }
+
+    /* Compare section */
+    .compare-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .compare-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .compare-input:focus { border-color: var(--border-hover); }
+    .compare-input::placeholder { color: var(--text-dim); }
+
+    .compare-result {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .compare-result.match {
+      background: rgba(67, 233, 123, 0.08);
+      border: 1px solid rgba(67, 233, 123, 0.3);
+      color: var(--success);
+    }
+
+    .compare-result.no-match {
+      background: rgba(255, 85, 85, 0.08);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      color: var(--danger);
+    }
+
+    .compare-result.waiting {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    /* Section visibility */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Progress */
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--bg-input);
+      border-radius: 2px;
+      margin-top: 12px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar.active { display: block; }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.2s ease;
+      width: 0%;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Hash Generator</h1>
+    <p class="tool-subtitle">MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512</p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="text">Text</button>
+      <button class="tab" data-tab="file">File</button>
+      <button class="tab" data-tab="compare">Compare</button>
+    </div>
+
+    <!-- Options -->
+    <div class="options-row">
+      <label class="toggle-label">
+        <div class="toggle-switch" id="caseToggle"></div>
+        UPPERCASE
+      </label>
+    </div>
+
+    <!-- Text Tab -->
+    <div class="tab-panel active" id="panel-text">
+      <div class="card">
+        <div class="card-label">Input Text</div>
+        <textarea class="input-area" id="textInput" placeholder="Type or paste text to hash..."></textarea>
+      </div>
+      <div class="card">
+        <div class="card-label">Hash Results</div>
+        <div class="hash-list" id="textHashList"></div>
+      </div>
+    </div>
+
+    <!-- File Tab -->
+    <div class="tab-panel" id="panel-file">
+      <div class="card">
+        <div class="card-label">Upload File</div>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-icon">&#x1F4C4;</div>
+          <div class="drop-zone-text">Drag & drop a file here or <span id="browseBtn">browse</span></div>
+          <input type="file" class="file-input" id="fileInput">
+          <div class="file-info" id="fileInfo"></div>
+          <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">File Hash Results</div>
+        <div class="hash-list" id="fileHashList"></div>
+      </div>
+    </div>
+
+    <!-- Compare Tab -->
+    <div class="tab-panel" id="panel-compare">
+      <div class="card">
+        <div class="card-label">Compare Hashes</div>
+        <div class="compare-inputs">
+          <input type="text" class="compare-input" id="hash1" placeholder="Enter first hash...">
+          <input type="text" class="compare-input" id="hash2" placeholder="Enter second hash...">
+        </div>
+        <div class="compare-result waiting" id="compareResult">Enter two hashes to compare</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    /* ---- MD5 Implementation ---- */
+    function md5(input) {
+      // input: Uint8Array, returns hex string
+      function toUint32(x) { return x >>> 0; }
+
+      var S = [
+        7,12,17,22, 7,12,17,22, 7,12,17,22, 7,12,17,22,
+        5, 9,14,20, 5, 9,14,20, 5, 9,14,20, 5, 9,14,20,
+        4,11,16,23, 4,11,16,23, 4,11,16,23, 4,11,16,23,
+        6,10,15,21, 6,10,15,21, 6,10,15,21, 6,10,15,21
+      ];
+
+      var K = new Uint32Array(64);
+      for (var i = 0; i < 64; i++) {
+        K[i] = toUint32(Math.floor(Math.abs(Math.sin(i + 1)) * 0x100000000));
+      }
+
+      var msgLen = input.length;
+      var bitLen = msgLen * 8;
+
+      // padding
+      var padLen = ((56 - (msgLen + 1) % 64) + 64) % 64;
+      var padded = new Uint8Array(msgLen + 1 + padLen + 8);
+      padded.set(input);
+      padded[msgLen] = 0x80;
+
+      // length in bits as 64-bit LE
+      for (var i = 0; i < 8; i++) {
+        padded[msgLen + 1 + padLen + i] = (i < 4) ? ((bitLen >>> (i * 8)) & 0xff) : 0;
+      }
+
+      var a0 = 0x67452301;
+      var b0 = 0xEFCDAB89;
+      var c0 = 0x98BADCFE;
+      var d0 = 0x10325476;
+
+      for (var offset = 0; offset < padded.length; offset += 64) {
+        var M = new Uint32Array(16);
+        for (var j = 0; j < 16; j++) {
+          M[j] = padded[offset + j*4] | (padded[offset + j*4+1] << 8) |
+                 (padded[offset + j*4+2] << 16) | (padded[offset + j*4+3] << 24);
+        }
+
+        var A = a0, B = b0, C = c0, D = d0;
+
+        for (var i = 0; i < 64; i++) {
+          var F, g;
+          if (i < 16) {
+            F = (B & C) | (~B & D);
+            g = i;
+          } else if (i < 32) {
+            F = (D & B) | (~D & C);
+            g = (5 * i + 1) % 16;
+          } else if (i < 48) {
+            F = B ^ C ^ D;
+            g = (3 * i + 5) % 16;
+          } else {
+            F = C ^ (B | ~D);
+            g = (7 * i) % 16;
+          }
+
+          F = toUint32(F + A + K[i] + M[g]);
+          A = D;
+          D = C;
+          C = B;
+          B = toUint32(B + toUint32((F << S[i]) | (F >>> (32 - S[i]))));
+        }
+
+        a0 = toUint32(a0 + A);
+        b0 = toUint32(b0 + B);
+        c0 = toUint32(c0 + C);
+        d0 = toUint32(d0 + D);
+      }
+
+      function toHex32LE(v) {
+        var h = '';
+        for (var i = 0; i < 4; i++) h += ('0' + ((v >>> (i * 8)) & 0xff).toString(16)).slice(-2);
+        return h;
+      }
+
+      return toHex32LE(a0) + toHex32LE(b0) + toHex32LE(c0) + toHex32LE(d0);
+    }
+
+    /* ---- Helpers ---- */
+    var ALGOS = ['MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
+    var CRYPTO_NAMES = { 'SHA-1': 'SHA-1', 'SHA-256': 'SHA-256', 'SHA-384': 'SHA-384', 'SHA-512': 'SHA-512' };
+    var uppercase = false;
+
+    function formatHash(hex) {
+      return uppercase ? hex.toUpperCase() : hex.toLowerCase();
+    }
+
+    function arrayBufferToHex(buffer) {
+      var bytes = new Uint8Array(buffer);
+      var hex = '';
+      for (var i = 0; i < bytes.length; i++) {
+        hex += ('0' + bytes[i].toString(16)).slice(-2);
+      }
+      return hex;
+    }
+
+    async function computeHashes(data) {
+      // data: Uint8Array
+      var results = {};
+      results['MD5'] = md5(data);
+
+      for (var algo of ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512']) {
+        var buf = await crypto.subtle.digest(algo, data);
+        results[algo] = arrayBufferToHex(buf);
+      }
+      return results;
+    }
+
+    function createHashItems(container) {
+      container.innerHTML = '';
+      ALGOS.forEach(function(algo) {
+        var item = document.createElement('div');
+        item.className = 'hash-item';
+        item.innerHTML =
+          '<div class="hash-item-header">' +
+            '<span class="hash-algo">' + algo + '</span>' +
+            '<button class="copy-btn" data-algo="' + algo + '">COPY</button>' +
+          '</div>' +
+          '<div class="hash-value empty" data-algo="' + algo + '">Waiting for input...</div>';
+        container.appendChild(item);
+      });
+    }
+
+    function updateHashDisplay(container, results) {
+      ALGOS.forEach(function(algo) {
+        var el = container.querySelector('.hash-value[data-algo="' + algo + '"]');
+        if (results && results[algo]) {
+          el.textContent = formatHash(results[algo]);
+          el.classList.remove('empty');
+        } else {
+          el.textContent = 'Waiting for input...';
+          el.classList.add('empty');
+        }
+      });
+    }
+
+    function refreshDisplay(container, results) {
+      if (!results) return;
+      ALGOS.forEach(function(algo) {
+        var el = container.querySelector('.hash-value[data-algo="' + algo + '"]');
+        if (results[algo]) {
+          el.textContent = formatHash(results[algo]);
+        }
+      });
+    }
+
+    /* ---- DOM ---- */
+    var textInput = document.getElementById('textInput');
+    var textHashList = document.getElementById('textHashList');
+    var fileHashList = document.getElementById('fileHashList');
+    var dropZone = document.getElementById('dropZone');
+    var fileInput = document.getElementById('fileInput');
+    var browseBtn = document.getElementById('browseBtn');
+    var fileInfo = document.getElementById('fileInfo');
+    var progressBar = document.getElementById('progressBar');
+    var progressFill = document.getElementById('progressFill');
+    var caseToggle = document.getElementById('caseToggle');
+    var hash1 = document.getElementById('hash1');
+    var hash2 = document.getElementById('hash2');
+    var compareResult = document.getElementById('compareResult');
+
+    var textResults = null;
+    var fileResults = null;
+
+    createHashItems(textHashList);
+    createHashItems(fileHashList);
+
+    /* ---- Tabs ---- */
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ---- Case Toggle ---- */
+    caseToggle.addEventListener('click', function() {
+      uppercase = !uppercase;
+      caseToggle.classList.toggle('active', uppercase);
+      refreshDisplay(textHashList, textResults);
+      refreshDisplay(fileHashList, fileResults);
+    });
+
+    /* ---- Text Hashing (live) ---- */
+    var textDebounce = null;
+    textInput.addEventListener('input', function() {
+      clearTimeout(textDebounce);
+      textDebounce = setTimeout(async function() {
+        var val = textInput.value;
+        if (!val) {
+          textResults = null;
+          updateHashDisplay(textHashList, null);
+          return;
+        }
+        var data = new TextEncoder().encode(val);
+        textResults = await computeHashes(data);
+        updateHashDisplay(textHashList, textResults);
+      }, 100);
+    });
+
+    /* ---- Copy Buttons ---- */
+    document.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('copy-btn')) return;
+      var algo = e.target.dataset.algo;
+      var hashEl = e.target.closest('.hash-item').querySelector('.hash-value');
+      if (hashEl.classList.contains('empty')) return;
+
+      navigator.clipboard.writeText(hashEl.textContent).then(function() {
+        e.target.textContent = 'COPIED';
+        e.target.classList.add('copied');
+        setTimeout(function() {
+          e.target.textContent = 'COPY';
+          e.target.classList.remove('copied');
+        }, 1500);
+      });
+    });
+
+    /* ---- File Hashing ---- */
+    browseBtn.addEventListener('click', function() { fileInput.click(); });
+    dropZone.addEventListener('click', function(e) {
+      if (e.target === browseBtn) return;
+      fileInput.click();
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', function() {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) processFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length) processFile(fileInput.files[0]);
+    });
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+
+    async function processFile(file) {
+      fileInfo.innerHTML = 'Hashing <span class="filename">' + file.name + '</span> (' + formatSize(file.size) + ')...';
+      progressBar.classList.add('active');
+      progressFill.style.width = '0%';
+      fileResults = null;
+      updateHashDisplay(fileHashList, null);
+
+      try {
+        var buffer = await file.arrayBuffer();
+        progressFill.style.width = '50%';
+        var data = new Uint8Array(buffer);
+        fileResults = await computeHashes(data);
+        progressFill.style.width = '100%';
+        updateHashDisplay(fileHashList, fileResults);
+        fileInfo.innerHTML = '<span class="filename">' + file.name + '</span> (' + formatSize(file.size) + ')';
+        setTimeout(function() {
+          progressBar.classList.remove('active');
+        }, 600);
+      } catch (err) {
+        fileInfo.textContent = 'Error reading file: ' + err.message;
+        progressBar.classList.remove('active');
+      }
+    }
+
+    /* ---- Hash Comparison ---- */
+    function checkCompare() {
+      var v1 = hash1.value.trim();
+      var v2 = hash2.value.trim();
+
+      if (!v1 || !v2) {
+        compareResult.className = 'compare-result waiting';
+        compareResult.textContent = 'Enter two hashes to compare';
+        return;
+      }
+
+      if (v1.toLowerCase() === v2.toLowerCase()) {
+        compareResult.className = 'compare-result match';
+        compareResult.textContent = 'Hashes match';
+      } else {
+        compareResult.className = 'compare-result no-match';
+        compareResult.textContent = 'Hashes do not match';
+      }
+    }
+
+    hash1.addEventListener('input', checkCompare);
+    hash2.addEventListener('input', checkCompare);
+
+  })();
+  </script>
+</body>
+</html>

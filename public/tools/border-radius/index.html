@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Border Radius Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate CSS border-radius values visually with draggable corners, presets, and live preview. Copy production-ready CSS instantly.">
+  <meta property="og:title" content="Border Radius Generator - Free Online Tool">
+  <meta property="og:description" content="Generate CSS border-radius values visually with draggable corners, presets, and live preview.">
+  <meta property="og:url" content="https://imseankim.com/tools/border-radius">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/border-radius">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --border: #222;
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --accent: #6c5ce7;
+      --accent-hover: #7d6ff0;
+      --success: #2ecc71;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    .br-app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .br-app { grid-template-columns: 1fr; }
+    }
+
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-area {
+      width: 100%;
+      min-height: 420px;
+      background: #1a1a1a;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-box {
+      width: 200px;
+      height: 200px;
+      background: var(--accent);
+      border: 2px solid #7d6ff0;
+      transition: border-radius 0.15s;
+      position: relative;
+    }
+
+    .corner-handle {
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      cursor: grab;
+      z-index: 10;
+      transition: transform 0.1s;
+    }
+
+    .corner-handle:hover,
+    .corner-handle.dragging {
+      transform: scale(1.3);
+      background: var(--accent);
+      border-color: #fff;
+    }
+
+    .corner-handle.dragging { cursor: grabbing; }
+
+    .handle-tl { top: -7px; left: -7px; }
+    .handle-tr { top: -7px; right: -7px; }
+    .handle-br { bottom: -7px; right: -7px; }
+    .handle-bl { bottom: -7px; left: -7px; }
+
+    .controls-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .unit-toggle {
+      display: flex;
+      background: #0a0a0a;
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+
+    .unit-btn {
+      flex: 1;
+      padding: 6px 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .unit-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .link-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .link-toggle input { display: none; }
+
+    .link-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .link-toggle input:checked + .link-icon {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .corner-control {
+      display: grid;
+      grid-template-columns: 90px 1fr 70px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .corner-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .corner-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .corner-dot.tl { border-top-left-radius: 6px; }
+    .corner-dot.tr { border-top-right-radius: 6px; }
+    .corner-dot.br { border-bottom-right-radius: 6px; }
+    .corner-dot.bl { border-bottom-left-radius: 6px; }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: grab;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 50%;
+      cursor: grab;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      text-align: center;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button {
+      opacity: 0.5;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .preset-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 4px 8px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .preset-btn.active {
+      border-color: var(--accent);
+      background: rgba(108, 92, 231, 0.1);
+      color: var(--accent);
+    }
+
+    .preset-shape {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      transition: border-radius 0.2s;
+    }
+
+    .customize-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .customize-row label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .customize-field {
+      flex: 1;
+    }
+
+    .color-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    .color-input-wrap input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+
+    .color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-input-wrap input[type="color"]::-webkit-color-swatch {
+      border: 1px solid #444;
+      border-radius: 4px;
+    }
+
+    .color-hex {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 12px;
+      font-family: monospace;
+      width: 65px;
+      outline: none;
+    }
+
+    .size-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .size-slider-row input[type="range"] {
+      flex: 1;
+    }
+
+    .size-slider-row span {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .code-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .code-header .panel-title {
+      margin-bottom: 0;
+    }
+
+    .copy-btn {
+      padding: 6px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+    }
+
+    .code-output {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .code-prop { color: #82aaff; }
+    .code-val { color: #c3e88d; }
+    .code-punc { color: var(--text-muted); }
+
+    @media (max-width: 900px) {
+      .br-app { padding: 16px; }
+      .presets-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="br-app">
+      <div class="preview-section">
+        <div class="preview-area" id="previewArea">
+          <div class="preview-container" id="previewContainer">
+            <div class="preview-box" id="previewBox">
+              <div class="corner-handle handle-tl" data-corner="tl"></div>
+              <div class="corner-handle handle-tr" data-corner="tr"></div>
+              <div class="corner-handle handle-br" data-corner="br"></div>
+              <div class="corner-handle handle-bl" data-corner="bl"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-panel">
+          <div class="code-header">
+            <div class="panel-title">CSS Output</div>
+            <button class="copy-btn" id="copyBtn">Copy CSS</button>
+          </div>
+          <div class="code-output" id="codeOutput"></div>
+        </div>
+      </div>
+
+      <div class="controls-section">
+        <!-- Corner Controls -->
+        <div class="panel">
+          <div class="panel-title">Border Radius</div>
+
+          <div class="unit-toggle">
+            <button class="unit-btn active" data-unit="px">px</button>
+            <button class="unit-btn" data-unit="%">%</button>
+          </div>
+
+          <label class="link-toggle" id="linkToggle">
+            <input type="checkbox" id="linkCheckbox" checked>
+            <span class="link-icon" id="linkIcon">&#x1f517;</span>
+            <span>Link all corners</span>
+          </label>
+
+          <div id="cornerControls">
+            <div class="corner-control" data-corner="tl">
+              <div class="corner-label"><span class="corner-dot tl"></span> Top Left</div>
+              <input type="range" min="0" max="200" value="20" class="corner-range">
+              <input type="number" min="0" max="200" value="20" class="corner-num">
+            </div>
+            <div class="corner-control" data-corner="tr">
+              <div class="corner-label"><span class="corner-dot tr"></span> Top Right</div>
+              <input type="range" min="0" max="200" value="20" class="corner-range">
+              <input type="number" min="0" max="200" value="20" class="corner-num">
+            </div>
+            <div class="corner-control" data-corner="br">
+              <div class="corner-label"><span class="corner-dot br"></span> Bottom Right</div>
+              <input type="range" min="0" max="200" value="20" class="corner-range">
+              <input type="number" min="0" max="200" value="20" class="corner-num">
+            </div>
+            <div class="corner-control" data-corner="bl">
+              <div class="corner-label"><span class="corner-dot bl"></span> Bottom Left</div>
+              <input type="range" min="0" max="200" value="20" class="corner-range">
+              <input type="number" min="0" max="200" value="20" class="corner-num">
+            </div>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="panel">
+          <div class="panel-title">Presets</div>
+          <div class="presets-grid" id="presetsGrid"></div>
+        </div>
+
+        <!-- Customize -->
+        <div class="panel">
+          <div class="panel-title">Customize Preview</div>
+
+          <div class="customize-row">
+            <div class="customize-field">
+              <label>Background</label>
+              <div class="color-input-wrap">
+                <input type="color" id="bgColor" value="#6c5ce7">
+                <input type="text" class="color-hex" id="bgHex" value="#6c5ce7">
+              </div>
+            </div>
+            <div class="customize-field">
+              <label>Border</label>
+              <div class="color-input-wrap">
+                <input type="color" id="borderColor" value="#7d6ff0">
+                <input type="text" class="color-hex" id="borderHex" value="#7d6ff0">
+              </div>
+            </div>
+          </div>
+
+          <div class="customize-field" style="margin-top:4px">
+            <label>Preview Size</label>
+            <div class="size-slider-row">
+              <input type="range" id="previewSize" min="80" max="360" value="200">
+              <span id="previewSizeLabel">200px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    // State
+    const state = {
+      corners: { tl: 20, tr: 20, br: 20, bl: 20 },
+      linked: true,
+      unit: 'px',
+      bgColor: '#6c5ce7',
+      borderColor: '#7d6ff0',
+      previewSize: 200,
+      activePreset: null
+    };
+
+    // Presets
+    const presets = [
+      { name: 'None',      tl: 0,   tr: 0,   br: 0,   bl: 0 },
+      { name: 'Rounded',   tl: 12,  tr: 12,  br: 12,  bl: 12 },
+      { name: 'Circle',    tl: 50,  tr: 50,  br: 50,  bl: 50, unit: '%' },
+      { name: 'Pill',      tl: 200, tr: 200, br: 200, bl: 200, unit: 'px' },
+      { name: 'Squircle',  tl: 30,  tr: 30,  br: 30,  bl: 30, unit: '%' },
+      { name: 'Leaf',      tl: 0,   tr: 50,  br: 0,   bl: 50, unit: '%' },
+      { name: 'Drop',      tl: 50,  tr: 50,  br: 0,   bl: 50, unit: '%' },
+      { name: 'Ticket',    tl: 0,   tr: 50,  br: 50,  bl: 0, unit: '%' },
+      { name: 'Blob',      tl: 40,  tr: 10,  br: 40,  bl: 10, unit: '%' },
+      { name: 'Shield',    tl: 50,  tr: 50,  br: 10,  bl: 10, unit: '%' },
+      { name: 'Arch',      tl: 50,  tr: 50,  br: 0,   bl: 0, unit: '%' },
+      { name: 'Tab',       tl: 12,  tr: 12,  br: 0,   bl: 0, unit: 'px' },
+      { name: 'Slant',     tl: 0,   tr: 40,  br: 0,   bl: 40, unit: '%' },
+      { name: 'Notch',     tl: 30,  tr: 0,   br: 30,  bl: 0, unit: '%' },
+      { name: 'Gem',       tl: 20,  tr: 50,  br: 20,  bl: 50, unit: '%' },
+      { name: 'Pebble',    tl: 45,  tr: 25,  br: 50,  bl: 15, unit: '%' }
+    ];
+
+    // DOM
+    const previewBox = document.getElementById('previewBox');
+    const codeOutput = document.getElementById('codeOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const linkCheckbox = document.getElementById('linkCheckbox');
+    const linkIcon = document.getElementById('linkIcon');
+    const presetsGrid = document.getElementById('presetsGrid');
+    const bgColorInput = document.getElementById('bgColor');
+    const bgHexInput = document.getElementById('bgHex');
+    const borderColorInput = document.getElementById('borderColor');
+    const borderHexInput = document.getElementById('borderHex');
+    const previewSizeSlider = document.getElementById('previewSize');
+    const previewSizeLabel = document.getElementById('previewSizeLabel');
+    const unitBtns = document.querySelectorAll('.unit-btn');
+    const cornerRows = document.querySelectorAll('.corner-control');
+    const handles = document.querySelectorAll('.corner-handle');
+
+    // Init presets
+    presets.forEach(function(p, i) {
+      var btn = document.createElement('button');
+      btn.className = 'preset-btn';
+      btn.dataset.index = i;
+
+      var shape = document.createElement('div');
+      shape.className = 'preset-shape';
+      var u = p.unit || state.unit;
+      shape.style.borderRadius = p.tl + u + ' ' + p.tr + u + ' ' + p.br + u + ' ' + p.bl + u;
+
+      var label = document.createElement('span');
+      label.textContent = p.name;
+
+      btn.appendChild(shape);
+      btn.appendChild(label);
+      btn.addEventListener('click', function() { applyPreset(i); });
+      presetsGrid.appendChild(btn);
+    });
+
+    function getMaxVal() {
+      return state.unit === 'px' ? 200 : 50;
+    }
+
+    function updateRangeMax() {
+      var max = getMaxVal();
+      cornerRows.forEach(function(row) {
+        var range = row.querySelector('.corner-range');
+        var num = row.querySelector('.corner-num');
+        range.max = max;
+        num.max = max;
+      });
+    }
+
+    function setUnit(u) {
+      state.unit = u;
+      unitBtns.forEach(function(b) {
+        b.classList.toggle('active', b.dataset.unit === u);
+      });
+      updateRangeMax();
+      // Clamp values
+      var max = getMaxVal();
+      ['tl','tr','br','bl'].forEach(function(c) {
+        if (state.corners[c] > max) state.corners[c] = max;
+      });
+      syncControlsFromState();
+      update();
+    }
+
+    function syncControlsFromState() {
+      cornerRows.forEach(function(row) {
+        var c = row.dataset.corner;
+        var v = state.corners[c];
+        row.querySelector('.corner-range').value = v;
+        row.querySelector('.corner-num').value = v;
+      });
+    }
+
+    function setCorner(corner, value) {
+      var max = getMaxVal();
+      value = Math.max(0, Math.min(max, Math.round(value)));
+      if (state.linked) {
+        state.corners.tl = value;
+        state.corners.tr = value;
+        state.corners.br = value;
+        state.corners.bl = value;
+        syncControlsFromState();
+      } else {
+        state.corners[corner] = value;
+        var row = document.querySelector('.corner-control[data-corner="' + corner + '"]');
+        row.querySelector('.corner-range').value = value;
+        row.querySelector('.corner-num').value = value;
+      }
+      state.activePreset = null;
+      clearPresetHighlight();
+      update();
+    }
+
+    function update() {
+      var c = state.corners;
+      var u = state.unit;
+      var br = c.tl + u + ' ' + c.tr + u + ' ' + c.br + u + ' ' + c.bl + u;
+      previewBox.style.borderRadius = br;
+
+      // Code output
+      var allSame = (c.tl === c.tr && c.tr === c.br && c.br === c.bl);
+      var shorthand;
+      if (allSame) {
+        shorthand = c.tl + u;
+      } else {
+        shorthand = c.tl + u + ' ' + c.tr + u + ' ' + c.br + u + ' ' + c.bl + u;
+      }
+
+      codeOutput.innerHTML =
+        '<span class="code-prop">border-radius</span><span class="code-punc">: </span>' +
+        '<span class="code-val">' + shorthand + '</span><span class="code-punc">;</span>';
+    }
+
+    // Corner inputs
+    cornerRows.forEach(function(row) {
+      var corner = row.dataset.corner;
+      var range = row.querySelector('.corner-range');
+      var num = row.querySelector('.corner-num');
+
+      range.addEventListener('input', function() {
+        setCorner(corner, parseInt(range.value));
+      });
+
+      num.addEventListener('input', function() {
+        setCorner(corner, parseInt(num.value) || 0);
+      });
+    });
+
+    // Link toggle
+    linkCheckbox.addEventListener('change', function() {
+      state.linked = linkCheckbox.checked;
+      if (state.linked) {
+        // Set all to top-left value
+        var v = state.corners.tl;
+        state.corners.tr = v;
+        state.corners.br = v;
+        state.corners.bl = v;
+        syncControlsFromState();
+        update();
+      }
+    });
+
+    // Unit toggle
+    unitBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        setUnit(btn.dataset.unit);
+      });
+    });
+
+    // Presets
+    function clearPresetHighlight() {
+      presetsGrid.querySelectorAll('.preset-btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
+    }
+
+    function applyPreset(index) {
+      var p = presets[index];
+      if (p.unit) setUnit(p.unit);
+      state.linked = false;
+      linkCheckbox.checked = false;
+      state.corners.tl = Math.min(p.tl, getMaxVal());
+      state.corners.tr = Math.min(p.tr, getMaxVal());
+      state.corners.br = Math.min(p.br, getMaxVal());
+      state.corners.bl = Math.min(p.bl, getMaxVal());
+      syncControlsFromState();
+      state.activePreset = index;
+      clearPresetHighlight();
+      presetsGrid.querySelectorAll('.preset-btn')[index].classList.add('active');
+      update();
+    }
+
+    // Customize colors
+    bgColorInput.addEventListener('input', function() {
+      state.bgColor = bgColorInput.value;
+      bgHexInput.value = bgColorInput.value;
+      previewBox.style.background = state.bgColor;
+    });
+
+    bgHexInput.addEventListener('input', function() {
+      if (/^#[0-9a-fA-F]{6}$/.test(bgHexInput.value)) {
+        state.bgColor = bgHexInput.value;
+        bgColorInput.value = bgHexInput.value;
+        previewBox.style.background = state.bgColor;
+      }
+    });
+
+    borderColorInput.addEventListener('input', function() {
+      state.borderColor = borderColorInput.value;
+      borderHexInput.value = borderColorInput.value;
+      previewBox.style.borderColor = state.borderColor;
+    });
+
+    borderHexInput.addEventListener('input', function() {
+      if (/^#[0-9a-fA-F]{6}$/.test(borderHexInput.value)) {
+        state.borderColor = borderHexInput.value;
+        borderColorInput.value = borderHexInput.value;
+        previewBox.style.borderColor = state.borderColor;
+      }
+    });
+
+    // Preview size
+    previewSizeSlider.addEventListener('input', function() {
+      state.previewSize = parseInt(previewSizeSlider.value);
+      previewSizeLabel.textContent = state.previewSize + 'px';
+      previewBox.style.width = state.previewSize + 'px';
+      previewBox.style.height = state.previewSize + 'px';
+    });
+
+    // Copy button
+    copyBtn.addEventListener('click', function() {
+      var c = state.corners;
+      var u = state.unit;
+      var allSame = (c.tl === c.tr && c.tr === c.br && c.br === c.bl);
+      var text;
+      if (allSame) {
+        text = 'border-radius: ' + c.tl + u + ';';
+      } else {
+        text = 'border-radius: ' + c.tl + u + ' ' + c.tr + u + ' ' + c.br + u + ' ' + c.bl + u + ';';
+      }
+      navigator.clipboard.writeText(text).then(function() {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(function() {
+          copyBtn.textContent = 'Copy CSS';
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+
+    // Draggable corner handles
+    var dragState = null;
+
+    function getDistance(corner, clientX, clientY) {
+      var rect = previewBox.getBoundingClientRect();
+      var cx, cy;
+      switch(corner) {
+        case 'tl': cx = rect.left; cy = rect.top; break;
+        case 'tr': cx = rect.right; cy = rect.top; break;
+        case 'br': cx = rect.right; cy = rect.bottom; break;
+        case 'bl': cx = rect.left; cy = rect.bottom; break;
+      }
+      var dx = clientX - cx;
+      var dy = clientY - cy;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function distanceToRadius(dist) {
+      var max = getMaxVal();
+      if (state.unit === 'px') {
+        return Math.round(Math.min(max, Math.max(0, dist)));
+      } else {
+        // Map pixel distance to percentage based on preview size
+        var pct = (dist / (state.previewSize * 0.5)) * 50;
+        return Math.round(Math.min(max, Math.max(0, pct)));
+      }
+    }
+
+    handles.forEach(function(handle) {
+      handle.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        dragState = {
+          corner: handle.dataset.corner,
+          handle: handle
+        };
+        handle.classList.add('dragging');
+      });
+
+      handle.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        dragState = {
+          corner: handle.dataset.corner,
+          handle: handle
+        };
+        handle.classList.add('dragging');
+      }, { passive: false });
+    });
+
+    function onMove(clientX, clientY) {
+      if (!dragState) return;
+      var dist = getDistance(dragState.corner, clientX, clientY);
+      var val = distanceToRadius(dist);
+      setCorner(dragState.corner, val);
+    }
+
+    function onUp() {
+      if (dragState) {
+        dragState.handle.classList.remove('dragging');
+        dragState = null;
+      }
+    }
+
+    document.addEventListener('mousemove', function(e) {
+      onMove(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('mouseup', onUp);
+
+    document.addEventListener('touchmove', function(e) {
+      if (dragState) {
+        e.preventDefault();
+        var touch = e.touches[0];
+        onMove(touch.clientX, touch.clientY);
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', onUp);
+
+    // Init
+    update();
+  })();
+  </script>
+</body>
+</html>

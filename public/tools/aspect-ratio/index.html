@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aspect Ratio Calculator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Calculate and convert aspect ratios, lock ratios while resizing, preview common presets, compare ratios side by side, and find dimensions for any device.">
+  <meta property="og:title" content="Aspect Ratio Calculator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Calculate aspect ratios, lock ratio while resizing, preview presets, and compare ratios side by side.">
+  <meta property="og:url" content="https://imseankim.com/tools/aspect-ratio">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/aspect-ratio">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    /* Input Groups */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-group input:focus {
+      border-color: var(--accent);
+    }
+
+    .separator {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      padding-top: 20px;
+    }
+
+    /* Ratio Display */
+    .ratio-display {
+      text-align: center;
+      padding: 20px;
+      background: var(--bg-input);
+      border-radius: var(--radius-sm);
+      margin-top: 16px;
+    }
+
+    .ratio-value {
+      font-size: 2.4rem;
+      font-weight: 300;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      letter-spacing: 4px;
+    }
+
+    .ratio-decimal {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Lock Toggle */
+    .lock-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-top: 18px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.2rem;
+    }
+
+    .lock-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .lock-btn.locked {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Preview */
+    .preview-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      margin-top: 16px;
+    }
+
+    .preview-rect {
+      border: 2px solid var(--accent);
+      border-radius: 4px;
+      background: rgba(79, 172, 254, 0.05);
+      transition: width 0.3s ease, height 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Presets */
+    .presets-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      padding: 8px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preset-btn.active {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preset-section-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 12px 0 8px;
+      width: 100%;
+    }
+
+    .preset-section-label:first-child {
+      margin-top: 0;
+    }
+
+    /* Comparison */
+    .compare-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .compare-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+    }
+
+    .compare-box .compare-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .compare-box .compare-inputs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .compare-box .compare-inputs input {
+      width: 80px;
+      padding: 8px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .compare-box .compare-inputs input:focus {
+      border-color: var(--accent);
+    }
+
+    .compare-box .compare-inputs span {
+      color: var(--text-muted);
+    }
+
+    .compare-preview-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 120px;
+    }
+
+    .compare-rect {
+      border: 2px solid var(--accent);
+      border-radius: 3px;
+      background: rgba(79, 172, 254, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .compare-box:nth-child(2) .compare-rect {
+      border-color: var(--success);
+      background: rgba(67, 233, 123, 0.05);
+    }
+
+    .compare-ratio-text {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    .compare-box:nth-child(2) .compare-ratio-text {
+      color: var(--success);
+    }
+
+    /* Scale Calculator */
+    .scale-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .scale-result {
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--accent);
+      min-width: 100px;
+      text-align: center;
+      border: 1px solid var(--border);
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .compare-container {
+        grid-template-columns: 1fr;
+      }
+
+      .input-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .separator {
+        text-align: center;
+        padding-top: 0;
+      }
+
+      .lock-btn {
+        margin: 0 auto;
+      }
+
+      .scale-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Aspect Ratio Calculator</h1>
+    <p class="tool-subtitle">Calculate, convert, and compare aspect ratios</p>
+
+    <!-- Calculator -->
+    <div class="card">
+      <div class="card-title">Dimensions</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label for="width">Width</label>
+          <input type="number" id="width" value="1920" min="1">
+        </div>
+        <button class="lock-btn" id="lockBtn" title="Lock ratio">&#x1f512;</button>
+        <div class="input-group">
+          <label for="height">Height</label>
+          <input type="number" id="height" value="1080" min="1">
+        </div>
+      </div>
+      <div class="ratio-display">
+        <div class="ratio-value" id="ratioValue">16:9</div>
+        <div class="ratio-decimal" id="ratioDecimal">1.7778</div>
+      </div>
+      <div class="preview-area">
+        <div class="preview-rect" id="previewRect"></div>
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="card">
+      <div class="card-title">Presets</div>
+      <div class="presets-grid" id="presetsGrid"></div>
+    </div>
+
+    <!-- Scale Calculator -->
+    <div class="card">
+      <div class="card-title">Scale Calculator</div>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:14px;">Given a ratio and one dimension, calculate the other.</p>
+      <div class="scale-row">
+        <div class="input-group" style="max-width:100px;">
+          <label for="scaleRatioW">Ratio W</label>
+          <input type="number" id="scaleRatioW" value="16" min="1">
+        </div>
+        <span class="separator">:</span>
+        <div class="input-group" style="max-width:100px;">
+          <label for="scaleRatioH">Ratio H</label>
+          <input type="number" id="scaleRatioH" value="9" min="1">
+        </div>
+        <div class="input-group" style="max-width:140px;">
+          <label for="scaleDimension">Known dimension</label>
+          <input type="number" id="scaleDimension" value="1920" min="1">
+        </div>
+        <div class="input-group" style="max-width:140px;">
+          <label for="scaleSide">Side</label>
+          <select id="scaleSide" style="width:100%;padding:10px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.9rem;outline:none;">
+            <option value="width">Width</option>
+            <option value="height">Height</option>
+          </select>
+        </div>
+        <div class="input-group" style="max-width:140px;">
+          <label>Result</label>
+          <div class="scale-result" id="scaleResult">1080</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="card">
+      <div class="card-title">Compare Ratios</div>
+      <div class="compare-container">
+        <div class="compare-box">
+          <div class="compare-label">Ratio A</div>
+          <div class="compare-inputs">
+            <input type="number" id="cmpAw" value="16" min="1">
+            <span>:</span>
+            <input type="number" id="cmpAh" value="9" min="1">
+          </div>
+          <div class="compare-preview-area">
+            <div class="compare-rect" id="cmpRectA"></div>
+          </div>
+          <div class="compare-ratio-text" id="cmpTextA">16:9</div>
+        </div>
+        <div class="compare-box">
+          <div class="compare-label">Ratio B</div>
+          <div class="compare-inputs">
+            <input type="number" id="cmpBw" value="4" min="1">
+            <span>:</span>
+            <input type="number" id="cmpBh" value="3" min="1">
+          </div>
+          <div class="compare-preview-area">
+            <div class="compare-rect" id="cmpRectB"></div>
+          </div>
+          <div class="compare-ratio-text" id="cmpTextB">4:3</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    // ===== UTILITIES =====
+    function gcd(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) { [a, b] = [b, a % b]; }
+      return a;
+    }
+
+    function simplifyRatio(w, h) {
+      if (!w || !h) return { rw: 0, rh: 0 };
+      const d = gcd(w, h);
+      return { rw: w / d, rh: h / d };
+    }
+
+    // ===== MAIN CALCULATOR =====
+    const $width = document.getElementById('width');
+    const $height = document.getElementById('height');
+    const $lockBtn = document.getElementById('lockBtn');
+    const $ratioValue = document.getElementById('ratioValue');
+    const $ratioDecimal = document.getElementById('ratioDecimal');
+    const $previewRect = document.getElementById('previewRect');
+
+    let locked = false;
+    let lockedRatio = null; // w/h
+
+    $lockBtn.addEventListener('click', () => {
+      locked = !locked;
+      $lockBtn.classList.toggle('locked', locked);
+      $lockBtn.innerHTML = locked ? '&#x1f512;' : '&#x1f513;';
+      if (locked) {
+        const w = parseFloat($width.value) || 1;
+        const h = parseFloat($height.value) || 1;
+        lockedRatio = w / h;
+      }
+    });
+
+    let lastEdited = 'width';
+
+    $width.addEventListener('input', () => {
+      lastEdited = 'width';
+      if (locked && lockedRatio) {
+        const w = parseFloat($width.value) || 0;
+        $height.value = Math.round(w / lockedRatio);
+      }
+      updateRatio();
+    });
+
+    $height.addEventListener('input', () => {
+      lastEdited = 'height';
+      if (locked && lockedRatio) {
+        const h = parseFloat($height.value) || 0;
+        $width.value = Math.round(h * lockedRatio);
+      }
+      updateRatio();
+    });
+
+    function updateRatio() {
+      const w = parseFloat($width.value) || 0;
+      const h = parseFloat($height.value) || 0;
+      if (w <= 0 || h <= 0) {
+        $ratioValue.textContent = '--';
+        $ratioDecimal.textContent = '';
+        return;
+      }
+      const { rw, rh } = simplifyRatio(w, h);
+      $ratioValue.textContent = rw + ':' + rh;
+      $ratioDecimal.textContent = (w / h).toFixed(4);
+      updatePreview(w, h);
+      highlightActivePreset(w, h);
+    }
+
+    function updatePreview(w, h) {
+      const maxW = 400;
+      const maxH = 180;
+      const ratio = w / h;
+      let pw, ph;
+      if (ratio >= maxW / maxH) {
+        pw = maxW;
+        ph = maxW / ratio;
+      } else {
+        ph = maxH;
+        pw = maxH * ratio;
+      }
+      $previewRect.style.width = pw + 'px';
+      $previewRect.style.height = ph + 'px';
+      $previewRect.textContent = Math.round(w) + ' x ' + Math.round(h);
+    }
+
+    // ===== PRESETS =====
+    const ratioPresets = [
+      { label: '1:1', w: 1, h: 1 },
+      { label: '4:3', w: 4, h: 3 },
+      { label: '3:2', w: 3, h: 2 },
+      { label: '16:9', w: 16, h: 9 },
+      { label: '16:10', w: 16, h: 10 },
+      { label: '21:9', w: 21, h: 9 },
+      { label: '9:16', w: 9, h: 16 },
+      { label: '2:3', w: 2, h: 3 },
+      { label: '3:4', w: 3, h: 4 },
+    ];
+
+    const devicePresets = [
+      { label: 'iPhone 15', w: 1179, h: 2556 },
+      { label: 'iPhone SE', w: 750, h: 1334 },
+      { label: 'iPad Pro 12.9"', w: 2048, h: 2732 },
+      { label: 'iPad Air', w: 1640, h: 2360 },
+      { label: 'MacBook Air 13"', w: 2560, h: 1664 },
+      { label: 'MacBook Pro 16"', w: 3456, h: 2234 },
+      { label: '1080p (Full HD)', w: 1920, h: 1080 },
+      { label: '1440p (QHD)', w: 2560, h: 1440 },
+      { label: '4K (UHD)', w: 3840, h: 2160 },
+      { label: 'Instagram Post', w: 1080, h: 1080 },
+      { label: 'Instagram Story', w: 1080, h: 1920 },
+      { label: 'YouTube Thumbnail', w: 1280, h: 720 },
+      { label: 'Twitter Post', w: 1600, h: 900 },
+      { label: 'Twitter Header', w: 1500, h: 500 },
+    ];
+
+    const $presetsGrid = document.getElementById('presetsGrid');
+
+    function buildPresets() {
+      let html = '<div class="preset-section-label">Common Ratios</div>';
+      ratioPresets.forEach(p => {
+        html += `<button class="preset-btn" data-w="${p.w}" data-h="${p.h}" data-type="ratio">${p.label}</button>`;
+      });
+      html += '<div class="preset-section-label">Device Sizes</div>';
+      devicePresets.forEach(p => {
+        html += `<button class="preset-btn" data-w="${p.w}" data-h="${p.h}" data-type="device">${p.label}</button>`;
+      });
+      $presetsGrid.innerHTML = html;
+
+      $presetsGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.preset-btn');
+        if (!btn) return;
+        const w = parseInt(btn.dataset.w);
+        const h = parseInt(btn.dataset.h);
+
+        if (btn.dataset.type === 'ratio') {
+          // For ratio presets, scale to reasonable dimensions
+          const currentW = parseFloat($width.value) || 1920;
+          const scale = Math.round(currentW / w);
+          const useScale = Math.max(scale, 1);
+          $width.value = w * useScale;
+          $height.value = h * useScale;
+        } else {
+          $width.value = w;
+          $height.value = h;
+        }
+
+        if (locked) {
+          lockedRatio = w / h;
+        }
+        updateRatio();
+      });
+    }
+
+    function highlightActivePreset(w, h) {
+      const { rw, rh } = simplifyRatio(w, h);
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        const bw = parseInt(btn.dataset.w);
+        const bh = parseInt(btn.dataset.h);
+        let isActive = false;
+        if (btn.dataset.type === 'ratio') {
+          const { rw: brw, rh: brh } = simplifyRatio(bw, bh);
+          isActive = brw === rw && brh === rh;
+        } else {
+          isActive = bw === w && bh === h;
+        }
+        btn.classList.toggle('active', isActive);
+      });
+    }
+
+    // ===== SCALE CALCULATOR =====
+    const $scaleRatioW = document.getElementById('scaleRatioW');
+    const $scaleRatioH = document.getElementById('scaleRatioH');
+    const $scaleDimension = document.getElementById('scaleDimension');
+    const $scaleSide = document.getElementById('scaleSide');
+    const $scaleResult = document.getElementById('scaleResult');
+
+    function updateScale() {
+      const rw = parseFloat($scaleRatioW.value) || 0;
+      const rh = parseFloat($scaleRatioH.value) || 0;
+      const dim = parseFloat($scaleDimension.value) || 0;
+      const side = $scaleSide.value;
+
+      if (rw <= 0 || rh <= 0 || dim <= 0) {
+        $scaleResult.textContent = '--';
+        return;
+      }
+
+      let result;
+      if (side === 'width') {
+        result = Math.round(dim * rh / rw);
+      } else {
+        result = Math.round(dim * rw / rh);
+      }
+      $scaleResult.textContent = result;
+    }
+
+    [$scaleRatioW, $scaleRatioH, $scaleDimension].forEach(el => {
+      el.addEventListener('input', updateScale);
+    });
+    $scaleSide.addEventListener('change', updateScale);
+
+    // ===== COMPARISON =====
+    const $cmpAw = document.getElementById('cmpAw');
+    const $cmpAh = document.getElementById('cmpAh');
+    const $cmpBw = document.getElementById('cmpBw');
+    const $cmpBh = document.getElementById('cmpBh');
+    const $cmpRectA = document.getElementById('cmpRectA');
+    const $cmpRectB = document.getElementById('cmpRectB');
+    const $cmpTextA = document.getElementById('cmpTextA');
+    const $cmpTextB = document.getElementById('cmpTextB');
+
+    function updateComparison() {
+      const aw = parseFloat($cmpAw.value) || 0;
+      const ah = parseFloat($cmpAh.value) || 0;
+      const bw = parseFloat($cmpBw.value) || 0;
+      const bh = parseFloat($cmpBh.value) || 0;
+
+      drawCompareRect($cmpRectA, aw, ah, $cmpTextA);
+      drawCompareRect($cmpRectB, bw, bh, $cmpTextB);
+    }
+
+    function drawCompareRect(el, w, h, textEl) {
+      if (w <= 0 || h <= 0) {
+        el.style.width = '0px';
+        el.style.height = '0px';
+        textEl.textContent = '--';
+        return;
+      }
+      const maxW = 200;
+      const maxH = 100;
+      const ratio = w / h;
+      let pw, ph;
+      if (ratio >= maxW / maxH) {
+        pw = maxW;
+        ph = maxW / ratio;
+      } else {
+        ph = maxH;
+        pw = maxH * ratio;
+      }
+      el.style.width = pw + 'px';
+      el.style.height = ph + 'px';
+      const { rw, rh } = simplifyRatio(w, h);
+      textEl.textContent = rw + ':' + rh + ' (' + (w / h).toFixed(2) + ')';
+    }
+
+    [$cmpAw, $cmpAh, $cmpBw, $cmpBh].forEach(el => {
+      el.addEventListener('input', updateComparison);
+    });
+
+    // ===== INIT =====
+    buildPresets();
+    updateRatio();
+    updateScale();
+    updateComparison();
+  </script>
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON to CSV Converter - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Free online JSON to CSV and CSV to JSON converter. Flatten nested JSON, customize delimiters, preview data in tables. Fast, private, no data sent to servers.">
+  <meta name="keywords" content="JSON to CSV, CSV to JSON, converter, online tool, flatten JSON, delimiter, data converter">
+  <meta property="og:title" content="JSON to CSV Converter - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Convert between JSON and CSV formats with nested JSON flattening, custom delimiters, and table preview.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imseankim.com/tools/json-csv/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://imseankim.com/tools/json-csv/">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .json-csv-tool {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .json-csv-tool h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .json-csv-tool .subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    /* Tabs */
+    .direction-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      width: fit-content;
+    }
+
+    .direction-tab {
+      padding: 10px 24px;
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+      transition: var(--transition);
+    }
+
+    .direction-tab:not(:last-child) {
+      border-right: 1px solid var(--border-light);
+    }
+
+    .direction-tab:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .direction-tab.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .separator {
+      width: 1px;
+      height: 24px;
+      background: var(--border-light);
+      margin: 0 4px;
+    }
+
+    .toolbar select {
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      letter-spacing: 1px;
+      transition: var(--transition);
+    }
+
+    .toolbar select:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    .toolbar label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    .toolbar label input[type="checkbox"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+      letter-spacing: 1px;
+      font-family: var(--font-sans);
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    /* Editor Layout */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .editor-pane {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editor-pane .pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    .editor-pane .pane-header span {
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .editor-pane .pane-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .editor-pane textarea {
+      width: 100%;
+      min-height: 320px;
+      padding: 16px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .editor-pane textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .editor-pane textarea::placeholder {
+      color: var(--text-dim);
+    }
+
+    .convert-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+    }
+
+    .convert-btn {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .convert-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      position: relative;
+    }
+
+    .drop-zone.dragover textarea {
+      border-color: var(--accent);
+      background: rgba(79, 172, 254, 0.05);
+    }
+
+    .drop-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(79, 172, 254, 0.08);
+      border: 2px dashed var(--accent);
+      border-radius: var(--radius-sm);
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+
+    .drop-zone.dragover .drop-overlay {
+      display: flex;
+    }
+
+    /* Table Preview */
+    .preview-section {
+      margin-top: 4px;
+    }
+
+    .preview-section h3 {
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      max-height: 400px;
+    }
+
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .table-wrap th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-light);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .table-wrap td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .table-wrap tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    /* Status */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .status-bar .status-msg {
+      color: var(--success);
+    }
+
+    .status-bar .status-err {
+      color: var(--danger);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Small button variant */
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.68rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .editor-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .convert-col {
+        padding: 8px 0;
+      }
+
+      .convert-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .json-csv-tool {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="json-csv-tool">
+      <h1>JSON &#8596; CSV CONVERTER</h1>
+      <p class="subtitle">Convert between JSON and CSV formats with nested object flattening</p>
+
+      <!-- Direction Tabs -->
+      <div class="direction-tabs">
+        <button class="direction-tab active" data-dir="json-to-csv">JSON &rarr; CSV</button>
+        <button class="direction-tab" data-dir="csv-to-json">CSV &rarr; JSON</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <label for="delimiter-select">Delimiter</label>
+        <select id="delimiter-select">
+          <option value=",">Comma (,)</option>
+          <option value=";">Semicolon (;)</option>
+          <option value="&#9;">Tab</option>
+          <option value="|">Pipe (|)</option>
+        </select>
+        <div class="separator"></div>
+        <label>
+          <input type="checkbox" id="include-headers" checked>
+          Include Headers
+        </label>
+        <div class="separator"></div>
+        <button class="btn" id="upload-btn" title="Upload file">Upload File</button>
+        <input type="file" id="file-input" accept=".json,.csv,.txt" style="display:none">
+      </div>
+
+      <!-- Editor Grid -->
+      <div class="editor-grid">
+        <!-- Input Pane -->
+        <div class="editor-pane drop-zone" id="input-drop">
+          <div class="pane-header">
+            <span id="input-label">INPUT (JSON)</span>
+            <div class="pane-actions">
+              <button class="btn btn-sm" id="clear-input">Clear</button>
+              <button class="btn btn-sm" id="sample-btn">Sample</button>
+            </div>
+          </div>
+          <textarea id="input-area" placeholder="Paste your JSON here..." spellcheck="false"></textarea>
+          <div class="drop-overlay">Drop file here</div>
+        </div>
+
+        <!-- Convert Button -->
+        <div class="convert-col">
+          <button class="convert-btn" id="convert-btn" title="Convert">&rarr;</button>
+        </div>
+
+        <!-- Output Pane -->
+        <div class="editor-pane">
+          <div class="pane-header">
+            <span id="output-label">OUTPUT (CSV)</span>
+            <div class="pane-actions">
+              <button class="btn btn-sm" id="copy-output">Copy</button>
+              <button class="btn btn-sm" id="download-output">Download</button>
+            </div>
+          </div>
+          <textarea id="output-area" placeholder="Converted output will appear here..." readonly spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span id="status-text"></span>
+      </div>
+
+      <!-- Table Preview -->
+      <div class="preview-section" id="preview-section" style="display:none">
+        <h3>Table Preview</h3>
+        <div class="table-wrap" id="table-wrap"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    // Elements
+    const dirTabs = document.querySelectorAll('.direction-tab');
+    const delimSelect = document.getElementById('delimiter-select');
+    const headersCheck = document.getElementById('include-headers');
+    const inputArea = document.getElementById('input-area');
+    const outputArea = document.getElementById('output-area');
+    const inputLabel = document.getElementById('input-label');
+    const outputLabel = document.getElementById('output-label');
+    const convertBtn = document.getElementById('convert-btn');
+    const clearBtn = document.getElementById('clear-input');
+    const sampleBtn = document.getElementById('sample-btn');
+    const copyBtn = document.getElementById('copy-output');
+    const downloadBtn = document.getElementById('download-output');
+    const uploadBtn = document.getElementById('upload-btn');
+    const fileInput = document.getElementById('file-input');
+    const statusText = document.getElementById('status-text');
+    const previewSection = document.getElementById('preview-section');
+    const tableWrap = document.getElementById('table-wrap');
+    const inputDrop = document.getElementById('input-drop');
+    const toast = document.getElementById('toast');
+
+    let direction = 'json-to-csv';
+
+    // Sample data
+    const sampleJSON = JSON.stringify([
+      { "id": 1, "name": "Alice Johnson", "email": "alice@example.com", "address": { "city": "New York", "state": "NY", "zip": "10001" }, "tags": ["admin", "user"] },
+      { "id": 2, "name": "Bob Smith", "email": "bob@example.com", "address": { "city": "Los Angeles", "state": "CA", "zip": "90001" }, "tags": ["user"] },
+      { "id": 3, "name": "Carol White", "email": "carol@example.com", "address": { "city": "Chicago", "state": "IL", "zip": "60601" }, "tags": ["editor", "user"] }
+    ], null, 2);
+
+    const sampleCSV = 'id,name,email,address.city,address.state,address.zip,tags\n1,Alice Johnson,alice@example.com,New York,NY,10001,"admin,user"\n2,Bob Smith,bob@example.com,Los Angeles,CA,90001,user\n3,Carol White,carol@example.com,Chicago,IL,60601,"editor,user"';
+
+    // Direction tabs
+    dirTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        dirTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        direction = tab.dataset.dir;
+        updateLabels();
+      });
+    });
+
+    function updateLabels() {
+      if (direction === 'json-to-csv') {
+        inputLabel.textContent = 'INPUT (JSON)';
+        outputLabel.textContent = 'OUTPUT (CSV)';
+        inputArea.placeholder = 'Paste your JSON here...';
+        convertBtn.innerHTML = '&rarr;';
+      } else {
+        inputLabel.textContent = 'INPUT (CSV)';
+        outputLabel.textContent = 'OUTPUT (JSON)';
+        inputArea.placeholder = 'Paste your CSV here...';
+        convertBtn.innerHTML = '&rarr;';
+      }
+    }
+
+    // Flatten nested object with dot notation
+    function flattenObject(obj, prefix, result) {
+      prefix = prefix || '';
+      result = result || {};
+      for (var key in obj) {
+        if (!obj.hasOwnProperty(key)) continue;
+        var fullKey = prefix ? prefix + '.' + key : key;
+        var val = obj[key];
+        if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
+          flattenObject(val, fullKey, result);
+        } else if (Array.isArray(val)) {
+          result[fullKey] = val.map(function(v) {
+            return typeof v === 'object' ? JSON.stringify(v) : String(v);
+          }).join(',');
+        } else {
+          result[fullKey] = val;
+        }
+      }
+      return result;
+    }
+
+    // Escape CSV field
+    function escapeCSVField(value, delim) {
+      if (value === null || value === undefined) return '';
+      var str = String(value);
+      if (str.indexOf(delim) !== -1 || str.indexOf('"') !== -1 || str.indexOf('\n') !== -1) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    }
+
+    // JSON to CSV
+    function jsonToCSV(jsonStr, delim, includeHeaders) {
+      var data = JSON.parse(jsonStr);
+      if (!Array.isArray(data)) {
+        if (typeof data === 'object' && data !== null) {
+          data = [data];
+        } else {
+          throw new Error('Input must be a JSON array or object');
+        }
+      }
+      if (data.length === 0) throw new Error('Empty array');
+
+      var flattened = data.map(function(item) { return flattenObject(item); });
+      var headerSet = {};
+      flattened.forEach(function(row) {
+        Object.keys(row).forEach(function(k) { headerSet[k] = true; });
+      });
+      var headers = Object.keys(headerSet);
+
+      var lines = [];
+      if (includeHeaders) {
+        lines.push(headers.map(function(h) { return escapeCSVField(h, delim); }).join(delim));
+      }
+      flattened.forEach(function(row) {
+        var line = headers.map(function(h) { return escapeCSVField(row[h], delim); });
+        lines.push(line.join(delim));
+      });
+
+      return { csv: lines.join('\n'), headers: headers, rows: flattened };
+    }
+
+    // Parse CSV (handles quoted fields)
+    function parseCSV(csvStr, delim) {
+      var lines = [];
+      var current = [];
+      var field = '';
+      var inQuotes = false;
+      var i = 0;
+      var len = csvStr.length;
+
+      while (i < len) {
+        var ch = csvStr[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (i + 1 < len && csvStr[i + 1] === '"') {
+              field += '"';
+              i += 2;
+            } else {
+              inQuotes = false;
+              i++;
+            }
+          } else {
+            field += ch;
+            i++;
+          }
+        } else {
+          if (ch === '"') {
+            inQuotes = true;
+            i++;
+          } else if (ch === delim) {
+            current.push(field);
+            field = '';
+            i++;
+          } else if (ch === '\r') {
+            i++;
+          } else if (ch === '\n') {
+            current.push(field);
+            field = '';
+            lines.push(current);
+            current = [];
+            i++;
+          } else {
+            field += ch;
+            i++;
+          }
+        }
+      }
+      // Last field/line
+      if (field || current.length > 0) {
+        current.push(field);
+        lines.push(current);
+      }
+
+      return lines;
+    }
+
+    // CSV to JSON
+    function csvToJSON(csvStr, delim, hasHeaders) {
+      var lines = parseCSV(csvStr.trim(), delim);
+      if (lines.length === 0) throw new Error('Empty CSV');
+
+      var headers;
+      var startRow;
+      if (hasHeaders) {
+        headers = lines[0];
+        startRow = 1;
+      } else {
+        headers = lines[0].map(function(_, idx) { return 'col' + (idx + 1); });
+        startRow = 0;
+      }
+
+      var result = [];
+      for (var i = startRow; i < lines.length; i++) {
+        var row = lines[i];
+        if (row.length === 1 && row[0] === '') continue; // skip empty
+        var obj = {};
+        headers.forEach(function(h, idx) {
+          var val = idx < row.length ? row[idx] : '';
+          // Unflatten dot notation keys
+          setNestedValue(obj, h.trim(), val);
+        });
+        result.push(obj);
+      }
+
+      return { json: result, headers: headers, rows: lines.slice(startRow) };
+    }
+
+    // Set nested value from dot notation key
+    function setNestedValue(obj, key, value) {
+      var parts = key.split('.');
+      var current = obj;
+      for (var i = 0; i < parts.length - 1; i++) {
+        if (!current[parts[i]] || typeof current[parts[i]] !== 'object') {
+          current[parts[i]] = {};
+        }
+        current = current[parts[i]];
+      }
+      // Try to auto-detect types
+      if (value === '') {
+        current[parts[parts.length - 1]] = value;
+      } else if (value === 'true') {
+        current[parts[parts.length - 1]] = true;
+      } else if (value === 'false') {
+        current[parts[parts.length - 1]] = false;
+      } else if (value === 'null') {
+        current[parts[parts.length - 1]] = null;
+      } else if (!isNaN(value) && value.trim() !== '') {
+        current[parts[parts.length - 1]] = Number(value);
+      } else {
+        current[parts[parts.length - 1]] = value;
+      }
+    }
+
+    // Convert
+    function doConvert() {
+      var input = inputArea.value.trim();
+      if (!input) {
+        setStatus('No input provided', true);
+        return;
+      }
+
+      var delim = delimSelect.value;
+      var includeHeaders = headersCheck.checked;
+
+      try {
+        if (direction === 'json-to-csv') {
+          var result = jsonToCSV(input, delim, includeHeaders);
+          outputArea.value = result.csv;
+          renderTable(result.headers, result.rows);
+          setStatus('Converted ' + result.rows.length + ' rows, ' + result.headers.length + ' columns');
+        } else {
+          var res = csvToJSON(input, delim, includeHeaders);
+          outputArea.value = JSON.stringify(res.json, null, 2);
+          // Build flat rows for table preview
+          var flatRows = res.json.map(function(item) { return flattenObject(item); });
+          var allKeys = {};
+          flatRows.forEach(function(r) { Object.keys(r).forEach(function(k) { allKeys[k] = true; }); });
+          renderTable(Object.keys(allKeys), flatRows);
+          setStatus('Converted ' + res.json.length + ' records');
+        }
+      } catch (e) {
+        setStatus('Error: ' + e.message, true);
+        outputArea.value = '';
+        previewSection.style.display = 'none';
+      }
+    }
+
+    function setStatus(msg, isError) {
+      statusText.textContent = msg;
+      statusText.className = isError ? 'status-err' : 'status-msg';
+    }
+
+    // Render table
+    function renderTable(headers, rows) {
+      if (!headers || headers.length === 0) {
+        previewSection.style.display = 'none';
+        return;
+      }
+
+      var html = '<table><thead><tr>';
+      headers.forEach(function(h) {
+        html += '<th>' + escapeHTML(String(h)) + '</th>';
+      });
+      html += '</tr></thead><tbody>';
+
+      var displayRows = rows.slice(0, 200); // limit preview
+      displayRows.forEach(function(row) {
+        html += '<tr>';
+        headers.forEach(function(h) {
+          var val = '';
+          if (Array.isArray(row)) {
+            val = row[headers.indexOf(h)] || '';
+          } else {
+            val = row[h] !== undefined ? row[h] : '';
+          }
+          html += '<td title="' + escapeHTML(String(val)) + '">' + escapeHTML(String(val)) + '</td>';
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      if (rows.length > 200) {
+        html += '<p style="padding:10px;color:var(--text-muted);font-size:0.72rem;">Showing 200 of ' + rows.length + ' rows</p>';
+      }
+
+      tableWrap.innerHTML = html;
+      previewSection.style.display = 'block';
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Event listeners
+    convertBtn.addEventListener('click', doConvert);
+
+    clearBtn.addEventListener('click', function() {
+      inputArea.value = '';
+      outputArea.value = '';
+      previewSection.style.display = 'none';
+      statusText.textContent = '';
+    });
+
+    sampleBtn.addEventListener('click', function() {
+      inputArea.value = direction === 'json-to-csv' ? sampleJSON : sampleCSV;
+    });
+
+    copyBtn.addEventListener('click', function() {
+      if (!outputArea.value) return;
+      navigator.clipboard.writeText(outputArea.value).then(function() {
+        showToast('Copied to clipboard');
+      });
+    });
+
+    downloadBtn.addEventListener('click', function() {
+      if (!outputArea.value) return;
+      var ext = direction === 'json-to-csv' ? '.csv' : '.json';
+      var mime = direction === 'json-to-csv' ? 'text/csv' : 'application/json';
+      var blob = new Blob([outputArea.value], { type: mime + ';charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'converted' + ext;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded converted' + ext);
+    });
+
+    uploadBtn.addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) readFile(file);
+      fileInput.value = '';
+    });
+
+    function readFile(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        inputArea.value = e.target.result;
+        // Auto-detect direction from file extension
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'json') {
+          setDirection('json-to-csv');
+        } else if (ext === 'csv') {
+          setDirection('csv-to-json');
+        }
+        showToast('Loaded ' + file.name);
+      };
+      reader.readAsText(file);
+    }
+
+    function setDirection(dir) {
+      direction = dir;
+      dirTabs.forEach(function(t) {
+        t.classList.toggle('active', t.dataset.dir === dir);
+      });
+      updateLabels();
+    }
+
+    // Drag and drop
+    ['dragenter', 'dragover'].forEach(function(evt) {
+      inputDrop.addEventListener(evt, function(e) {
+        e.preventDefault();
+        inputDrop.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(function(evt) {
+      inputDrop.addEventListener(evt, function(e) {
+        e.preventDefault();
+        inputDrop.classList.remove('dragover');
+      });
+    });
+
+    inputDrop.addEventListener('drop', function(e) {
+      var files = e.dataTransfer.files;
+      if (files.length > 0) readFile(files[0]);
+    });
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        doConvert();
+      }
+    });
+
+    // Toast
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+  })();
+  </script>
+</body>
+</html>

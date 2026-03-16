@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Counter - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Count words, characters, sentences, and paragraphs instantly. Analyze keyword density, reading level, and estimated reading time. Free online word counter tool.">
+  <meta property="og:title" content="Word Counter - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Count words, characters, sentences, paragraphs. Keyword density, reading level, and reading time analysis.">
+  <meta property="og:url" content="https://imseankim.com/tools/word-counter">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/word-counter">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted, #777);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 16px 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    /* Textarea Area */
+    .editor-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .toolbar button {
+      background: #141414;
+      border: 1px solid #222;
+      color: #ccc;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .toolbar button:hover {
+      border-color: #444;
+      color: #fff;
+    }
+
+    .char-limit-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .char-limit-group label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .char-limit-group input {
+      width: 80px;
+      background: #141414;
+      border: 1px solid #222;
+      color: #ccc;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .char-limit-group input:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    .char-limit-warning {
+      display: none;
+      color: #ff5555;
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+      margin-top: -4px;
+    }
+
+    .char-limit-warning.visible {
+      display: block;
+    }
+
+    #textInput {
+      width: 100%;
+      min-height: 220px;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      color: #ddd;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      padding: 20px;
+      resize: vertical;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    #textInput:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    #textInput.limit-exceeded {
+      border-color: #ff5555;
+    }
+
+    /* Bottom Panels */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+      .char-limit-group {
+        margin-left: 0;
+      }
+    }
+
+    .panel {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #666;
+      margin-bottom: 14px;
+    }
+
+    /* Keywords Table */
+    .keywords-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .keywords-table th {
+      text-align: left;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #555;
+      padding: 0 0 8px;
+      border-bottom: 1px solid #222;
+      font-weight: 400;
+    }
+
+    .keywords-table th:last-child {
+      text-align: right;
+    }
+
+    .keywords-table td {
+      padding: 7px 0;
+      font-size: 0.85rem;
+      color: #aaa;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .keywords-table td:last-child {
+      text-align: right;
+      color: #666;
+      font-size: 0.8rem;
+    }
+
+    .keywords-table .density-bar {
+      display: inline-block;
+      height: 3px;
+      background: #444;
+      border-radius: 2px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .empty-msg {
+      color: #444;
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
+    /* Reading Level */
+    .reading-level-score {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .reading-level-label {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .reading-level-detail {
+      font-size: 0.78rem;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    /* Global dark overrides */
+    body {
+      background: #0a0a0a;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Word Counter</h1>
+    <p class="tool-subtitle">Analyze your text in real time</p>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="statWords">0</div>
+        <div class="stat-label">Words</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statChars">0</div>
+        <div class="stat-label">Characters</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statCharsNoSpace">0</div>
+        <div class="stat-label">No Spaces</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statSentences">0</div>
+        <div class="stat-label">Sentences</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statParagraphs">0</div>
+        <div class="stat-label">Paragraphs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statReadTime">0s</div>
+        <div class="stat-label">Read Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statSpeakTime">0s</div>
+        <div class="stat-label">Speak Time</div>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-section">
+      <div class="toolbar">
+        <button id="btnClear">Clear</button>
+        <button id="btnCopy">Copy Text</button>
+        <div class="char-limit-group">
+          <label for="charLimit">Char Limit</label>
+          <input type="number" id="charLimit" placeholder="None" min="0">
+        </div>
+      </div>
+      <div class="char-limit-warning" id="charWarning">Character limit exceeded!</div>
+      <textarea id="textInput" placeholder="Paste or type your text here..."></textarea>
+    </div>
+
+    <!-- Bottom Panels -->
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-title">Top Keywords</div>
+        <table class="keywords-table" id="keywordsTable">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Count</th>
+              <th>Density</th>
+            </tr>
+          </thead>
+          <tbody id="keywordsBody">
+            <tr><td colspan="3" class="empty-msg">Start typing to see keywords</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Reading Level</div>
+        <div class="reading-level-score" id="fleschScore">&mdash;</div>
+        <div class="reading-level-label" id="fleschLabel">Enter text to analyze</div>
+        <div class="reading-level-detail" id="fleschDetail"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (function () {
+      const textInput = document.getElementById('textInput');
+      const charLimitInput = document.getElementById('charLimit');
+      const charWarning = document.getElementById('charWarning');
+
+      const statWords = document.getElementById('statWords');
+      const statChars = document.getElementById('statChars');
+      const statCharsNoSpace = document.getElementById('statCharsNoSpace');
+      const statSentences = document.getElementById('statSentences');
+      const statParagraphs = document.getElementById('statParagraphs');
+      const statReadTime = document.getElementById('statReadTime');
+      const statSpeakTime = document.getElementById('statSpeakTime');
+
+      const keywordsBody = document.getElementById('keywordsBody');
+      const fleschScore = document.getElementById('fleschScore');
+      const fleschLabel = document.getElementById('fleschLabel');
+      const fleschDetail = document.getElementById('fleschDetail');
+
+      const btnClear = document.getElementById('btnClear');
+      const btnCopy = document.getElementById('btnCopy');
+
+      // Common words to skip in keyword analysis
+      const STOP_WORDS = new Set([
+        'the','be','to','of','and','a','in','that','have','i','it','for','not',
+        'on','with','he','as','you','do','at','this','but','his','by','from',
+        'they','we','say','her','she','or','an','will','my','one','all','would',
+        'there','their','what','so','up','out','if','about','who','get','which',
+        'go','me','when','make','can','like','time','no','just','him','know',
+        'take','people','into','year','your','good','some','could','them','see',
+        'other','than','then','now','look','only','come','its','over','think',
+        'also','back','after','use','two','how','our','work','first','well',
+        'way','even','new','want','because','any','these','give','day','most',
+        'us','is','are','was','were','been','being','has','had','did','does',
+        'am','been','doing','did','should','may','might','shall','must','need',
+        'very','more','much','own','such','here','still','through','each','where'
+      ]);
+
+      function getWords(text) {
+        if (!text.trim()) return [];
+        return text.trim().split(/\s+/).filter(function (w) { return w.length > 0; });
+      }
+
+      function countSentences(text) {
+        if (!text.trim()) return 0;
+        var matches = text.match(/[.!?]+(\s|$)/g);
+        return matches ? matches.length : 0;
+      }
+
+      function countParagraphs(text) {
+        if (!text.trim()) return 0;
+        return text.split(/\n\s*\n/).filter(function (p) { return p.trim().length > 0; }).length ||
+               (text.trim().length > 0 ? 1 : 0);
+      }
+
+      function countSyllables(word) {
+        word = word.toLowerCase().replace(/[^a-z]/g, '');
+        if (word.length <= 2) return 1;
+        word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+        word = word.replace(/^y/, '');
+        var m = word.match(/[aeiouy]{1,2}/g);
+        return m ? m.length : 1;
+      }
+
+      function formatTime(minutes) {
+        if (minutes < 1) {
+          var secs = Math.round(minutes * 60);
+          return secs + 's';
+        }
+        var m = Math.floor(minutes);
+        var s = Math.round((minutes - m) * 60);
+        if (m === 0) return s + 's';
+        if (s === 0) return m + 'm';
+        return m + 'm ' + s + 's';
+      }
+
+      function getFleschGrade(score) {
+        if (score >= 90) return '5th Grade';
+        if (score >= 80) return '6th Grade';
+        if (score >= 70) return '7th Grade';
+        if (score >= 60) return '8th-9th Grade';
+        if (score >= 50) return '10th-12th Grade';
+        if (score >= 30) return 'College';
+        return 'Professional';
+      }
+
+      function getFleschDifficulty(score) {
+        if (score >= 90) return 'Very Easy';
+        if (score >= 80) return 'Easy';
+        if (score >= 70) return 'Fairly Easy';
+        if (score >= 60) return 'Standard';
+        if (score >= 50) return 'Fairly Difficult';
+        if (score >= 30) return 'Difficult';
+        return 'Very Difficult';
+      }
+
+      function analyze() {
+        var text = textInput.value;
+        var words = getWords(text);
+        var wordCount = words.length;
+        var charCount = text.length;
+        var charNoSpace = text.replace(/\s/g, '').length;
+        var sentenceCount = countSentences(text);
+        var paragraphCount = countParagraphs(text);
+
+        // Reading time: ~225 wpm, Speaking: ~150 wpm
+        var readMin = wordCount / 225;
+        var speakMin = wordCount / 150;
+
+        statWords.textContent = wordCount;
+        statChars.textContent = charCount;
+        statCharsNoSpace.textContent = charNoSpace;
+        statSentences.textContent = sentenceCount;
+        statParagraphs.textContent = paragraphCount;
+        statReadTime.textContent = formatTime(readMin);
+        statSpeakTime.textContent = formatTime(speakMin);
+
+        // Character limit check
+        var limit = parseInt(charLimitInput.value);
+        if (!isNaN(limit) && limit > 0) {
+          if (charCount > limit) {
+            charWarning.textContent = 'Character limit exceeded! (' + charCount + ' / ' + limit + ')';
+            charWarning.classList.add('visible');
+            textInput.classList.add('limit-exceeded');
+          } else {
+            charWarning.textContent = charCount + ' / ' + limit + ' characters used';
+            charWarning.classList.add('visible');
+            textInput.classList.remove('limit-exceeded');
+          }
+        } else {
+          charWarning.classList.remove('visible');
+          textInput.classList.remove('limit-exceeded');
+        }
+
+        // Keyword frequency
+        var freq = {};
+        words.forEach(function (w) {
+          var clean = w.toLowerCase().replace(/[^a-z0-9'-]/g, '').replace(/^['-]+|['-]+$/g, '');
+          if (clean.length < 2 || STOP_WORDS.has(clean)) return;
+          freq[clean] = (freq[clean] || 0) + 1;
+        });
+
+        var sorted = Object.entries(freq).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+
+        if (sorted.length === 0) {
+          keywordsBody.innerHTML = '<tr><td colspan="3" class="empty-msg">Start typing to see keywords</td></tr>';
+        } else {
+          var maxCount = sorted[0][1];
+          keywordsBody.innerHTML = sorted.map(function (item) {
+            var density = ((item[1] / wordCount) * 100).toFixed(1);
+            var barWidth = Math.round((item[1] / maxCount) * 60);
+            return '<tr>' +
+              '<td>' + item[0] + '</td>' +
+              '<td>' + item[1] + '</td>' +
+              '<td><span class="density-bar" style="width:' + barWidth + 'px"></span>' + density + '%</td>' +
+              '</tr>';
+          }).join('');
+        }
+
+        // Flesch-Kincaid Reading Ease
+        if (wordCount >= 10 && sentenceCount >= 1) {
+          var totalSyllables = 0;
+          words.forEach(function (w) {
+            totalSyllables += countSyllables(w);
+          });
+
+          var score = 206.835 - 1.015 * (wordCount / sentenceCount) - 84.6 * (totalSyllables / wordCount);
+          score = Math.max(0, Math.min(100, Math.round(score * 10) / 10));
+
+          fleschScore.textContent = score;
+          fleschLabel.textContent = getFleschDifficulty(score);
+          fleschDetail.innerHTML =
+            'Grade level: ' + getFleschGrade(score) + '<br>' +
+            'Avg words/sentence: ' + (wordCount / sentenceCount).toFixed(1) + '<br>' +
+            'Avg syllables/word: ' + (totalSyllables / wordCount).toFixed(1);
+        } else {
+          fleschScore.innerHTML = '&mdash;';
+          fleschLabel.textContent = wordCount === 0 ? 'Enter text to analyze' : 'Need 10+ words and 1+ sentence';
+          fleschDetail.innerHTML = '';
+        }
+      }
+
+      textInput.addEventListener('input', analyze);
+      charLimitInput.addEventListener('input', analyze);
+
+      btnClear.addEventListener('click', function () {
+        textInput.value = '';
+        charLimitInput.value = '';
+        analyze();
+        textInput.focus();
+      });
+
+      btnCopy.addEventListener('click', function () {
+        if (!textInput.value) return;
+        navigator.clipboard.writeText(textInput.value).then(function () {
+          var original = btnCopy.textContent;
+          btnCopy.textContent = 'Copied!';
+          setTimeout(function () { btnCopy.textContent = original; }, 1500);
+        });
+      });
+
+      // Initial state
+      analyze();
+    })();
+  </script>
+</body>
+</html>

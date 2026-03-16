@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diff Checker - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Free online diff checker and text comparison tool. Compare two texts side by side with additions, deletions, and line numbers. Fast, private, no data sent to servers.">
+  <meta name="keywords" content="diff checker, text comparison, online diff tool, compare text, side by side diff, unified diff">
+  <meta property="og:title" content="Diff Checker - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Compare two texts side by side with highlighted additions, deletions, and statistics.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imseankim.com/tools/diff/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://imseankim.com/tools/diff/">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .diff-tool {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .diff-tool h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .diff-tool .subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .separator {
+      width: 1px;
+      height: 24px;
+      background: var(--border-light);
+      margin: 0 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-size: 0.75rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn.active {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Toggle */
+    .toggle-group {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .toggle-group .btn {
+      border: none;
+      border-radius: 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .toggle-group .btn:last-child {
+      border-right: none;
+    }
+
+    .toggle-group .btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: transparent;
+    }
+
+    /* Input panels */
+    .input-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    .panel-header span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .panel textarea {
+      width: 100%;
+      height: 280px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      resize: vertical;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .panel textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .panel textarea::placeholder {
+      color: var(--text-dim);
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    .stats-bar.visible {
+      display: flex;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stat .dot.added { background: #2ea04370; border: 1px solid #2ea043; }
+    .stat .dot.removed { background: #f8514970; border: 1px solid #f85149; }
+    .stat .dot.unchanged { background: #44444470; border: 1px solid #666; }
+
+    /* Diff output */
+    .diff-output {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: none;
+    }
+
+    .diff-output.visible {
+      display: block;
+    }
+
+    .diff-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .diff-output-header span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    /* Side by side diff */
+    .diff-container {
+      overflow-x: auto;
+    }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .diff-table td {
+      padding: 1px 12px;
+      vertical-align: top;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .diff-table .line-num {
+      width: 50px;
+      min-width: 50px;
+      text-align: right;
+      color: var(--text-dim);
+      user-select: none;
+      padding-right: 10px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+
+    .diff-table .line-content {
+      padding-left: 12px;
+    }
+
+    /* Side-by-side: left and right halves */
+    .diff-table .side-left {
+      border-right: 1px solid var(--border);
+    }
+
+    .diff-table .side-left .line-content {
+      border-right: 1px solid var(--border);
+    }
+
+    /* Diff line colors */
+    .diff-table tr.diff-added .line-content {
+      background: rgba(46, 160, 67, 0.12);
+      color: #7ee787;
+    }
+
+    .diff-table tr.diff-added .line-num {
+      background: rgba(46, 160, 67, 0.08);
+      color: #2ea043;
+    }
+
+    .diff-table tr.diff-removed .line-content {
+      background: rgba(248, 81, 73, 0.12);
+      color: #ffa198;
+    }
+
+    .diff-table tr.diff-removed .line-num {
+      background: rgba(248, 81, 73, 0.08);
+      color: #f85149;
+    }
+
+    .diff-table tr.diff-unchanged .line-content {
+      color: var(--text-dim);
+    }
+
+    /* Unified diff prefix */
+    .diff-prefix {
+      color: inherit;
+      user-select: none;
+      opacity: 0.6;
+    }
+
+    /* Separator row */
+    .diff-table tr.diff-separator td {
+      background: var(--bg-card);
+      color: var(--text-dim);
+      text-align: center;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Empty state */
+    .diff-empty {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .diff-tool { padding: 16px; }
+      .input-panels { grid-template-columns: 1fr; }
+      .toolbar { gap: 6px; }
+      .panel textarea { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="diff-tool">
+      <h1>Diff Checker</h1>
+      <p class="subtitle">Compare two blocks of text and see the differences</p>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button class="btn primary" id="compareBtn" onclick="runDiff()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          Compare
+        </button>
+        <button class="btn" id="clearBtn" onclick="clearAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          Clear
+        </button>
+
+        <div class="separator"></div>
+
+        <div class="toggle-group">
+          <button class="btn active" id="sideBySideBtn" onclick="setView('side')">Side by Side</button>
+          <button class="btn" id="unifiedBtn" onclick="setView('unified')">Unified</button>
+        </div>
+
+        <div class="separator"></div>
+
+        <button class="btn" id="ignoreWsBtn" onclick="toggleOption('ignoreWs')">Ignore Whitespace</button>
+        <button class="btn" id="ignoreCaseBtn" onclick="toggleOption('ignoreCase')">Case Insensitive</button>
+
+        <div class="separator"></div>
+
+        <button class="btn" id="copyBtn" onclick="copyDiff()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Diff
+        </button>
+      </div>
+
+      <!-- Input panels -->
+      <div class="input-panels">
+        <div class="panel">
+          <div class="panel-header">
+            <span>Original</span>
+          </div>
+          <textarea id="originalText" placeholder="Paste original text here..." spellcheck="false"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span>Modified</span>
+          </div>
+          <textarea id="modifiedText" placeholder="Paste modified text here..." spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar" id="statsBar">
+        <div class="stat"><span class="dot added"></span><span id="statAdded">0 added</span></div>
+        <div class="stat"><span class="dot removed"></span><span id="statRemoved">0 removed</span></div>
+        <div class="stat"><span class="dot unchanged"></span><span id="statUnchanged">0 unchanged</span></div>
+      </div>
+
+      <!-- Diff output -->
+      <div class="diff-output" id="diffOutput">
+        <div class="diff-output-header">
+          <span>Diff Result</span>
+        </div>
+        <div class="diff-container" id="diffContainer"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    /* ---- State ---- */
+    let viewMode = 'side';
+    let ignoreWs = false;
+    let ignoreCase = false;
+    let lastDiff = null;
+
+    /* ---- Options ---- */
+    function setView(mode) {
+      viewMode = mode;
+      document.getElementById('sideBySideBtn').classList.toggle('active', mode === 'side');
+      document.getElementById('unifiedBtn').classList.toggle('active', mode === 'unified');
+      if (lastDiff) renderDiff(lastDiff);
+    }
+
+    function toggleOption(opt) {
+      if (opt === 'ignoreWs') {
+        ignoreWs = !ignoreWs;
+        document.getElementById('ignoreWsBtn').classList.toggle('active', ignoreWs);
+      } else if (opt === 'ignoreCase') {
+        ignoreCase = !ignoreCase;
+        document.getElementById('ignoreCaseBtn').classList.toggle('active', ignoreCase);
+      }
+      if (lastDiff) runDiff();
+    }
+
+    function clearAll() {
+      document.getElementById('originalText').value = '';
+      document.getElementById('modifiedText').value = '';
+      document.getElementById('diffOutput').classList.remove('visible');
+      document.getElementById('statsBar').classList.remove('visible');
+      document.getElementById('diffContainer').innerHTML = '';
+      lastDiff = null;
+    }
+
+    /* ---- LCS-based diff algorithm ---- */
+    function normalizeLine(line) {
+      let l = line;
+      if (ignoreWs) l = l.replace(/\s+/g, ' ').trim();
+      if (ignoreCase) l = l.toLowerCase();
+      return l;
+    }
+
+    function computeDiff(origLines, modLines) {
+      const n = origLines.length;
+      const m = modLines.length;
+
+      // Build normalized versions for comparison
+      const normOrig = origLines.map(normalizeLine);
+      const normMod = modLines.map(normalizeLine);
+
+      // LCS table (space-optimized would be better but clarity wins here)
+      const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+
+      for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= m; j++) {
+          if (normOrig[i - 1] === normMod[j - 1]) {
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+          } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          }
+        }
+      }
+
+      // Backtrack to get diff operations
+      const ops = [];
+      let i = n, j = m;
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && normOrig[i - 1] === normMod[j - 1]) {
+          ops.push({ type: 'equal', origIdx: i - 1, modIdx: j - 1, text: origLines[i - 1] });
+          i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+          ops.push({ type: 'add', modIdx: j - 1, text: modLines[j - 1] });
+          j--;
+        } else {
+          ops.push({ type: 'remove', origIdx: i - 1, text: origLines[i - 1] });
+          i--;
+        }
+      }
+
+      ops.reverse();
+      return ops;
+    }
+
+    /* ---- Run diff ---- */
+    function runDiff() {
+      const origText = document.getElementById('originalText').value;
+      const modText = document.getElementById('modifiedText').value;
+
+      const origLines = origText.split('\n');
+      const modLines = modText.split('\n');
+
+      const ops = computeDiff(origLines, modLines);
+      lastDiff = ops;
+
+      // Stats
+      let added = 0, removed = 0, unchanged = 0;
+      ops.forEach(op => {
+        if (op.type === 'add') added++;
+        else if (op.type === 'remove') removed++;
+        else unchanged++;
+      });
+
+      document.getElementById('statAdded').textContent = added + ' added';
+      document.getElementById('statRemoved').textContent = removed + ' removed';
+      document.getElementById('statUnchanged').textContent = unchanged + ' unchanged';
+      document.getElementById('statsBar').classList.add('visible');
+      document.getElementById('diffOutput').classList.add('visible');
+
+      renderDiff(ops);
+    }
+
+    /* ---- Render ---- */
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderDiff(ops) {
+      if (viewMode === 'side') {
+        renderSideBySide(ops);
+      } else {
+        renderUnified(ops);
+      }
+    }
+
+    function renderSideBySide(ops) {
+      const container = document.getElementById('diffContainer');
+
+      if (ops.length === 0) {
+        container.innerHTML = '<div class="diff-empty">No differences found</div>';
+        return;
+      }
+
+      let html = '<table class="diff-table">';
+
+      // Group operations for side-by-side alignment
+      let i = 0;
+      while (i < ops.length) {
+        const op = ops[i];
+
+        if (op.type === 'equal') {
+          const origNum = op.origIdx + 1;
+          const modNum = op.modIdx + 1;
+          html += '<tr class="diff-unchanged">';
+          html += '<td class="line-num side-left">' + origNum + '</td>';
+          html += '<td class="line-content side-left">' + escapeHtml(op.text) + '</td>';
+          html += '<td class="line-num">' + modNum + '</td>';
+          html += '<td class="line-content">' + escapeHtml(op.text) + '</td>';
+          html += '</tr>';
+          i++;
+        } else {
+          // Collect consecutive removes and adds for pairing
+          const removes = [];
+          const adds = [];
+          while (i < ops.length && ops[i].type !== 'equal') {
+            if (ops[i].type === 'remove') removes.push(ops[i]);
+            else if (ops[i].type === 'add') adds.push(ops[i]);
+            i++;
+          }
+
+          const maxLen = Math.max(removes.length, adds.length);
+          for (let k = 0; k < maxLen; k++) {
+            const rem = removes[k];
+            const add = adds[k];
+            const hasRem = !!rem;
+            const hasAdd = !!add;
+
+            let rowClass = '';
+            if (hasRem && hasAdd) rowClass = 'diff-removed'; // show as modified
+            else if (hasRem) rowClass = 'diff-removed';
+            else rowClass = 'diff-added';
+
+            // Left side (original / removed)
+            if (hasRem && hasAdd) {
+              // Modified line: show removal on left, addition on right
+              html += '<tr class="diff-removed">';
+              html += '<td class="line-num side-left">' + (rem.origIdx + 1) + '</td>';
+              html += '<td class="line-content side-left">' + escapeHtml(rem.text) + '</td>';
+            } else if (hasRem) {
+              html += '<tr class="diff-removed">';
+              html += '<td class="line-num side-left">' + (rem.origIdx + 1) + '</td>';
+              html += '<td class="line-content side-left">' + escapeHtml(rem.text) + '</td>';
+            } else {
+              html += '<tr class="diff-added">';
+              html += '<td class="line-num side-left"></td>';
+              html += '<td class="line-content side-left"></td>';
+            }
+
+            // Right side (modified / added)
+            if (hasAdd) {
+              html += '<td class="line-num">' + (add.modIdx + 1) + '</td>';
+              html += '<td class="line-content">' + escapeHtml(add.text) + '</td>';
+            } else {
+              html += '<td class="line-num"></td>';
+              html += '<td class="line-content"></td>';
+            }
+
+            html += '</tr>';
+
+            // If both exist, also render the add as a separate added row for the right side
+            if (hasRem && hasAdd) {
+              // Already rendered as a single row with removal on left, addition on right
+              // Re-tag the row with a combined style via closing and reopening
+              // Actually let's simplify: show removed on left, added on right in same row
+            }
+          }
+        }
+      }
+
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    function renderUnified(ops) {
+      const container = document.getElementById('diffContainer');
+
+      if (ops.length === 0) {
+        container.innerHTML = '<div class="diff-empty">No differences found</div>';
+        return;
+      }
+
+      let html = '<table class="diff-table">';
+
+      for (const op of ops) {
+        if (op.type === 'equal') {
+          html += '<tr class="diff-unchanged">';
+          html += '<td class="line-num">' + (op.origIdx + 1) + '</td>';
+          html += '<td class="line-num">' + (op.modIdx + 1) + '</td>';
+          html += '<td class="line-content"><span class="diff-prefix">  </span>' + escapeHtml(op.text) + '</td>';
+          html += '</tr>';
+        } else if (op.type === 'remove') {
+          html += '<tr class="diff-removed">';
+          html += '<td class="line-num">' + (op.origIdx + 1) + '</td>';
+          html += '<td class="line-num"></td>';
+          html += '<td class="line-content"><span class="diff-prefix">- </span>' + escapeHtml(op.text) + '</td>';
+          html += '</tr>';
+        } else if (op.type === 'add') {
+          html += '<tr class="diff-added">';
+          html += '<td class="line-num"></td>';
+          html += '<td class="line-num">' + (op.modIdx + 1) + '</td>';
+          html += '<td class="line-content"><span class="diff-prefix">+ </span>' + escapeHtml(op.text) + '</td>';
+          html += '</tr>';
+        }
+      }
+
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    /* ---- Copy diff ---- */
+    function copyDiff() {
+      if (!lastDiff) return;
+
+      let text = '';
+      for (const op of lastDiff) {
+        if (op.type === 'equal') text += '  ' + op.text + '\n';
+        else if (op.type === 'remove') text += '- ' + op.text + '\n';
+        else if (op.type === 'add') text += '+ ' + op.text + '\n';
+      }
+
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const original = btn.innerHTML;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Copied';
+        setTimeout(() => { btn.innerHTML = original; }, 1500);
+      });
+    }
+
+    /* ---- Keyboard shortcut ---- */
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runDiff();
+      }
+    });
+  </script>
+</body>
+</html>

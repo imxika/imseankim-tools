@@ -39,6 +39,18 @@
     { "source": "/svg-editor", "destination": "/tools/svg-editor/" },
     { "source": "/favicon", "destination": "/tools/favicon/" },
     { "source": "/privacy", "destination": "/privacy/" },
-    { "source": "/terms", "destination": "/terms/" }
+    { "source": "/terms", "destination": "/terms/" },
+    { "source": "/contrast", "destination": "/tools/contrast/" },
+    { "source": "/animation", "destination": "/tools/animation/" },
+    { "source": "/border-radius", "destination": "/tools/border-radius/" },
+    { "source": "/hash", "destination": "/tools/hash/" },
+    { "source": "/meta-tags", "destination": "/tools/meta-tags/" },
+    { "source": "/timestamp", "destination": "/tools/timestamp/" },
+    { "source": "/json-csv", "destination": "/tools/json-csv/" },
+    { "source": "/diff", "destination": "/tools/diff/" },
+    { "source": "/emoji", "destination": "/tools/emoji/" },
+    { "source": "/word-counter", "destination": "/tools/word-counter/" },
+    { "source": "/pomodoro", "destination": "/tools/pomodoro/" },
+    { "source": "/aspect-ratio", "destination": "/tools/aspect-ratio/" }
   ]
 }

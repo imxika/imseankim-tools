@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Animation Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Create CSS animations visually with keyframe editor, 15+ presets, cubic-bezier visualizer, and live preview. Copy production-ready CSS instantly.">
+  <meta property="og:title" content="CSS Animation Generator - Free Online Tool">
+  <meta property="og:description" content="Create CSS animations visually with keyframe editor, presets, and live preview.">
+  <meta property="og:url" content="https://imseankim.com/tools/animation">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/animation">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --border: #222;
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --accent: #4facfe;
+      --accent-hover: #3a9aee;
+      --danger: #ff5555;
+      --success: #43e97b;
+    }
+
+    .anim-app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .anim-app { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Preview */
+    .preview-section { display: flex; flex-direction: column; gap: 16px; }
+
+    .preview-area {
+      width: 100%;
+      min-height: 360px;
+      background: #1a1a1a;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-box {
+      width: 100px;
+      height: 100px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .playback-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .playback-controls button {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .playback-controls button:hover { border-color: var(--accent); color: var(--accent); }
+    .playback-controls button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* Sidebar */
+    .sidebar { display: flex; flex-direction: column; gap: 16px; max-height: calc(100vh - 100px); overflow-y: auto; }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus { border-color: var(--accent); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Presets */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .preset-btn {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 6px 4px;
+      font-size: 0.68rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .preset-btn:hover { border-color: var(--accent); color: var(--text); }
+    .preset-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* Keyframe Editor */
+    .keyframe-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .keyframe-item {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .kf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .kf-header span {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .kf-remove {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .kf-props { display: flex; flex-direction: column; gap: 6px; }
+
+    .kf-prop {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kf-prop label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kf-prop input, .kf-prop select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .kf-prop input:focus, .kf-prop select:focus { border-color: var(--accent); }
+
+    .add-kf-btn {
+      background: none;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: inherit;
+      width: 100%;
+      transition: all 0.15s;
+    }
+
+    .add-kf-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Bezier Visualizer */
+    .bezier-canvas-wrap {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .bezier-canvas-wrap canvas { cursor: crosshair; }
+
+    .bezier-values {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .bezier-values input {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 5px 6px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      text-align: center;
+      width: 100%;
+      outline: none;
+    }
+
+    .bezier-values input:focus { border-color: var(--accent); }
+
+    .bezier-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .bezier-preset-btn {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .bezier-preset-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* Code Output */
+    .code-output {
+      position: relative;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: #ccc;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      z-index: 2;
+    }
+
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn.copied { background: var(--success); color: #000; border-color: var(--success); }
+
+    /* Timeline bar */
+    .timeline-bar {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      position: relative;
+      height: 40px;
+    }
+
+    .timeline-track {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      right: 14px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      transform: translateY(-50%);
+    }
+
+    .timeline-dot {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .timeline-dot:hover { transform: translate(-50%, -50%) scale(1.3); }
+
+    .kf-color-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .kf-color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+    .kf-color-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="anim-app">
+      <!-- Left: Preview + Code -->
+      <div class="preview-section">
+        <div class="panel">
+          <div class="panel-title">Live Preview</div>
+          <div class="preview-area" id="previewArea">
+            <div class="preview-box" id="previewBox">&#9632;</div>
+          </div>
+          <div class="playback-controls" style="margin-top: 12px;">
+            <button id="btnPlay" class="active" onclick="setPlayState('running')">&#9654; Play</button>
+            <button id="btnPause" onclick="setPlayState('paused')">&#10074;&#10074; Pause</button>
+            <button id="btnRestart" onclick="restartAnimation()">&#8635; Restart</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Timeline</div>
+          <div class="timeline-bar" id="timelineBar">
+            <div class="timeline-track"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="position: relative;">
+          <div class="panel-title">Generated CSS</div>
+          <button class="copy-btn" id="copyBtn" onclick="copyCSS()">Copy</button>
+          <div class="code-output" id="codeOutput"></div>
+        </div>
+      </div>
+
+      <!-- Right: Controls -->
+      <div class="sidebar">
+        <!-- Presets -->
+        <div class="panel">
+          <div class="panel-title">Presets</div>
+          <div class="presets-grid" id="presetsGrid"></div>
+        </div>
+
+        <!-- Animation Properties -->
+        <div class="panel">
+          <div class="panel-title">Animation Properties</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Duration (s)</label>
+              <input type="number" id="propDuration" value="1" min="0.1" step="0.1" onchange="updateAnimation()">
+            </div>
+            <div class="form-group">
+              <label>Delay (s)</label>
+              <input type="number" id="propDelay" value="0" min="0" step="0.1" onchange="updateAnimation()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Iterations</label>
+              <input type="text" id="propIterations" value="infinite" onchange="updateAnimation()">
+            </div>
+            <div class="form-group">
+              <label>Direction</label>
+              <select id="propDirection" onchange="updateAnimation()">
+                <option value="normal">normal</option>
+                <option value="reverse">reverse</option>
+                <option value="alternate">alternate</option>
+                <option value="alternate-reverse">alternate-reverse</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Fill Mode</label>
+            <select id="propFillMode" onchange="updateAnimation()">
+              <option value="none">none</option>
+              <option value="forwards">forwards</option>
+              <option value="backwards">backwards</option>
+              <option value="both">both</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Timing Function -->
+        <div class="panel">
+          <div class="panel-title">Timing Function</div>
+          <div class="form-group">
+            <select id="timingSelect" onchange="onTimingSelect()">
+              <option value="custom">custom (cubic-bezier)</option>
+              <option value="linear">linear</option>
+              <option value="ease">ease</option>
+              <option value="ease-in">ease-in</option>
+              <option value="ease-out">ease-out</option>
+              <option value="ease-in-out">ease-in-out</option>
+              <option value="steps">steps</option>
+            </select>
+          </div>
+          <div id="bezierEditor">
+            <div class="bezier-canvas-wrap">
+              <canvas id="bezierCanvas" width="200" height="200"></canvas>
+            </div>
+            <div class="bezier-values">
+              <input type="number" id="bx1" value="0.25" min="0" max="1" step="0.01" onchange="onBezierInput()">
+              <input type="number" id="by1" value="0.1" min="-1" max="2" step="0.01" onchange="onBezierInput()">
+              <input type="number" id="bx2" value="0.25" min="0" max="1" step="0.01" onchange="onBezierInput()">
+              <input type="number" id="by2" value="1" min="-1" max="2" step="0.01" onchange="onBezierInput()">
+            </div>
+            <div class="bezier-presets">
+              <button class="bezier-preset-btn" onclick="setBezier(0.25,0.1,0.25,1)">ease</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0.42,0,1,1)">ease-in</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0,0,0.58,1)">ease-out</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0.42,0,0.58,1)">ease-in-out</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0.68,-0.55,0.27,1.55)">back</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0.36,0.07,0.19,0.97)">smooth</button>
+              <button class="bezier-preset-btn" onclick="setBezier(0.77,0,0.175,1)">snap</button>
+            </div>
+          </div>
+          <div id="stepsEditor" style="display:none; margin-top: 8px;">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Steps</label>
+                <input type="number" id="stepsCount" value="4" min="1" max="60" onchange="updateAnimation()">
+              </div>
+              <div class="form-group">
+                <label>Jump</label>
+                <select id="stepsJump" onchange="updateAnimation()">
+                  <option value="end">end</option>
+                  <option value="start">start</option>
+                  <option value="both">both</option>
+                  <option value="none">none</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keyframe Editor -->
+        <div class="panel">
+          <div class="panel-title">Keyframes</div>
+          <div class="keyframe-list" id="keyframeList"></div>
+          <button class="add-kf-btn" onclick="addKeyframe()" style="margin-top: 10px;">+ Add Keyframe</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    /* ===== State ===== */
+    let animName = 'customAnim';
+    let keyframes = [
+      { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+      { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+    ];
+
+    let bezier = { x1: 0.25, y1: 0.1, x2: 0.25, y2: 1 };
+    let draggingCP = null; // 1 or 2
+
+    /* ===== Presets ===== */
+    const presets = {
+      'Fade In': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Fade Out': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' }
+      ],
+      'Slide Left': [
+        { pct: 0, translateX: '-100px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Slide Right': [
+        { pct: 0, translateX: '100px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Slide Top': [
+        { pct: 0, translateX: '0px', translateY: '-100px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Slide Bottom': [
+        { pct: 0, translateX: '0px', translateY: '100px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Bounce': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 20, translateX: '0px', translateY: '-30px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 40, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 60, translateX: '0px', translateY: '-15px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 80, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Pulse': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 50, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1.15', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Shake': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 10, translateX: '-10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 20, translateX: '10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 30, translateX: '-10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 40, translateX: '10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 50, translateX: '-10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 60, translateX: '10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 70, translateX: '-10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 80, translateX: '10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 90, translateX: '-10px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Spin': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '360deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Flip X': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 50, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0.5', bgColor: '', extraTransform: 'rotateY(90deg)' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', extraTransform: 'rotateY(0deg)' }
+      ],
+      'Flip Y': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 50, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0.5', bgColor: '', extraTransform: 'rotateX(90deg)' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', extraTransform: 'rotateX(0deg)' }
+      ],
+      'Zoom In': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '0', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Zoom Out': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '0', opacity: '0', bgColor: '' }
+      ],
+      'Swing': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 20, translateX: '0px', translateY: '0px', rotate: '15deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 40, translateX: '0px', translateY: '0px', rotate: '-10deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 60, translateX: '0px', translateY: '0px', rotate: '5deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 80, translateX: '0px', translateY: '0px', rotate: '-5deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Rubber Band': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 30, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1.25', opacity: '1', bgColor: '', scaleX: '1.25', scaleY: '0.75' },
+        { pct: 40, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '0.75', opacity: '1', bgColor: '', scaleX: '0.75', scaleY: '1.25' },
+        { pct: 50, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1.15', opacity: '1', bgColor: '', scaleX: '1.15', scaleY: '0.85' },
+        { pct: 65, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '0.95', opacity: '1', bgColor: '', scaleX: '0.95', scaleY: '1.05' },
+        { pct: 75, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1.05', opacity: '1', bgColor: '', scaleX: '1.05', scaleY: '0.95' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Jello': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '0deg', skewY: '0deg' },
+        { pct: 11, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '-12.5deg', skewY: '-12.5deg' },
+        { pct: 22, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '6.25deg', skewY: '6.25deg' },
+        { pct: 33, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '-3.125deg', skewY: '-3.125deg' },
+        { pct: 44, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '1.5625deg', skewY: '1.5625deg' },
+        { pct: 55, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '0deg', skewY: '0deg' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '', skewX: '0deg', skewY: '0deg' }
+      ],
+      'Flash': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 25, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 50, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 75, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '0', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ],
+      'Wobble': [
+        { pct: 0, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 15, translateX: '-25px', translateY: '0px', rotate: '-5deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 30, translateX: '20px', translateY: '0px', rotate: '3deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 45, translateX: '-15px', translateY: '0px', rotate: '-3deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 60, translateX: '10px', translateY: '0px', rotate: '2deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 75, translateX: '-5px', translateY: '0px', rotate: '-1deg', scale: '1', opacity: '1', bgColor: '' },
+        { pct: 100, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' }
+      ]
+    };
+
+    let activePreset = null;
+
+    /* ===== Init ===== */
+    function init() {
+      renderPresets();
+      renderKeyframes();
+      drawBezier();
+      updateAnimation();
+    }
+
+    /* ===== Presets ===== */
+    function renderPresets() {
+      const grid = document.getElementById('presetsGrid');
+      grid.innerHTML = '';
+      Object.keys(presets).forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = 'preset-btn' + (activePreset === name ? ' active' : '');
+        btn.textContent = name;
+        btn.onclick = () => applyPreset(name);
+        grid.appendChild(btn);
+      });
+    }
+
+    function applyPreset(name) {
+      activePreset = name;
+      keyframes = JSON.parse(JSON.stringify(presets[name]));
+      renderPresets();
+      renderKeyframes();
+      updateAnimation();
+    }
+
+    /* ===== Keyframe Editor ===== */
+    function renderKeyframes() {
+      const list = document.getElementById('keyframeList');
+      list.innerHTML = '';
+      keyframes.sort((a, b) => a.pct - b.pct);
+
+      keyframes.forEach((kf, i) => {
+        const item = document.createElement('div');
+        item.className = 'keyframe-item';
+        item.innerHTML = `
+          <div class="kf-header">
+            <span>${kf.pct}%</span>
+            ${keyframes.length > 2 ? `<button class="kf-remove" onclick="removeKeyframe(${i})">&times;</button>` : ''}
+          </div>
+          <div class="kf-props">
+            <div class="kf-prop">
+              <label>Percent</label>
+              <input type="number" value="${kf.pct}" min="0" max="100" onchange="updateKF(${i},'pct',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>Translate X</label>
+              <input type="text" value="${kf.translateX}" onchange="updateKF(${i},'translateX',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>Translate Y</label>
+              <input type="text" value="${kf.translateY}" onchange="updateKF(${i},'translateY',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>Rotate</label>
+              <input type="text" value="${kf.rotate}" onchange="updateKF(${i},'rotate',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>Scale</label>
+              <input type="text" value="${kf.scale}" onchange="updateKF(${i},'scale',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>Opacity</label>
+              <input type="number" value="${kf.opacity}" min="0" max="1" step="0.05" onchange="updateKF(${i},'opacity',this.value)">
+            </div>
+            <div class="kf-prop">
+              <label>BG Color</label>
+              <input type="color" class="kf-color-input" value="${kf.bgColor || '#4facfe'}" onchange="updateKF(${i},'bgColor',this.value)">
+            </div>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      renderTimeline();
+    }
+
+    function updateKF(index, prop, value) {
+      if (prop === 'pct') value = Math.max(0, Math.min(100, parseInt(value) || 0));
+      keyframes[index][prop] = typeof value === 'number' ? value : value;
+      activePreset = null;
+      renderPresets();
+      if (prop === 'pct') renderKeyframes();
+      updateAnimation();
+    }
+
+    function addKeyframe() {
+      const existingPcts = keyframes.map(k => k.pct);
+      let newPct = 50;
+      while (existingPcts.includes(newPct) && newPct < 100) newPct++;
+      if (existingPcts.includes(newPct)) newPct = 0;
+
+      keyframes.push({ pct: newPct, translateX: '0px', translateY: '0px', rotate: '0deg', scale: '1', opacity: '1', bgColor: '' });
+      activePreset = null;
+      renderPresets();
+      renderKeyframes();
+      updateAnimation();
+    }
+
+    function removeKeyframe(index) {
+      if (keyframes.length <= 2) return;
+      keyframes.splice(index, 1);
+      activePreset = null;
+      renderPresets();
+      renderKeyframes();
+      updateAnimation();
+    }
+
+    /* ===== Timeline ===== */
+    function renderTimeline() {
+      const bar = document.getElementById('timelineBar');
+      bar.querySelectorAll('.timeline-dot').forEach(d => d.remove());
+      const track = bar.querySelector('.timeline-track');
+      const trackRect = { left: 14, right: 14 };
+
+      keyframes.forEach(kf => {
+        const dot = document.createElement('div');
+        dot.className = 'timeline-dot';
+        dot.style.left = `calc(14px + ${kf.pct}% * (100% - 28px) / 100)`;
+        dot.title = kf.pct + '%';
+        bar.appendChild(dot);
+      });
+    }
+
+    /* ===== Timing Function ===== */
+    function getTimingFunction() {
+      const sel = document.getElementById('timingSelect').value;
+      if (sel === 'custom') return `cubic-bezier(${bezier.x1}, ${bezier.y1}, ${bezier.x2}, ${bezier.y2})`;
+      if (sel === 'steps') {
+        const count = document.getElementById('stepsCount').value;
+        const jump = document.getElementById('stepsJump').value;
+        return `steps(${count}, ${jump})`;
+      }
+      return sel;
+    }
+
+    function onTimingSelect() {
+      const sel = document.getElementById('timingSelect').value;
+      document.getElementById('bezierEditor').style.display = sel === 'custom' ? '' : 'none';
+      document.getElementById('stepsEditor').style.display = sel === 'steps' ? '' : 'none';
+      updateAnimation();
+    }
+
+    function onBezierInput() {
+      bezier.x1 = parseFloat(document.getElementById('bx1').value) || 0;
+      bezier.y1 = parseFloat(document.getElementById('by1').value) || 0;
+      bezier.x2 = parseFloat(document.getElementById('bx2').value) || 0;
+      bezier.y2 = parseFloat(document.getElementById('by2').value) || 0;
+      drawBezier();
+      updateAnimation();
+    }
+
+    function setBezier(x1, y1, x2, y2) {
+      bezier = { x1, y1, x2, y2 };
+      document.getElementById('bx1').value = x1;
+      document.getElementById('by1').value = y1;
+      document.getElementById('bx2').value = x2;
+      document.getElementById('by2').value = y2;
+      document.getElementById('timingSelect').value = 'custom';
+      document.getElementById('bezierEditor').style.display = '';
+      document.getElementById('stepsEditor').style.display = 'none';
+      drawBezier();
+      updateAnimation();
+    }
+
+    /* ===== Bezier Canvas ===== */
+    function drawBezier() {
+      const canvas = document.getElementById('bezierCanvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const pad = 20;
+      const gw = w - pad * 2, gh = h - pad * 2;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const x = pad + (gw / 4) * i;
+        const y = pad + (gh / 4) * i;
+        ctx.beginPath(); ctx.moveTo(x, pad); ctx.lineTo(x, pad + gh); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(pad + gw, y); ctx.stroke();
+      }
+
+      // Diagonal
+      ctx.strokeStyle = '#333';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pad, pad + gh);
+      ctx.lineTo(pad + gw, pad);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const toX = v => pad + v * gw;
+      const toY = v => pad + gh - v * gh;
+
+      // Control point lines
+      ctx.strokeStyle = '#555';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(0));
+      ctx.lineTo(toX(bezier.x1), toY(bezier.y1));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(toX(1), toY(1));
+      ctx.lineTo(toX(bezier.x2), toY(bezier.y2));
+      ctx.stroke();
+
+      // Curve
+      ctx.strokeStyle = '#4facfe';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(0));
+      ctx.bezierCurveTo(toX(bezier.x1), toY(bezier.y1), toX(bezier.x2), toY(bezier.y2), toX(1), toY(1));
+      ctx.stroke();
+
+      // Control points
+      [{ x: bezier.x1, y: bezier.y1 }, { x: bezier.x2, y: bezier.y2 }].forEach((cp, idx) => {
+        ctx.beginPath();
+        ctx.arc(toX(cp.x), toY(cp.y), 6, 0, Math.PI * 2);
+        ctx.fillStyle = idx === 0 ? '#ff6b6b' : '#43e97b';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+
+      // Endpoints
+      [{ x: 0, y: 0 }, { x: 1, y: 1 }].forEach(ep => {
+        ctx.beginPath();
+        ctx.arc(toX(ep.x), toY(ep.y), 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#888';
+        ctx.fill();
+      });
+    }
+
+    // Bezier canvas dragging
+    (function() {
+      const canvas = document.getElementById('bezierCanvas');
+      const pad = 20;
+
+      function canvasToValue(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left - pad) / (canvas.width - pad * 2);
+        const y = 1 - (e.clientY - rect.top - pad) / (canvas.height - pad * 2);
+        return { x: Math.max(0, Math.min(1, x)), y: Math.round(Math.max(-1, Math.min(2, y)) * 100) / 100 };
+      }
+
+      function dist(e, cpx, cpy) {
+        const rect = canvas.getBoundingClientRect();
+        const gw = canvas.width - pad * 2, gh = canvas.height - pad * 2;
+        const px = pad + cpx * gw;
+        const py = pad + gh - cpy * gh;
+        return Math.hypot(e.clientX - rect.left - px, e.clientY - rect.top - py);
+      }
+
+      canvas.addEventListener('mousedown', e => {
+        const d1 = dist(e, bezier.x1, bezier.y1);
+        const d2 = dist(e, bezier.x2, bezier.y2);
+        if (d1 < 20 || d2 < 20) {
+          draggingCP = d1 < d2 ? 1 : 2;
+        }
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (!draggingCP) return;
+        const v = canvasToValue(e);
+        if (draggingCP === 1) { bezier.x1 = v.x; bezier.y1 = v.y; }
+        else { bezier.x2 = v.x; bezier.y2 = v.y; }
+        document.getElementById('bx1').value = bezier.x1;
+        document.getElementById('by1').value = bezier.y1;
+        document.getElementById('bx2').value = bezier.x2;
+        document.getElementById('by2').value = bezier.y2;
+        drawBezier();
+        updateAnimation();
+      });
+
+      window.addEventListener('mouseup', () => { draggingCP = null; });
+    })();
+
+    /* ===== Build & Apply Animation ===== */
+    let styleEl = null;
+
+    function buildTransform(kf) {
+      let t = `translate(${kf.translateX}, ${kf.translateY}) rotate(${kf.rotate}) scale(${kf.scale})`;
+      if (kf.scaleX && kf.scaleY) t = `translate(${kf.translateX}, ${kf.translateY}) rotate(${kf.rotate}) scaleX(${kf.scaleX}) scaleY(${kf.scaleY})`;
+      if (kf.extraTransform) t += ' ' + kf.extraTransform;
+      if (kf.skewX || kf.skewY) t += ` skew(${kf.skewX || '0deg'}, ${kf.skewY || '0deg'})`;
+      return t;
+    }
+
+    function buildKeyframesCSS() {
+      const sorted = [...keyframes].sort((a, b) => a.pct - b.pct);
+      let css = `@keyframes ${animName} {\n`;
+      sorted.forEach(kf => {
+        css += `  ${kf.pct}% {\n`;
+        css += `    transform: ${buildTransform(kf)};\n`;
+        css += `    opacity: ${kf.opacity};\n`;
+        if (kf.bgColor) css += `    background-color: ${kf.bgColor};\n`;
+        css += `  }\n`;
+      });
+      css += `}`;
+      return css;
+    }
+
+    function buildAnimationProperty() {
+      const dur = document.getElementById('propDuration').value + 's';
+      const timing = getTimingFunction();
+      const delay = document.getElementById('propDelay').value + 's';
+      const iter = document.getElementById('propIterations').value;
+      const dir = document.getElementById('propDirection').value;
+      const fill = document.getElementById('propFillMode').value;
+      return `animation: ${animName} ${dur} ${timing} ${delay} ${iter} ${dir} ${fill};`;
+    }
+
+    function updateAnimation() {
+      const kfCSS = buildKeyframesCSS();
+      const animProp = buildAnimationProperty();
+
+      // Update code output
+      document.getElementById('codeOutput').textContent = kfCSS + '\n\n' + '.element {\n  ' + animProp + '\n}';
+
+      // Apply to preview
+      if (styleEl) styleEl.remove();
+      styleEl = document.createElement('style');
+      styleEl.textContent = kfCSS + `\n#previewBox { ${animProp} }`;
+      document.head.appendChild(styleEl);
+
+      renderTimeline();
+    }
+
+    /* ===== Playback Controls ===== */
+    function setPlayState(state) {
+      const box = document.getElementById('previewBox');
+      box.style.animationPlayState = state;
+      document.getElementById('btnPlay').classList.toggle('active', state === 'running');
+      document.getElementById('btnPause').classList.toggle('active', state === 'paused');
+    }
+
+    function restartAnimation() {
+      const box = document.getElementById('previewBox');
+      box.style.animation = 'none';
+      box.offsetHeight; // trigger reflow
+      box.style.animation = '';
+      box.style.animationPlayState = 'running';
+      document.getElementById('btnPlay').classList.add('active');
+      document.getElementById('btnPause').classList.remove('active');
+      updateAnimation();
+    }
+
+    /* ===== Copy ===== */
+    function copyCSS() {
+      const text = document.getElementById('codeOutput').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+      });
+    }
+
+    /* ===== Start ===== */
+    init();
+  </script>
+</body>
+</html>
