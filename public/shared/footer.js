@@ -65,7 +65,9 @@
     <div class="footer-links">
       <a href="/">All Tools</a>
       <a href="https://imseankim.com">Main Site</a>
-      <a href="mailto:contact@imseankim.com">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="mailto:seankim.ny@gmail.com">Contact</a>
     </div>
     <p class="copyright">&copy; ${new Date().getFullYear()} imseankim.com — Free Online Tools</p>
   `;

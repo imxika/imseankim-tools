@@ -37,6 +37,8 @@
     { "source": "/image-resize", "destination": "/tools/image-resize/" },
     { "source": "/image-compress", "destination": "/tools/image-compress/" },
     { "source": "/svg-editor", "destination": "/tools/svg-editor/" },
-    { "source": "/favicon", "destination": "/tools/favicon/" }
+    { "source": "/favicon", "destination": "/tools/favicon/" },
+    { "source": "/privacy", "destination": "/privacy/" },
+    { "source": "/terms", "destination": "/terms/" }
   ]
 }
