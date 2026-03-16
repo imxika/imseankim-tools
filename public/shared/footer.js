@@ -34,10 +34,20 @@
     document.body.appendChild(section);
   }
 
-  // Bottom ad
+  // Bottom ad — Google AdSense
+  // After AdSense approval, replace the placeholder below with your actual AdSense ad unit code.
+  // Example: <ins class="adsbygoogle" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" ...></ins>
   const ad = document.createElement('div');
   ad.className = 'ad-banner bottom';
-  ad.innerHTML = '<div class="ad-placeholder">Advertisement</div>';
+  ad.innerHTML = `
+    <div class="ad-placeholder">
+      <!-- Google AdSense Ad Unit -->
+      <!-- Paste your AdSense ad unit code here after approval -->
+      <!-- e.g. <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+      <!-- <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+      Advertisement
+    </div>
+  `;
   document.body.appendChild(ad);
 
   // Footer
