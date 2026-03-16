@@ -6,6 +6,14 @@
   const currentSlug = path.replace(/^\//, '').replace(/\/.*/, '') || path.split('/tools/')[1]?.replace(/\/.*/, '') || '';
   const tools = window.__TOOLS__ || [];
 
+  // In-content ad (ad #2 — between tool content and related tools)
+  if (currentSlug) {
+    const inlineAd = document.createElement('div');
+    inlineAd.className = 'ad-inline';
+    inlineAd.innerHTML = '<div class="ad-placeholder">Advertisement</div>';
+    document.body.appendChild(inlineAd);
+  }
+
   // Related tools section
   if (currentSlug && tools.length) {
     const allItems = tools.flatMap(c => c.items);
