@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Grid Builder - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Build CSS Grid layouts visually with a drag-and-drop grid builder. Set rows, columns, gaps, template areas, and export clean CSS code.">
+  <meta property="og:title" content="CSS Grid Builder - Free Online Tool">
+  <meta property="og:description" content="Build CSS Grid layouts visually. Set rows, columns, gaps, merge cells, and export clean CSS.">
+  <meta property="og:url" content="https://imseankim.com/tools/grid">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/grid">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .grid-app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Controls Bar */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .control-group input[type="number"] {
+      width: 60px;
+      padding: 6px 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .control-group input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    /* Presets */
+    .presets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+    }
+
+    .presets-bar span {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-right: 4px;
+    }
+
+    .preset-btn {
+      padding: 6px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .preset-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* Main Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 20px;
+    }
+
+    @media (max-width: 960px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Grid Preview */
+    .preview-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .grid-preview-container {
+      position: relative;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      min-height: 400px;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .grid-preview {
+      flex: 1;
+      display: grid;
+      min-height: 360px;
+    }
+
+    .grid-cell {
+      border: 1px dashed var(--border-light);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      user-select: none;
+      min-height: 40px;
+    }
+
+    .grid-cell:hover {
+      background: rgba(79, 172, 254, 0.08);
+      border-color: var(--accent);
+      color: var(--text-secondary);
+    }
+
+    .grid-cell.selected {
+      background: rgba(79, 172, 254, 0.15);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .grid-cell.merged {
+      background: rgba(79, 172, 254, 0.12);
+      border: 1px solid rgba(79, 172, 254, 0.4);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .grid-cell.hidden-cell {
+      display: none;
+    }
+
+    .grid-cell .cell-label {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .grid-cell .area-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Sizing Inputs */
+    .sizing-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sizing-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sizing-row label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 80px;
+    }
+
+    .sizing-inputs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sizing-input {
+      width: 72px;
+      padding: 5px 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .sizing-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .sizing-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    /* Right Panel */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Areas Editor */
+    .areas-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .areas-panel .panel-header {
+      margin-bottom: 12px;
+    }
+
+    .area-instructions {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .areas-grid {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .area-cell-input {
+      width: 100%;
+      padding: 6px 4px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .area-cell-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .area-cell-input.has-value {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: rgba(79, 172, 254, 0.3);
+    }
+
+    /* Code Output */
+    .code-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      flex: 1;
+    }
+
+    .code-panel .panel-header {
+      margin-bottom: 12px;
+    }
+
+    .code-output {
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      white-space: pre;
+      min-height: 180px;
+      tab-size: 2;
+    }
+
+    .code-output .prop {
+      color: #81a1c1;
+    }
+
+    .code-output .val {
+      color: #a3be8c;
+    }
+
+    .code-output .selector {
+      color: #d08770;
+    }
+
+    .code-output .brace {
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      padding: 6px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .copy-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .copy-btn.copied {
+      background: rgba(67, 233, 123, 0.15);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    /* Merge controls */
+    .merge-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .merge-btn {
+      padding: 6px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .merge-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .merge-btn.primary {
+      background: rgba(79, 172, 254, 0.15);
+      border-color: rgba(79, 172, 254, 0.4);
+      color: var(--accent);
+    }
+
+    .merge-btn.primary:hover {
+      background: rgba(79, 172, 254, 0.25);
+    }
+
+    .merge-btn.danger {
+      background: rgba(255, 85, 85, 0.1);
+      border-color: rgba(255, 85, 85, 0.3);
+      color: var(--danger);
+    }
+
+    .merge-btn.danger:hover {
+      background: rgba(255, 85, 85, 0.2);
+    }
+
+    .merge-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Child items code section */
+    .child-items-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .child-items-toggle label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .child-items-toggle input {
+      accent-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="grid-app">
+
+      <!-- Controls Bar -->
+      <div class="controls-bar">
+        <div class="control-group">
+          <label>Rows</label>
+          <input type="number" id="rowCount" min="1" max="12" value="3">
+        </div>
+        <div class="control-group">
+          <label>Columns</label>
+          <input type="number" id="colCount" min="1" max="12" value="3">
+        </div>
+        <div class="divider"></div>
+        <div class="control-group">
+          <label>Row Gap</label>
+          <input type="number" id="rowGap" min="0" max="100" value="10">
+          <label style="min-width:auto">px</label>
+        </div>
+        <div class="control-group">
+          <label>Col Gap</label>
+          <input type="number" id="colGap" min="0" max="100" value="10">
+          <label style="min-width:auto">px</label>
+        </div>
+      </div>
+
+      <!-- Presets -->
+      <div class="presets-bar">
+        <span>Presets:</span>
+        <button class="preset-btn" data-preset="holy-grail">Holy Grail</button>
+        <button class="preset-btn" data-preset="dashboard">Dashboard</button>
+        <button class="preset-btn" data-preset="gallery">Gallery</button>
+        <button class="preset-btn" data-preset="sidebar">Sidebar</button>
+        <button class="preset-btn" data-preset="magazine">Magazine</button>
+        <button class="preset-btn" data-preset="footer">Footer</button>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="main-layout">
+
+        <!-- Left: Preview + Sizing -->
+        <div class="preview-panel">
+          <div class="panel-header">
+            <span class="panel-title">Grid Preview</span>
+            <div class="merge-bar">
+              <span class="merge-hint">Click cells to select, then merge</span>
+              <button class="merge-btn primary" id="mergeBtn" disabled>Merge Selected</button>
+              <button class="merge-btn danger" id="unmergeBtn">Reset Merges</button>
+            </div>
+          </div>
+
+          <div class="grid-preview-container">
+            <div class="grid-preview" id="gridPreview"></div>
+          </div>
+
+          <!-- Column Widths -->
+          <div class="sizing-section">
+            <div class="sizing-row">
+              <label>Col Widths</label>
+              <div class="sizing-inputs" id="colWidths"></div>
+            </div>
+            <div class="sizing-row">
+              <label>Row Heights</label>
+              <div class="sizing-inputs" id="rowHeights"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Areas + Code -->
+        <div class="right-panel">
+
+          <!-- Areas Editor -->
+          <div class="areas-panel">
+            <div class="panel-header">
+              <span class="panel-title">Template Areas</span>
+              <span class="panel-subtitle">Name each cell</span>
+            </div>
+            <p class="area-instructions">Type area names into cells. Use the same name across adjacent cells to define regions. Use "." for empty cells.</p>
+            <div class="areas-grid" id="areasGrid"></div>
+          </div>
+
+          <!-- Code Output -->
+          <div class="code-panel">
+            <div class="panel-header">
+              <span class="panel-title">CSS Output</span>
+              <button class="copy-btn" id="copyBtn">Copy CSS</button>
+            </div>
+            <div class="code-output" id="codeOutput"></div>
+            <div class="child-items-toggle">
+              <input type="checkbox" id="showChildCSS" checked>
+              <label for="showChildCSS">Include child item CSS</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    // State
+    let rows = 3;
+    let cols = 3;
+    let rowGap = 10;
+    let colGap = 10;
+    let colSizes = [];
+    let rowSizes = [];
+    let selectedCells = new Set();
+    let merges = []; // [{startRow, startCol, endRow, endCol}]
+    let areaNames = {}; // "r-c" -> name
+
+    // DOM refs
+    const rowCountEl = document.getElementById('rowCount');
+    const colCountEl = document.getElementById('colCount');
+    const rowGapEl = document.getElementById('rowGap');
+    const colGapEl = document.getElementById('colGap');
+    const gridPreview = document.getElementById('gridPreview');
+    const colWidthsEl = document.getElementById('colWidths');
+    const rowHeightsEl = document.getElementById('rowHeights');
+    const areasGrid = document.getElementById('areasGrid');
+    const codeOutput = document.getElementById('codeOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const mergeBtn = document.getElementById('mergeBtn');
+    const unmergeBtn = document.getElementById('unmergeBtn');
+    const showChildCSS = document.getElementById('showChildCSS');
+
+    // Initialize
+    function init() {
+      initSizes();
+      render();
+    }
+
+    function initSizes() {
+      colSizes = Array.from({length: cols}, (_, i) => colSizes[i] || '1fr');
+      rowSizes = Array.from({length: rows}, (_, i) => rowSizes[i] || '1fr');
+      colSizes.length = cols;
+      rowSizes.length = rows;
+    }
+
+    // Get merged cell info for a given row, col
+    function getMergeAt(r, c) {
+      return merges.find(m => r >= m.startRow && r <= m.endRow && c >= m.startCol && c <= m.endCol);
+    }
+
+    function isMergeOrigin(r, c, merge) {
+      return merge && merge.startRow === r && merge.startCol === c;
+    }
+
+    // Render everything
+    function render() {
+      renderGrid();
+      renderSizeInputs();
+      renderAreas();
+      renderCode();
+    }
+
+    function renderGrid() {
+      gridPreview.innerHTML = '';
+      gridPreview.style.gridTemplateColumns = colSizes.join(' ');
+      gridPreview.style.gridTemplateRows = rowSizes.join(' ');
+      gridPreview.style.gap = rowGap + 'px ' + colGap + 'px';
+
+      let cellNum = 1;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const merge = getMergeAt(r, c);
+
+          if (merge && !isMergeOrigin(r, c, merge)) {
+            // This cell is covered by a merge but isn't the origin - skip it
+            continue;
+          }
+
+          const cell = document.createElement('div');
+          cell.className = 'grid-cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          if (merge) {
+            cell.classList.add('merged');
+            cell.style.gridRow = (merge.startRow + 1) + ' / ' + (merge.endRow + 2);
+            cell.style.gridColumn = (merge.startCol + 1) + ' / ' + (merge.endCol + 2);
+
+            const spanR = merge.endRow - merge.startRow + 1;
+            const spanC = merge.endCol - merge.startCol + 1;
+            cell.innerHTML = '<span class="cell-label">span ' + spanR + 'x' + spanC + '</span>';
+          } else {
+            cell.style.gridRow = (r + 1);
+            cell.style.gridColumn = (c + 1);
+
+            const areaName = areaNames[r + '-' + c];
+            if (areaName && areaName !== '.') {
+              cell.innerHTML = '<span class="area-name">' + escHtml(areaName) + '</span>';
+            } else {
+              cell.innerHTML = '<span class="cell-label">' + cellNum + '</span>';
+            }
+          }
+
+          const key = r + '-' + c;
+          if (selectedCells.has(key)) {
+            cell.classList.add('selected');
+          }
+
+          cell.addEventListener('click', function(e) {
+            toggleCellSelection(r, c);
+          });
+
+          gridPreview.appendChild(cell);
+          cellNum++;
+        }
+      }
+    }
+
+    function toggleCellSelection(r, c) {
+      const key = r + '-' + c;
+      // Don't allow selecting cells that are part of a merge (non-origin)
+      const merge = getMergeAt(r, c);
+      if (merge && !isMergeOrigin(r, c, merge)) return;
+
+      if (selectedCells.has(key)) {
+        selectedCells.delete(key);
+      } else {
+        selectedCells.add(key);
+      }
+      updateMergeButton();
+      renderGrid();
+    }
+
+    function updateMergeButton() {
+      const canMerge = selectedCells.size >= 2 && canMergeSelection();
+      mergeBtn.disabled = !canMerge;
+    }
+
+    function canMergeSelection() {
+      if (selectedCells.size < 2) return false;
+      const cells = Array.from(selectedCells).map(k => {
+        const [r, c] = k.split('-').map(Number);
+        return {r, c};
+      });
+
+      const minR = Math.min(...cells.map(c => c.r));
+      const maxR = Math.max(...cells.map(c => c.r));
+      const minC = Math.min(...cells.map(c => c.c));
+      const maxC = Math.max(...cells.map(c => c.c));
+
+      // Check it forms a rectangle and all cells are selected
+      const expected = (maxR - minR + 1) * (maxC - minC + 1);
+      if (cells.length !== expected) return false;
+
+      // Check no overlap with existing merges
+      for (let r = minR; r <= maxR; r++) {
+        for (let c = minC; c <= maxC; c++) {
+          const existing = getMergeAt(r, c);
+          if (existing) return false;
+        }
+      }
+      return true;
+    }
+
+    function doMerge() {
+      if (!canMergeSelection()) return;
+      const cells = Array.from(selectedCells).map(k => {
+        const [r, c] = k.split('-').map(Number);
+        return {r, c};
+      });
+
+      const minR = Math.min(...cells.map(c => c.r));
+      const maxR = Math.max(...cells.map(c => c.r));
+      const minC = Math.min(...cells.map(c => c.c));
+      const maxC = Math.max(...cells.map(c => c.c));
+
+      merges.push({startRow: minR, startCol: minC, endRow: maxR, endCol: maxC});
+      selectedCells.clear();
+      updateMergeButton();
+      render();
+    }
+
+    function resetMerges() {
+      merges = [];
+      selectedCells.clear();
+      updateMergeButton();
+      render();
+    }
+
+    function renderSizeInputs() {
+      colWidthsEl.innerHTML = '';
+      for (let c = 0; c < cols; c++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'sizing-input';
+        input.value = colSizes[c];
+        input.placeholder = '1fr';
+        input.title = 'Column ' + (c + 1) + ' width (fr, px, auto, minmax(...))';
+        const idx = c;
+        input.addEventListener('input', function() {
+          colSizes[idx] = this.value || '1fr';
+          renderGrid();
+          renderCode();
+        });
+        colWidthsEl.appendChild(input);
+      }
+
+      rowHeightsEl.innerHTML = '';
+      for (let r = 0; r < rows; r++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'sizing-input';
+        input.value = rowSizes[r];
+        input.placeholder = '1fr';
+        input.title = 'Row ' + (r + 1) + ' height (fr, px, auto, minmax(...))';
+        const idx = r;
+        input.addEventListener('input', function() {
+          rowSizes[idx] = this.value || '1fr';
+          renderGrid();
+          renderCode();
+        });
+        rowHeightsEl.appendChild(input);
+      }
+    }
+
+    function renderAreas() {
+      areasGrid.innerHTML = '';
+      areasGrid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'area-cell-input';
+          input.placeholder = '.';
+          const key = r + '-' + c;
+          input.value = areaNames[key] || '';
+          if (input.value) input.classList.add('has-value');
+
+          const row = r, col = c;
+          input.addEventListener('input', function() {
+            const val = this.value.trim();
+            if (val) {
+              areaNames[row + '-' + col] = val;
+              this.classList.add('has-value');
+            } else {
+              delete areaNames[row + '-' + col];
+              this.classList.remove('has-value');
+            }
+            renderGrid();
+            renderCode();
+          });
+          areasGrid.appendChild(input);
+        }
+      }
+    }
+
+    function getAreasCSS() {
+      // Check if any areas are defined
+      const hasAreas = Object.keys(areaNames).some(k => {
+        const v = areaNames[k];
+        return v && v !== '.';
+      });
+      if (!hasAreas) return null;
+
+      let lines = [];
+      for (let r = 0; r < rows; r++) {
+        let row = '';
+        for (let c = 0; c < cols; c++) {
+          const name = areaNames[r + '-' + c] || '.';
+          row += (c > 0 ? ' ' : '') + name;
+        }
+        lines.push('"' + row + '"');
+      }
+      return lines;
+    }
+
+    function renderCode() {
+      const colStr = colSizes.join(' ');
+      const rowStr = rowSizes.join(' ');
+      const gapStr = (rowGap === colGap) ? rowGap + 'px' : rowGap + 'px ' + colGap + 'px';
+      const areas = getAreasCSS();
+
+      let css = '';
+      css += '<span class="selector">.container</span> <span class="brace">{</span>\n';
+      css += '  <span class="prop">display</span>: <span class="val">grid</span>;\n';
+      css += '  <span class="prop">grid-template-columns</span>: <span class="val">' + escHtml(colStr) + '</span>;\n';
+      css += '  <span class="prop">grid-template-rows</span>: <span class="val">' + escHtml(rowStr) + '</span>;\n';
+      css += '  <span class="prop">gap</span>: <span class="val">' + escHtml(gapStr) + '</span>;\n';
+
+      if (areas) {
+        css += '  <span class="prop">grid-template-areas</span>:\n';
+        areas.forEach(function(line, i) {
+          css += '    <span class="val">' + escHtml(line) + '</span>';
+          css += (i === areas.length - 1) ? ';\n' : '\n';
+        });
+      }
+
+      css += '<span class="brace">}</span>';
+
+      // Child item CSS
+      if (showChildCSS.checked) {
+        // Merged cells
+        merges.forEach(function(m, i) {
+          css += '\n\n<span class="selector">.item-' + (i + 1) + '</span> <span class="brace">{</span>\n';
+          css += '  <span class="prop">grid-column</span>: <span class="val">' + (m.startCol + 1) + ' / ' + (m.endCol + 2) + '</span>;\n';
+          css += '  <span class="prop">grid-row</span>: <span class="val">' + (m.startRow + 1) + ' / ' + (m.endRow + 2) + '</span>;\n';
+          css += '<span class="brace">}</span>';
+        });
+
+        // Named areas
+        if (areas) {
+          const uniqueNames = new Set();
+          Object.values(areaNames).forEach(function(n) {
+            if (n && n !== '.') uniqueNames.add(n);
+          });
+          uniqueNames.forEach(function(name) {
+            css += '\n\n<span class="selector">.' + escHtml(name) + '</span> <span class="brace">{</span>\n';
+            css += '  <span class="prop">grid-area</span>: <span class="val">' + escHtml(name) + '</span>;\n';
+            css += '<span class="brace">}</span>';
+          });
+        }
+      }
+
+      codeOutput.innerHTML = css;
+    }
+
+    function getPlainCSS() {
+      const colStr = colSizes.join(' ');
+      const rowStr = rowSizes.join(' ');
+      const gapStr = (rowGap === colGap) ? rowGap + 'px' : rowGap + 'px ' + colGap + 'px';
+      const areas = getAreasCSS();
+
+      let css = '.container {\n';
+      css += '  display: grid;\n';
+      css += '  grid-template-columns: ' + colStr + ';\n';
+      css += '  grid-template-rows: ' + rowStr + ';\n';
+      css += '  gap: ' + gapStr + ';\n';
+
+      if (areas) {
+        css += '  grid-template-areas:\n';
+        areas.forEach(function(line, i) {
+          css += '    ' + line;
+          css += (i === areas.length - 1) ? ';\n' : '\n';
+        });
+      }
+
+      css += '}';
+
+      if (showChildCSS.checked) {
+        merges.forEach(function(m, i) {
+          css += '\n\n.item-' + (i + 1) + ' {\n';
+          css += '  grid-column: ' + (m.startCol + 1) + ' / ' + (m.endCol + 2) + ';\n';
+          css += '  grid-row: ' + (m.startRow + 1) + ' / ' + (m.endRow + 2) + ';\n';
+          css += '}';
+        });
+
+        if (areas) {
+          const uniqueNames = new Set();
+          Object.values(areaNames).forEach(function(n) {
+            if (n && n !== '.') uniqueNames.add(n);
+          });
+          uniqueNames.forEach(function(name) {
+            css += '\n\n.' + name + ' {\n';
+            css += '  grid-area: ' + name + ';\n';
+            css += '}';
+          });
+        }
+      }
+
+      return css;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Copy
+    copyBtn.addEventListener('click', function() {
+      const css = getPlainCSS();
+      navigator.clipboard.writeText(css).then(function() {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(function() {
+          copyBtn.textContent = 'Copy CSS';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    // Merge / Unmerge
+    mergeBtn.addEventListener('click', doMerge);
+    unmergeBtn.addEventListener('click', resetMerges);
+
+    // Show/hide child CSS
+    showChildCSS.addEventListener('change', renderCode);
+
+    // Controls
+    rowCountEl.addEventListener('input', function() {
+      rows = Math.max(1, Math.min(12, parseInt(this.value) || 1));
+      cleanupOnResize();
+      initSizes();
+      render();
+    });
+
+    colCountEl.addEventListener('input', function() {
+      cols = Math.max(1, Math.min(12, parseInt(this.value) || 1));
+      cleanupOnResize();
+      initSizes();
+      render();
+    });
+
+    rowGapEl.addEventListener('input', function() {
+      rowGap = Math.max(0, parseInt(this.value) || 0);
+      renderGrid();
+      renderCode();
+    });
+
+    colGapEl.addEventListener('input', function() {
+      colGap = Math.max(0, parseInt(this.value) || 0);
+      renderGrid();
+      renderCode();
+    });
+
+    function cleanupOnResize() {
+      // Remove merges that go out of bounds
+      merges = merges.filter(function(m) {
+        return m.endRow < rows && m.endCol < cols;
+      });
+      // Remove area names out of bounds
+      Object.keys(areaNames).forEach(function(k) {
+        const [r, c] = k.split('-').map(Number);
+        if (r >= rows || c >= cols) delete areaNames[k];
+      });
+      selectedCells.clear();
+      updateMergeButton();
+    }
+
+    // Presets
+    const presets = {
+      'holy-grail': {
+        rows: 3, cols: 3,
+        colSizes: ['200px', '1fr', '200px'],
+        rowSizes: ['auto', '1fr', 'auto'],
+        rowGap: 10, colGap: 10,
+        areas: {
+          '0-0': 'header', '0-1': 'header', '0-2': 'header',
+          '1-0': 'sidebar', '1-1': 'main', '1-2': 'aside',
+          '2-0': 'footer', '2-1': 'footer', '2-2': 'footer'
+        },
+        merges: []
+      },
+      'dashboard': {
+        rows: 3, cols: 4,
+        colSizes: ['1fr', '1fr', '1fr', '1fr'],
+        rowSizes: ['auto', '1fr', '1fr'],
+        rowGap: 12, colGap: 12,
+        areas: {
+          '0-0': 'header', '0-1': 'header', '0-2': 'header', '0-3': 'header',
+          '1-0': 'stats1', '1-1': 'stats2', '1-2': 'stats3', '1-3': 'stats4',
+          '2-0': 'chart', '2-1': 'chart', '2-2': 'table', '2-3': 'table'
+        },
+        merges: []
+      },
+      'gallery': {
+        rows: 3, cols: 4,
+        colSizes: ['1fr', '1fr', '1fr', '1fr'],
+        rowSizes: ['1fr', '1fr', '1fr'],
+        rowGap: 8, colGap: 8,
+        areas: {},
+        merges: [
+          {startRow: 0, startCol: 0, endRow: 1, endCol: 1},
+          {startRow: 0, startCol: 2, endRow: 0, endCol: 3},
+          {startRow: 2, startCol: 2, endRow: 2, endCol: 3}
+        ]
+      },
+      'sidebar': {
+        rows: 1, cols: 2,
+        colSizes: ['260px', '1fr'],
+        rowSizes: ['1fr'],
+        rowGap: 0, colGap: 16,
+        areas: {
+          '0-0': 'sidebar', '0-1': 'content'
+        },
+        merges: []
+      },
+      'magazine': {
+        rows: 4, cols: 3,
+        colSizes: ['1fr', '1fr', '1fr'],
+        rowSizes: ['auto', '1fr', '1fr', 'auto'],
+        rowGap: 10, colGap: 10,
+        areas: {
+          '0-0': 'headline', '0-1': 'headline', '0-2': 'headline',
+          '1-0': 'feature', '1-1': 'feature', '1-2': 'sidebar',
+          '2-0': 'article1', '2-1': 'article2', '2-2': 'sidebar',
+          '3-0': 'footer', '3-1': 'footer', '3-2': 'footer'
+        },
+        merges: []
+      },
+      'footer': {
+        rows: 2, cols: 4,
+        colSizes: ['1fr', '1fr', '1fr', '1fr'],
+        rowSizes: ['1fr', 'auto'],
+        rowGap: 16, colGap: 24,
+        areas: {
+          '0-0': 'brand', '0-1': 'links1', '0-2': 'links2', '0-3': 'links3',
+          '1-0': 'copy', '1-1': 'copy', '1-2': 'copy', '1-3': 'copy'
+        },
+        merges: []
+      }
+    };
+
+    document.querySelectorAll('.preset-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const key = this.dataset.preset;
+        const p = presets[key];
+        if (!p) return;
+
+        document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+
+        rows = p.rows;
+        cols = p.cols;
+        colSizes = p.colSizes.slice();
+        rowSizes = p.rowSizes.slice();
+        rowGap = p.rowGap;
+        colGap = p.colGap;
+        areaNames = Object.assign({}, p.areas);
+        merges = p.merges.map(function(m) { return Object.assign({}, m); });
+        selectedCells.clear();
+
+        rowCountEl.value = rows;
+        colCountEl.value = cols;
+        rowGapEl.value = rowGap;
+        colGapEl.value = colGap;
+
+        updateMergeButton();
+        render();
+      });
+    });
+
+    init();
+  })();
+  </script>
+</body>
+</html>

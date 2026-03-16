@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Flexbox Playground - Free Online Tool | imseankim.com</title>
+<meta name="description" content="Free online CSS Flexbox playground. Visually build flex layouts with live preview, per-item controls, presets, and instant CSS code output.">
+<meta name="keywords" content="CSS flexbox, flexbox playground, flex layout generator, justify-content, align-items, flex-direction, free online tool">
+<meta property="og:title" content="CSS Flexbox Playground - Free Online Tool | imseankim.com">
+<meta property="og:description" content="Visually build CSS Flexbox layouts with live preview, per-item controls, presets, and instant code output.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://imseankim.com/tools/flexbox/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSS Flexbox Playground - Free Online Tool">
+<meta name="twitter:description" content="Visually build CSS Flexbox layouts with live preview, per-item controls, and presets.">
+<link rel="canonical" href="https://imseankim.com/tools/flexbox/">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ============ Flexbox Playground Styles ============ */
+
+.fb-topbar {
+  position: sticky; top: 56px; z-index: 90;
+  background: rgba(10,10,10,0.92); backdrop-filter: blur(20px);
+  border-bottom: 1px solid #222;
+  padding: 12px 30px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.fb-topbar h1 {
+  font-size: 1.1rem; font-weight: 300; letter-spacing: 6px; text-transform: uppercase;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+.fb-topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.fb-topbar-actions button {
+  background: #1a1a1a; border: 1px solid #333; color: #aaa;
+  padding: 6px 16px; border-radius: 8px; font-size: 0.75rem;
+  cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+  font-family: var(--font-sans); white-space: nowrap;
+}
+.fb-topbar-actions button:hover { background: #252525; color: #fff; border-color: #555; }
+.fb-topbar-actions button.active { background: #4facfe22; color: #4facfe; border-color: #4facfe55; }
+
+.fb-layout {
+  display: flex; min-height: calc(100vh - 56px - 52px - 50px);
+}
+
+/* Sidebar */
+.fb-sidebar {
+  width: 340px; min-width: 340px;
+  background: #111; border-right: 1px solid #1e1e1e;
+  overflow-y: auto; padding: 20px;
+}
+
+.fb-section {
+  margin-bottom: 20px;
+}
+.fb-section-title {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  color: #666; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #1e1e1e;
+}
+
+.fb-prop {
+  margin-bottom: 14px;
+}
+.fb-prop-label {
+  font-size: 0.75rem; color: #888; margin-bottom: 6px; font-family: var(--font-mono);
+}
+
+.fb-btn-group {
+  display: flex; flex-wrap: wrap; gap: 4px;
+}
+.fb-btn {
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #888;
+  padding: 5px 10px; border-radius: 6px; font-size: 0.7rem;
+  cursor: pointer; transition: all 0.2s; font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.fb-btn:hover { background: #252525; color: #ccc; border-color: #444; }
+.fb-btn.active { background: #4facfe22; color: #4facfe; border-color: #4facfe55; }
+
+.fb-gap-control {
+  display: flex; align-items: center; gap: 10px;
+}
+.fb-gap-control input[type="range"] {
+  flex: 1; accent-color: #4facfe; background: transparent;
+}
+.fb-gap-value {
+  font-size: 0.75rem; color: #4facfe; font-family: var(--font-mono); min-width: 36px; text-align: right;
+}
+
+/* Items controls */
+.fb-items-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.fb-items-header span { font-size: 0.7rem; color: #666; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+.fb-item-actions { display: flex; gap: 6px; }
+.fb-item-actions button {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid #333;
+  background: #1a1a1a; color: #aaa; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.fb-item-actions button:hover { background: #252525; color: #fff; border-color: #555; }
+
+.fb-item-tab {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.fb-item-chip {
+  width: 28px; height: 28px; border-radius: 6px; border: 2px solid transparent;
+  cursor: pointer; font-size: 0.65rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: #000;
+}
+.fb-item-chip:hover { transform: scale(1.1); }
+.fb-item-chip.selected { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+.fb-item-props { display: none; }
+.fb-item-props.visible { display: block; }
+
+.fb-number-input {
+  display: flex; align-items: center; gap: 6px;
+}
+.fb-number-input input {
+  width: 60px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #fff;
+  padding: 5px 8px; border-radius: 6px; font-size: 0.75rem; font-family: var(--font-mono);
+  text-align: center;
+}
+.fb-number-input input:focus { outline: none; border-color: #4facfe; }
+
+/* Main area */
+.fb-main {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.fb-preview-area {
+  flex: 1; padding: 30px; overflow: auto; display: flex; align-items: flex-start; justify-content: center;
+}
+
+.fb-container {
+  display: flex;
+  background: #141414; border: 2px dashed #333; border-radius: 12px;
+  min-height: 300px; width: 100%; max-width: 900px;
+  padding: 16px; transition: all 0.3s;
+  position: relative;
+}
+
+.fb-child {
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: #000; min-width: 60px; min-height: 60px;
+  padding: 12px 16px; transition: all 0.3s; cursor: pointer; position: relative;
+}
+.fb-child:hover { opacity: 0.85; }
+.fb-child.selected-child { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Code output */
+.fb-code-area {
+  background: #0d0d0d; border-top: 1px solid #222; padding: 16px 24px;
+  max-height: 240px; overflow-y: auto; position: relative;
+}
+.fb-code-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.fb-code-header span {
+  font-size: 0.7rem; color: #666; letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+}
+.fb-copy-btn {
+  background: #1a1a1a; border: 1px solid #333; color: #aaa;
+  padding: 4px 14px; border-radius: 6px; font-size: 0.7rem;
+  cursor: pointer; transition: all 0.2s; font-family: var(--font-sans);
+}
+.fb-copy-btn:hover { background: #252525; color: #fff; border-color: #555; }
+.fb-copy-btn.copied { background: #43e97b22; color: #43e97b; border-color: #43e97b55; }
+
+.fb-code-block {
+  font-family: var(--font-mono); font-size: 0.78rem; color: #aaa;
+  white-space: pre-wrap; line-height: 1.7; tab-size: 2;
+}
+.fb-code-block .prop-name { color: #81a1c1; }
+.fb-code-block .prop-value { color: #a3be8c; }
+.fb-code-block .selector { color: #d08770; }
+.fb-code-block .bracket { color: #666; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .fb-layout { flex-direction: column; }
+  .fb-sidebar { width: 100%; min-width: 0; max-height: 50vh; border-right: none; border-bottom: 1px solid #1e1e1e; }
+}
+</style>
+</head>
+<body>
+
+<script src="/shared/header.js"></script>
+
+<main class="tool-content">
+
+<div class="fb-topbar">
+  <h1>Flexbox</h1>
+  <div class="fb-topbar-actions" id="presets">
+    <button onclick="applyPreset('centered')">Centered</button>
+    <button onclick="applyPreset('navbar')">Navbar</button>
+    <button onclick="applyPreset('cardgrid')">Card Grid</button>
+    <button onclick="applyPreset('sidebar')">Sidebar</button>
+    <button onclick="applyPreset('holygrail')">Holy Grail</button>
+    <button onclick="applyPreset('footer')">Footer</button>
+  </div>
+</div>
+
+<div class="fb-layout">
+
+  <!-- Sidebar Controls -->
+  <div class="fb-sidebar">
+
+    <div class="fb-section">
+      <div class="fb-section-title">Container Properties</div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">flex-direction</div>
+        <div class="fb-btn-group" data-prop="flexDirection">
+          <button class="fb-btn active" data-val="row">row</button>
+          <button class="fb-btn" data-val="row-reverse">row-reverse</button>
+          <button class="fb-btn" data-val="column">column</button>
+          <button class="fb-btn" data-val="column-reverse">col-reverse</button>
+        </div>
+      </div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">flex-wrap</div>
+        <div class="fb-btn-group" data-prop="flexWrap">
+          <button class="fb-btn active" data-val="nowrap">nowrap</button>
+          <button class="fb-btn" data-val="wrap">wrap</button>
+          <button class="fb-btn" data-val="wrap-reverse">wrap-reverse</button>
+        </div>
+      </div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">justify-content</div>
+        <div class="fb-btn-group" data-prop="justifyContent">
+          <button class="fb-btn active" data-val="flex-start">flex-start</button>
+          <button class="fb-btn" data-val="flex-end">flex-end</button>
+          <button class="fb-btn" data-val="center">center</button>
+          <button class="fb-btn" data-val="space-between">between</button>
+          <button class="fb-btn" data-val="space-around">around</button>
+          <button class="fb-btn" data-val="space-evenly">evenly</button>
+        </div>
+      </div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">align-items</div>
+        <div class="fb-btn-group" data-prop="alignItems">
+          <button class="fb-btn" data-val="flex-start">flex-start</button>
+          <button class="fb-btn" data-val="flex-end">flex-end</button>
+          <button class="fb-btn" data-val="center">center</button>
+          <button class="fb-btn active" data-val="stretch">stretch</button>
+          <button class="fb-btn" data-val="baseline">baseline</button>
+        </div>
+      </div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">align-content</div>
+        <div class="fb-btn-group" data-prop="alignContent">
+          <button class="fb-btn active" data-val="stretch">stretch</button>
+          <button class="fb-btn" data-val="flex-start">flex-start</button>
+          <button class="fb-btn" data-val="flex-end">flex-end</button>
+          <button class="fb-btn" data-val="center">center</button>
+          <button class="fb-btn" data-val="space-between">between</button>
+          <button class="fb-btn" data-val="space-around">around</button>
+        </div>
+      </div>
+
+      <div class="fb-prop">
+        <div class="fb-prop-label">gap</div>
+        <div class="fb-gap-control">
+          <input type="range" id="gapRange" min="0" max="40" value="10" oninput="updateGap(this.value)">
+          <span class="fb-gap-value" id="gapValue">10px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fb-section">
+      <div class="fb-items-header">
+        <span>Items (<span id="itemCount">3</span>)</span>
+        <div class="fb-item-actions">
+          <button onclick="removeItem()" title="Remove item">&#8722;</button>
+          <button onclick="addItem()" title="Add item">&#43;</button>
+        </div>
+      </div>
+
+      <div class="fb-item-tab" id="itemTabs"></div>
+
+      <div id="itemPropsContainer"></div>
+    </div>
+
+  </div>
+
+  <!-- Main Preview + Code -->
+  <div class="fb-main">
+
+    <div class="fb-preview-area">
+      <div class="fb-container" id="flexContainer"></div>
+    </div>
+
+    <div class="fb-code-area">
+      <div class="fb-code-header">
+        <span>Generated CSS</span>
+        <button class="fb-copy-btn" id="copyBtn" onclick="copyCSS()">Copy</button>
+      </div>
+      <div class="fb-code-block" id="codeOutput"></div>
+    </div>
+
+  </div>
+
+</div>
+
+</main>
+
+<script src="/shared/footer.js"></script>
+
+<script>
+// ============ State ============
+const ITEM_COLORS = [
+  '#4facfe','#43e97b','#fa709a','#fee140','#a18cd1',
+  '#fbc2eb','#f68084','#fccb90','#84fab0','#8fd3f4',
+  '#d4fc79','#96e6a1'
+];
+
+const containerState = {
+  flexDirection: 'row',
+  flexWrap: 'nowrap',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+  alignContent: 'stretch',
+  gap: 10
+};
+
+let items = [
+  { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 },
+  { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 },
+  { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 }
+];
+
+let selectedItem = 0;
+
+// ============ Container Button Groups ============
+document.querySelectorAll('.fb-btn-group').forEach(group => {
+  const prop = group.dataset.prop;
+  group.querySelectorAll('.fb-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.fb-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      containerState[prop] = btn.dataset.val;
+      render();
+    });
+  });
+});
+
+function updateGap(val) {
+  containerState.gap = parseInt(val);
+  document.getElementById('gapValue').textContent = val + 'px';
+  render();
+}
+
+// ============ Items ============
+function addItem() {
+  if (items.length >= 12) return;
+  items.push({ flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 });
+  selectedItem = items.length - 1;
+  render();
+}
+
+function removeItem() {
+  if (items.length <= 1) return;
+  items.splice(items.length - 1, 1);
+  if (selectedItem >= items.length) selectedItem = items.length - 1;
+  render();
+}
+
+function selectItem(i) {
+  selectedItem = i;
+  renderItemTabs();
+  renderItemProps();
+  highlightSelected();
+}
+
+function renderItemTabs() {
+  const container = document.getElementById('itemTabs');
+  container.innerHTML = '';
+  items.forEach((_, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'fb-item-chip' + (i === selectedItem ? ' selected' : '');
+    chip.style.background = ITEM_COLORS[i % ITEM_COLORS.length];
+    chip.textContent = i + 1;
+    chip.onclick = () => selectItem(i);
+    container.appendChild(chip);
+  });
+  document.getElementById('itemCount').textContent = items.length;
+}
+
+function renderItemProps() {
+  const item = items[selectedItem];
+  if (!item) return;
+  const c = document.getElementById('itemPropsContainer');
+  c.innerHTML = `
+    <div class="fb-prop">
+      <div class="fb-prop-label">flex-grow</div>
+      <div class="fb-number-input">
+        <input type="number" min="0" max="10" value="${item.flexGrow}" onchange="updateItem('flexGrow', this.value)">
+      </div>
+    </div>
+    <div class="fb-prop">
+      <div class="fb-prop-label">flex-shrink</div>
+      <div class="fb-number-input">
+        <input type="number" min="0" max="10" value="${item.flexShrink}" onchange="updateItem('flexShrink', this.value)">
+      </div>
+    </div>
+    <div class="fb-prop">
+      <div class="fb-prop-label">flex-basis</div>
+      <div class="fb-btn-group" data-itemprop="flexBasis">
+        ${['auto','0','100px','150px','200px','50%'].map(v =>
+          `<button class="fb-btn${item.flexBasis === v ? ' active' : ''}" onclick="updateItem('flexBasis','${v}')">${v}</button>`
+        ).join('')}
+      </div>
+    </div>
+    <div class="fb-prop">
+      <div class="fb-prop-label">align-self</div>
+      <div class="fb-btn-group" data-itemprop="alignSelf">
+        ${['auto','flex-start','flex-end','center','stretch','baseline'].map(v =>
+          `<button class="fb-btn${item.alignSelf === v ? ' active' : ''}" onclick="updateItem('alignSelf','${v}')">${v}</button>`
+        ).join('')}
+      </div>
+    </div>
+    <div class="fb-prop">
+      <div class="fb-prop-label">order</div>
+      <div class="fb-number-input">
+        <input type="number" min="-10" max="10" value="${item.order}" onchange="updateItem('order', this.value)">
+      </div>
+    </div>
+  `;
+}
+
+function updateItem(prop, val) {
+  if (prop === 'flexGrow' || prop === 'flexShrink' || prop === 'order') {
+    items[selectedItem][prop] = parseInt(val) || 0;
+  } else {
+    items[selectedItem][prop] = val;
+  }
+  render();
+}
+
+// ============ Preview ============
+function renderPreview() {
+  const el = document.getElementById('flexContainer');
+  el.style.flexDirection = containerState.flexDirection;
+  el.style.flexWrap = containerState.flexWrap;
+  el.style.justifyContent = containerState.justifyContent;
+  el.style.alignItems = containerState.alignItems;
+  el.style.alignContent = containerState.alignContent;
+  el.style.gap = containerState.gap + 'px';
+
+  el.innerHTML = '';
+  items.forEach((item, i) => {
+    const child = document.createElement('div');
+    child.className = 'fb-child' + (i === selectedItem ? ' selected-child' : '');
+    child.style.background = ITEM_COLORS[i % ITEM_COLORS.length];
+    child.style.flexGrow = item.flexGrow;
+    child.style.flexShrink = item.flexShrink;
+    child.style.flexBasis = item.flexBasis;
+    child.style.alignSelf = item.alignSelf;
+    child.style.order = item.order;
+    child.textContent = i + 1;
+    child.onclick = () => selectItem(i);
+    el.appendChild(child);
+  });
+}
+
+function highlightSelected() {
+  document.querySelectorAll('.fb-child').forEach((el, i) => {
+    el.classList.toggle('selected-child', i === selectedItem);
+  });
+}
+
+// ============ Code Output ============
+function toCSSProp(camel) {
+  return camel.replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+
+function generateCSS() {
+  let css = `.container {\n  display: flex;\n`;
+  const defaults = {
+    flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'flex-start',
+    alignItems: 'stretch', alignContent: 'stretch'
+  };
+  for (const [key, def] of Object.entries(defaults)) {
+    if (containerState[key] !== def) {
+      css += `  ${toCSSProp(key)}: ${containerState[key]};\n`;
+    }
+  }
+  if (containerState.gap > 0) {
+    css += `  gap: ${containerState.gap}px;\n`;
+  }
+  css += `}\n`;
+
+  const itemDefaults = { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 };
+  items.forEach((item, i) => {
+    const overrides = [];
+    for (const [key, def] of Object.entries(itemDefaults)) {
+      if (String(item[key]) !== String(def)) {
+        overrides.push(`  ${toCSSProp(key)}: ${item[key]};`);
+      }
+    }
+    if (overrides.length > 0) {
+      css += `\n.item-${i + 1} {\n${overrides.join('\n')}\n}\n`;
+    }
+  });
+
+  return css;
+}
+
+function renderCode() {
+  const raw = generateCSS();
+  const highlighted = raw
+    .replace(/^(\.[a-z0-9-]+)/gm, '<span class="selector">$1</span>')
+    .replace(/([{|}])/g, '<span class="bracket">$1</span>')
+    .replace(/(\s{2})([\w-]+)(:\s*)([^;]+)(;)/g,
+      '$1<span class="prop-name">$2</span>$3<span class="prop-value">$4</span>$5');
+  document.getElementById('codeOutput').innerHTML = highlighted;
+}
+
+function copyCSS() {
+  const css = generateCSS();
+  navigator.clipboard.writeText(css).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ============ Presets ============
+function applyPreset(name) {
+  // Clear active preset buttons
+  document.querySelectorAll('#presets button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  switch (name) {
+    case 'centered':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'nowrap',
+        justifyContent: 'center', alignItems: 'center', alignContent: 'stretch', gap: 10
+      });
+      items = [
+        { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 }
+      ];
+      break;
+    case 'navbar':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'nowrap',
+        justifyContent: 'space-between', alignItems: 'center', alignContent: 'stretch', gap: 10
+      });
+      items = [
+        { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 },
+        { flexGrow: 0, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 }
+      ];
+      break;
+    case 'cardgrid':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'wrap',
+        justifyContent: 'flex-start', alignItems: 'stretch', alignContent: 'stretch', gap: 16
+      });
+      items = [];
+      for (let i = 0; i < 6; i++) {
+        items.push({ flexGrow: 0, flexShrink: 1, flexBasis: '200px', alignSelf: 'auto', order: 0 });
+      }
+      break;
+    case 'sidebar':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'nowrap',
+        justifyContent: 'flex-start', alignItems: 'stretch', alignContent: 'stretch', gap: 0
+      });
+      items = [
+        { flexGrow: 0, flexShrink: 0, flexBasis: '200px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: 'auto', alignSelf: 'auto', order: 0 }
+      ];
+      break;
+    case 'holygrail':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'wrap',
+        justifyContent: 'flex-start', alignItems: 'stretch', alignContent: 'stretch', gap: 8
+      });
+      items = [
+        { flexGrow: 0, flexShrink: 0, flexBasis: '100%', alignSelf: 'auto', order: 0 },
+        { flexGrow: 0, flexShrink: 0, flexBasis: '150px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: '0', alignSelf: 'auto', order: 0 },
+        { flexGrow: 0, flexShrink: 0, flexBasis: '150px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 0, flexShrink: 0, flexBasis: '100%', alignSelf: 'auto', order: 0 }
+      ];
+      break;
+    case 'footer':
+      Object.assign(containerState, {
+        flexDirection: 'row', flexWrap: 'wrap',
+        justifyContent: 'space-around', alignItems: 'flex-start', alignContent: 'stretch', gap: 20
+      });
+      items = [
+        { flexGrow: 1, flexShrink: 1, flexBasis: '200px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: '200px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: '200px', alignSelf: 'auto', order: 0 },
+        { flexGrow: 1, flexShrink: 1, flexBasis: '200px', alignSelf: 'auto', order: 0 }
+      ];
+      break;
+  }
+
+  selectedItem = 0;
+  syncUI();
+  render();
+}
+
+// Sync button group UI to match current state
+function syncUI() {
+  document.querySelectorAll('.fb-btn-group[data-prop]').forEach(group => {
+    const prop = group.dataset.prop;
+    group.querySelectorAll('.fb-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.val === containerState[prop]);
+    });
+  });
+  document.getElementById('gapRange').value = containerState.gap;
+  document.getElementById('gapValue').textContent = containerState.gap + 'px';
+}
+
+// ============ Master Render ============
+function render() {
+  renderPreview();
+  renderItemTabs();
+  renderItemProps();
+  renderCode();
+}
+
+// ============ Init ============
+render();
+</script>
+</body>
+</html>

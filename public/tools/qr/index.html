@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate QR codes for URLs, text, WiFi, email, phone, SMS, and vCards. Customize size, colors, and error correction. Free online QR code generator.">
+  <meta property="og:title" content="QR Code Generator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Generate customizable QR codes instantly. Support for URLs, WiFi, vCards, and more.">
+  <meta property="og:url" content="https://imseankim.com/tools/qr">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/qr">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab:hover {
+      border-color: var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .tab.active {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Color input */
+    .color-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-swatch {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding: 0;
+      background: none;
+      overflow: hidden;
+    }
+
+    .color-swatch input[type="color"] {
+      width: 52px;
+      height: 52px;
+      border: none;
+      cursor: pointer;
+      margin: -8px;
+    }
+
+    .color-hex {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .color-hex:focus {
+      border-color: var(--accent);
+    }
+
+    /* Preview */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .qr-canvas-wrap {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: inline-block;
+    }
+
+    #qrCanvas {
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .qr-placeholder {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: var(--transition);
+      flex: 1;
+      text-transform: uppercase;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-hover);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Size slider */
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .range-wrap input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .range-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .range-val {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      min-width: 45px;
+      text-align: right;
+    }
+
+    .customization-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .wifi-fields, .email-fields, .sms-fields, .vcard-fields {
+      display: none;
+    }
+
+    .wifi-fields.active, .email-fields.active, .sms-fields.active, .vcard-fields.active,
+    .url-field.active, .text-field.active, .phone-field.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">QR Code Generator</h1>
+    <p class="tool-subtitle">Generate QR codes for URLs, text, WiFi, and more</p>
+
+    <div class="layout">
+      <!-- Left Panel: Input -->
+      <div class="panel">
+        <div class="panel-title">Input Type</div>
+        <div class="tabs" id="typeTabs">
+          <button class="tab active" data-type="url">URL</button>
+          <button class="tab" data-type="text">Text</button>
+          <button class="tab" data-type="wifi">WiFi</button>
+          <button class="tab" data-type="email">Email</button>
+          <button class="tab" data-type="phone">Phone</button>
+          <button class="tab" data-type="sms">SMS</button>
+          <button class="tab" data-type="vcard">vCard</button>
+        </div>
+
+        <!-- URL -->
+        <div class="url-field active" id="urlField">
+          <div class="form-group">
+            <label class="form-label">URL</label>
+            <input type="url" class="form-input qr-input" id="urlInput" placeholder="https://example.com" value="https://imseankim.com">
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="text-field" id="textField">
+          <div class="form-group">
+            <label class="form-label">Text</label>
+            <textarea class="form-input qr-input" id="textInput" placeholder="Enter your text here..."></textarea>
+          </div>
+        </div>
+
+        <!-- WiFi -->
+        <div class="wifi-fields" id="wifiFields">
+          <div class="form-group">
+            <label class="form-label">SSID (Network Name)</label>
+            <input type="text" class="form-input qr-input" id="wifiSsid" placeholder="MyNetwork">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="text" class="form-input qr-input" id="wifiPass" placeholder="password123">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Encryption</label>
+            <select class="form-select qr-input" id="wifiEnc">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">None</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="email-fields" id="emailFields">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input qr-input" id="emailAddr" placeholder="user@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-input qr-input" id="emailSubject" placeholder="Hello">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Body</label>
+            <textarea class="form-input qr-input" id="emailBody" placeholder="Message..."></textarea>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="phone-field" id="phoneField">
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input qr-input" id="phoneInput" placeholder="+1234567890">
+          </div>
+        </div>
+
+        <!-- SMS -->
+        <div class="sms-fields" id="smsFields">
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input qr-input" id="smsPhone" placeholder="+1234567890">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input qr-input" id="smsBody" placeholder="Your message..."></textarea>
+          </div>
+        </div>
+
+        <!-- vCard -->
+        <div class="vcard-fields" id="vcardFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-input qr-input" id="vcardFirst" placeholder="Sean">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-input qr-input" id="vcardLast" placeholder="Kim">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input qr-input" id="vcardPhone" placeholder="+1234567890">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input qr-input" id="vcardEmail" placeholder="user@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Organization</label>
+            <input type="text" class="form-input qr-input" id="vcardOrg" placeholder="Company">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Website</label>
+            <input type="url" class="form-input qr-input" id="vcardUrl" placeholder="https://example.com">
+          </div>
+        </div>
+
+        <!-- Customization -->
+        <div class="customization-section">
+          <div class="panel-title">Customization</div>
+          <div class="form-group">
+            <label class="form-label">Size</label>
+            <div class="range-wrap">
+              <input type="range" id="sizeSlider" min="100" max="500" value="250" step="10">
+              <span class="range-val" id="sizeVal">250px</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Foreground</label>
+              <div class="color-group">
+                <div class="color-swatch">
+                  <input type="color" id="fgColor" value="#000000">
+                </div>
+                <input type="text" class="color-hex qr-input" id="fgHex" value="#000000" maxlength="7">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Background</label>
+              <div class="color-group">
+                <div class="color-swatch">
+                  <input type="color" id="bgColor" value="#ffffff">
+                </div>
+                <input type="text" class="color-hex qr-input" id="bgHex" value="#ffffff" maxlength="7">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Error Correction</label>
+            <select class="form-select qr-input" id="ecLevel">
+              <option value="L">L — Low (7%)</option>
+              <option value="M" selected>M — Medium (15%)</option>
+              <option value="Q">Q — Quartile (25%)</option>
+              <option value="H">H — High (30%)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Preview -->
+      <div class="panel">
+        <div class="panel-title">Preview</div>
+        <div class="preview-area">
+          <div class="qr-canvas-wrap" id="canvasWrap">
+            <canvas id="qrCanvas" width="250" height="250"></canvas>
+          </div>
+          <div id="errorMsg" class="error-msg" style="display:none;"></div>
+          <div class="btn-row">
+            <button class="btn btn-accent" id="downloadPng">Download PNG</button>
+            <button class="btn" id="downloadSvg">Download SVG</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    // =====================================================
+    //  QR CODE ENCODER — From-scratch vanilla JS
+    //  Supports versions 1-10, byte mode, all EC levels
+    //  Implements Reed-Solomon error correction
+    // =====================================================
+
+    // EC codewords per block and block counts for versions 1-10
+    // Format: [totalDataCodewords, [ecPerBlock, numBlocks] ] per EC level L,M,Q,H
+    const VERSION_TABLE = [
+      null, // index 0 unused
+      // v1
+      { size: 21, data: { L: 19, M: 16, Q: 13, H: 9 }, ec: { L: 7, M: 10, Q: 13, H: 17 }, blocks: { L: 1, M: 1, Q: 1, H: 1 } },
+      // v2
+      { size: 25, data: { L: 34, M: 28, Q: 22, H: 16 }, ec: { L: 10, M: 16, Q: 22, H: 28 }, blocks: { L: 1, M: 1, Q: 1, H: 1 } },
+      // v3
+      { size: 29, data: { L: 55, M: 44, Q: 34, H: 26 }, ec: { L: 15, M: 26, Q: 18, H: 22 }, blocks: { L: 1, M: 1, Q: 2, H: 2 } },
+      // v4
+      { size: 33, data: { L: 80, M: 64, Q: 48, H: 36 }, ec: { L: 20, M: 18, Q: 26, H: 16 }, blocks: { L: 1, M: 2, Q: 2, H: 4 } },
+      // v5
+      { size: 37, data: { L: 108, M: 86, Q: 62, H: 46 }, ec: { L: 26, M: 24, Q: 18, H: 22 }, blocks: { L: 1, M: 2, Q: 2, H: 2 } },
+      // v6
+      { size: 41, data: { L: 136, M: 108, Q: 76, H: 60 }, ec: { L: 18, M: 16, Q: 24, H: 28 }, blocks: { L: 2, M: 4, Q: 4, H: 4 } },
+      // v7
+      { size: 45, data: { L: 156, M: 124, Q: 88, H: 66 }, ec: { L: 20, M: 18, Q: 18, H: 26 }, blocks: { L: 2, M: 4, Q: 2, H: 5 } },
+      // v8
+      { size: 49, data: { L: 194, M: 154, Q: 110, H: 86 }, ec: { L: 24, M: 22, Q: 22, H: 26 }, blocks: { L: 2, M: 2, Q: 4, H: 6 } },
+      // v9
+      { size: 53, data: { L: 232, M: 182, Q: 132, H: 100 }, ec: { L: 30, M: 22, Q: 20, H: 24 }, blocks: { L: 2, M: 3, Q: 4, H: 6 } },
+      // v10
+      { size: 57, data: { L: 274, M: 216, Q: 154, H: 122 }, ec: { L: 18, M: 26, Q: 24, H: 28 }, blocks: { L: 2, M: 4, Q: 6, H: 8 } },
+    ];
+
+    // Correct total codewords for each version (data + EC)
+    const TOTAL_CODEWORDS = [0, 26, 44, 70, 100, 134, 172, 196, 242, 292, 346];
+
+    // Alignment pattern positions (v2+)
+    const ALIGNMENT_POSITIONS = [
+      null, [], [6,18], [6,22], [6,26], [6,30], [6,34],
+      [6,22,38], [6,24,42], [6,26,46], [6,28,52]
+    ];
+
+    // GF(256) arithmetic for Reed-Solomon
+    const GF_EXP = new Uint8Array(512);
+    const GF_LOG = new Uint8Array(256);
+    (function initGF() {
+      let v = 1;
+      for (let i = 0; i < 255; i++) {
+        GF_EXP[i] = v;
+        GF_LOG[v] = i;
+        v <<= 1;
+        if (v >= 256) v ^= 0x11d;
+      }
+      for (let i = 255; i < 512; i++) GF_EXP[i] = GF_EXP[i - 255];
+    })();
+
+    function gfMul(a, b) {
+      if (a === 0 || b === 0) return 0;
+      return GF_EXP[GF_LOG[a] + GF_LOG[b]];
+    }
+
+    function rsGeneratorPoly(degree) {
+      let g = [1];
+      for (let i = 0; i < degree; i++) {
+        const ng = new Array(g.length + 1).fill(0);
+        for (let j = 0; j < g.length; j++) {
+          ng[j] ^= g[j];
+          ng[j + 1] ^= gfMul(g[j], GF_EXP[i]);
+        }
+        g = ng;
+      }
+      return g;
+    }
+
+    function rsEncode(data, ecCount) {
+      const gen = rsGeneratorPoly(ecCount);
+      const msg = new Uint8Array(data.length + ecCount);
+      msg.set(data);
+      for (let i = 0; i < data.length; i++) {
+        const coef = msg[i];
+        if (coef !== 0) {
+          for (let j = 0; j < gen.length; j++) {
+            msg[i + j] ^= gfMul(gen[j], coef);
+          }
+        }
+      }
+      return Array.from(msg.slice(data.length));
+    }
+
+    // Choose smallest version that fits
+    function chooseVersion(dataLen, ecLevel) {
+      for (let v = 1; v <= 10; v++) {
+        const cap = VERSION_TABLE[v].data[ecLevel];
+        // byte mode overhead: 4 bits mode + 8 or 16 bits length
+        const overhead = (v <= 9) ? 2 : 3; // in bytes (rough: 4+8 bits = 12 bits ~ 2 bytes used from capacity)
+        if (dataLen + overhead <= cap) return v;
+      }
+      return -1;
+    }
+
+    // Encode data into byte mode bitstream
+    function encodeData(text, version, ecLevel) {
+      const bytes = new TextEncoder().encode(text);
+      const dataCapacity = VERSION_TABLE[version].data[ecLevel];
+
+      // Build bit stream
+      const bits = [];
+      function pushBits(val, len) {
+        for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1);
+      }
+
+      // Mode indicator: byte mode = 0100
+      pushBits(0b0100, 4);
+
+      // Character count
+      const ccBits = version <= 9 ? 8 : 16;
+      pushBits(bytes.length, ccBits);
+
+      // Data
+      for (const b of bytes) pushBits(b, 8);
+
+      // Terminator (up to 4 zeros)
+      const totalDataBits = dataCapacity * 8;
+      const termLen = Math.min(4, totalDataBits - bits.length);
+      for (let i = 0; i < termLen; i++) bits.push(0);
+
+      // Pad to byte boundary
+      while (bits.length % 8 !== 0) bits.push(0);
+
+      // Pad bytes: 0xEC, 0x11 alternating
+      const padBytes = [0xEC, 0x11];
+      let pi = 0;
+      while (bits.length < totalDataBits) {
+        pushBits(padBytes[pi], 8);
+        pi = (pi + 1) % 2;
+      }
+
+      // Convert to byte array
+      const dataBytes = [];
+      for (let i = 0; i < bits.length; i += 8) {
+        let b = 0;
+        for (let j = 0; j < 8; j++) b = (b << 1) | (bits[i + j] || 0);
+        dataBytes.push(b);
+      }
+
+      return new Uint8Array(dataBytes);
+    }
+
+    // Interleave blocks and add EC
+    function buildCodewords(dataBytes, version, ecLevel) {
+      const vInfo = VERSION_TABLE[version];
+      const numBlocks = vInfo.blocks[ecLevel];
+      const ecPerBlock = vInfo.ec[ecLevel] / numBlocks;
+      const totalData = vInfo.data[ecLevel];
+      const shortBlockLen = Math.floor(totalData / numBlocks);
+      const longBlocks = totalData % numBlocks;
+
+      // Split data into blocks
+      const blocks = [];
+      let offset = 0;
+      for (let i = 0; i < numBlocks; i++) {
+        const bLen = shortBlockLen + (i >= numBlocks - longBlocks ? 1 : 0);
+        blocks.push(Array.from(dataBytes.slice(offset, offset + bLen)));
+        offset += bLen;
+      }
+
+      // Generate EC for each block
+      const ecBlocks = blocks.map(b => rsEncode(new Uint8Array(b), ecPerBlock));
+
+      // Interleave data
+      const result = [];
+      const maxDataLen = shortBlockLen + (longBlocks > 0 ? 1 : 0);
+      for (let i = 0; i < maxDataLen; i++) {
+        for (let j = 0; j < numBlocks; j++) {
+          if (i < blocks[j].length) result.push(blocks[j][i]);
+        }
+      }
+      // Interleave EC
+      for (let i = 0; i < ecPerBlock; i++) {
+        for (let j = 0; j < numBlocks; j++) {
+          result.push(ecBlocks[j][i]);
+        }
+      }
+
+      return result;
+    }
+
+    // Create the QR matrix
+    function createMatrix(version) {
+      const size = VERSION_TABLE[version].size;
+      // 0 = white, 1 = black, -1 = unset
+      const matrix = [];
+      for (let r = 0; r < size; r++) {
+        matrix.push(new Int8Array(size).fill(-1));
+      }
+      return matrix;
+    }
+
+    function setModule(matrix, row, col, val) {
+      if (row >= 0 && row < matrix.length && col >= 0 && col < matrix.length) {
+        matrix[row][col] = val ? 1 : 0;
+      }
+    }
+
+    // Place finder patterns
+    function placeFinderPatterns(matrix) {
+      const size = matrix.length;
+      function placeOne(row, col) {
+        for (let r = -1; r <= 7; r++) {
+          for (let c = -1; c <= 7; c++) {
+            const rr = row + r, cc = col + c;
+            if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+            if ((r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+                (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+                (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
+              matrix[rr][cc] = 1;
+            } else {
+              matrix[rr][cc] = 0;
+            }
+          }
+        }
+      }
+      placeOne(0, 0);
+      placeOne(0, size - 7);
+      placeOne(size - 7, 0);
+    }
+
+    // Place alignment patterns
+    function placeAlignmentPatterns(matrix, version) {
+      const positions = ALIGNMENT_POSITIONS[version];
+      if (!positions || positions.length < 2) return;
+      const size = matrix.length;
+      for (const r of positions) {
+        for (const c of positions) {
+          // Skip if overlapping with finder pattern
+          if (r <= 8 && c <= 8) continue;
+          if (r <= 8 && c >= size - 8) continue;
+          if (r >= size - 8 && c <= 8) continue;
+          for (let dr = -2; dr <= 2; dr++) {
+            for (let dc = -2; dc <= 2; dc++) {
+              const val = (Math.abs(dr) === 2 || Math.abs(dc) === 2 || (dr === 0 && dc === 0)) ? 1 : 0;
+              matrix[r + dr][c + dc] = val;
+            }
+          }
+        }
+      }
+    }
+
+    // Place timing patterns
+    function placeTimingPatterns(matrix) {
+      const size = matrix.length;
+      for (let i = 8; i < size - 8; i++) {
+        const val = (i % 2 === 0) ? 1 : 0;
+        if (matrix[6][i] === -1) matrix[6][i] = val;
+        if (matrix[i][6] === -1) matrix[i][6] = val;
+      }
+    }
+
+    // Reserve format info areas
+    function reserveFormatAreas(matrix, version) {
+      const size = matrix.length;
+      // Around finder patterns
+      for (let i = 0; i < 8; i++) {
+        if (matrix[8][i] === -1) matrix[8][i] = 0;
+        if (matrix[i][8] === -1) matrix[i][8] = 0;
+        if (matrix[8][size - 1 - i] === -1) matrix[8][size - 1 - i] = 0;
+        if (matrix[size - 1 - i][8] === -1) matrix[size - 1 - i][8] = 0;
+      }
+      if (matrix[8][8] === -1) matrix[8][8] = 0;
+      // Dark module
+      matrix[size - 8][8] = 1;
+    }
+
+    // Place data bits
+    function placeData(matrix, codewords) {
+      const size = matrix.length;
+      const bits = [];
+      for (const cw of codewords) {
+        for (let i = 7; i >= 0; i--) bits.push((cw >> i) & 1);
+      }
+      // Add remainder bits (versions 2-6: 7 bits, v7+: varies but we pad)
+      while (bits.length < size * size) bits.push(0);
+
+      let bitIdx = 0;
+      let right = size - 1;
+      let upward = true;
+
+      while (right >= 0) {
+        if (right === 6) right--; // skip timing column
+        const left = right - 1;
+        const rows = upward ?
+          Array.from({length: size}, (_, i) => size - 1 - i) :
+          Array.from({length: size}, (_, i) => i);
+        for (const row of rows) {
+          for (const col of [right, left]) {
+            if (col < 0) continue;
+            if (matrix[row][col] === -1) {
+              matrix[row][col] = (bitIdx < bits.length) ? bits[bitIdx] : 0;
+              bitIdx++;
+            }
+          }
+        }
+        upward = !upward;
+        right -= 2;
+      }
+    }
+
+    // Masking
+    const MASK_FUNCTIONS = [
+      (r, c) => (r + c) % 2 === 0,
+      (r, c) => r % 2 === 0,
+      (r, c) => c % 3 === 0,
+      (r, c) => (r + c) % 3 === 0,
+      (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
+      (r, c) => ((r * c) % 2 + (r * c) % 3) === 0,
+      (r, c) => ((r * c) % 2 + (r * c) % 3) % 2 === 0,
+      (r, c) => ((r + c) % 2 + (r * c) % 3) % 2 === 0,
+    ];
+
+    function isDataModule(matrix, reservedMatrix, row, col) {
+      return reservedMatrix[row][col] === -1;
+    }
+
+    function applyMask(matrix, reservedMatrix, maskIdx) {
+      const size = matrix.length;
+      const fn = MASK_FUNCTIONS[maskIdx];
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if (isDataModule(matrix, reservedMatrix, r, c)) {
+            if (fn(r, c)) matrix[r][c] ^= 1;
+          }
+        }
+      }
+    }
+
+    // Format info encoding
+    const FORMAT_EC_TABLE = { L: 1, M: 0, Q: 3, H: 2 };
+
+    function encodeFormatInfo(ecLevel, maskPattern) {
+      const ecBits = FORMAT_EC_TABLE[ecLevel];
+      let data = (ecBits << 3) | maskPattern;
+      let bits = data << 10;
+      // Generator polynomial: x^10 + x^8 + x^5 + x^4 + x^2 + x + 1 = 0x537
+      let gen = 0x537;
+      for (let i = 4; i >= 0; i--) {
+        if (bits & (1 << (i + 10))) bits ^= gen << i;
+      }
+      bits = (data << 10) | bits;
+      bits ^= 0x5412; // mask
+      return bits;
+    }
+
+    function placeFormatInfo(matrix, ecLevel, maskPattern) {
+      const size = matrix.length;
+      const bits = encodeFormatInfo(ecLevel, maskPattern);
+
+      // Place around top-left finder pattern
+      const positions1 = [
+        [0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[7,8],[8,8],
+        [8,7],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0]
+      ];
+      for (let i = 0; i < 15; i++) {
+        const [r, c] = positions1[i];
+        matrix[r][c] = (bits >> (14 - i)) & 1;
+      }
+
+      // Place around other finder patterns
+      // Bottom-left: column 8, rows size-1 to size-7
+      for (let i = 0; i < 7; i++) {
+        matrix[size - 1 - i][8] = (bits >> i) & 1;
+      }
+      // Top-right: row 8, columns size-8 to size-1
+      for (let i = 0; i < 8; i++) {
+        matrix[8][size - 8 + i] = (bits >> (7 - i)) & 1;
+      }
+    }
+
+    // Penalty scoring
+    function computePenalty(matrix) {
+      const size = matrix.length;
+      let penalty = 0;
+
+      // Rule 1: runs of same color in row/col
+      for (let r = 0; r < size; r++) {
+        let run = 1;
+        for (let c = 1; c < size; c++) {
+          if (matrix[r][c] === matrix[r][c-1]) { run++; }
+          else { if (run >= 5) penalty += run - 2; run = 1; }
+        }
+        if (run >= 5) penalty += run - 2;
+      }
+      for (let c = 0; c < size; c++) {
+        let run = 1;
+        for (let r = 1; r < size; r++) {
+          if (matrix[r][c] === matrix[r-1][c]) { run++; }
+          else { if (run >= 5) penalty += run - 2; run = 1; }
+        }
+        if (run >= 5) penalty += run - 2;
+      }
+
+      // Rule 2: 2x2 blocks
+      for (let r = 0; r < size - 1; r++) {
+        for (let c = 0; c < size - 1; c++) {
+          const v = matrix[r][c];
+          if (v === matrix[r][c+1] && v === matrix[r+1][c] && v === matrix[r+1][c+1]) {
+            penalty += 3;
+          }
+        }
+      }
+
+      // Rule 3: finder-like patterns
+      const pattern1 = [1,0,1,1,1,0,1,0,0,0,0];
+      const pattern2 = [0,0,0,0,1,0,1,1,1,0,1];
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c <= size - 11; c++) {
+          let match1 = true, match2 = true;
+          for (let k = 0; k < 11; k++) {
+            if (matrix[r][c+k] !== pattern1[k]) match1 = false;
+            if (matrix[r][c+k] !== pattern2[k]) match2 = false;
+          }
+          if (match1 || match2) penalty += 40;
+        }
+      }
+      for (let c = 0; c < size; c++) {
+        for (let r = 0; r <= size - 11; r++) {
+          let match1 = true, match2 = true;
+          for (let k = 0; k < 11; k++) {
+            if (matrix[r+k][c] !== pattern1[k]) match1 = false;
+            if (matrix[r+k][c] !== pattern2[k]) match2 = false;
+          }
+          if (match1 || match2) penalty += 40;
+        }
+      }
+
+      // Rule 4: proportion of dark modules
+      let dark = 0;
+      for (let r = 0; r < size; r++)
+        for (let c = 0; c < size; c++)
+          if (matrix[r][c] === 1) dark++;
+      const pct = (dark * 100) / (size * size);
+      const prev5 = Math.floor(pct / 5) * 5;
+      const next5 = prev5 + 5;
+      penalty += Math.min(Math.abs(prev5 - 50) / 5, Math.abs(next5 - 50) / 5) * 10;
+
+      return penalty;
+    }
+
+    function cloneMatrix(m) {
+      return m.map(row => new Int8Array(row));
+    }
+
+    // Main QR generation
+    function generateQR(text, ecLevel) {
+      if (!text) return null;
+
+      const bytes = new TextEncoder().encode(text);
+      const version = chooseVersion(bytes.length, ecLevel);
+      if (version < 0) return null; // too long
+
+      const dataBytes = encodeData(text, version, ecLevel);
+      const codewords = buildCodewords(dataBytes, version, ecLevel);
+
+      // Build the matrix structure (without data)
+      const matrix = createMatrix(version);
+      placeFinderPatterns(matrix);
+      placeAlignmentPatterns(matrix, version);
+      placeTimingPatterns(matrix);
+      reserveFormatAreas(matrix, version);
+
+      // Save reserved pattern to know which modules are data
+      const reserved = cloneMatrix(matrix);
+
+      // Place data
+      placeData(matrix, codewords);
+
+      // Try all 8 masks, pick the one with lowest penalty
+      let bestMask = 0;
+      let bestPenalty = Infinity;
+      let bestMatrix = null;
+
+      for (let m = 0; m < 8; m++) {
+        const trial = cloneMatrix(matrix);
+        applyMask(trial, reserved, m);
+        placeFormatInfo(trial, ecLevel, m);
+        const p = computePenalty(trial);
+        if (p < bestPenalty) {
+          bestPenalty = p;
+          bestMask = m;
+          bestMatrix = trial;
+        }
+      }
+
+      return { matrix: bestMatrix, version, size: VERSION_TABLE[version].size };
+    }
+
+    // =====================================================
+    //  UI Logic
+    // =====================================================
+
+    const canvas = document.getElementById('qrCanvas');
+    const ctx = canvas.getContext('2d');
+    const errorMsg = document.getElementById('errorMsg');
+    const canvasWrap = document.getElementById('canvasWrap');
+
+    // State
+    let currentType = 'url';
+    let debounceTimer = null;
+
+    // Tab switching
+    const fieldMap = {
+      url: document.getElementById('urlField'),
+      text: document.getElementById('textField'),
+      wifi: document.getElementById('wifiFields'),
+      email: document.getElementById('emailFields'),
+      phone: document.getElementById('phoneField'),
+      sms: document.getElementById('smsFields'),
+      vcard: document.getElementById('vcardFields'),
+    };
+
+    document.getElementById('typeTabs').addEventListener('click', function(e) {
+      const tab = e.target.closest('.tab');
+      if (!tab) return;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentType = tab.dataset.type;
+      Object.values(fieldMap).forEach(f => f.classList.remove('active'));
+      fieldMap[currentType].classList.add('active');
+      scheduleGenerate();
+    });
+
+    // Build the QR text from inputs
+    function getQRText() {
+      switch (currentType) {
+        case 'url': return document.getElementById('urlInput').value.trim();
+        case 'text': return document.getElementById('textInput').value;
+        case 'wifi': {
+          const ssid = document.getElementById('wifiSsid').value;
+          const pass = document.getElementById('wifiPass').value;
+          const enc = document.getElementById('wifiEnc').value;
+          if (!ssid) return '';
+          return `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+        }
+        case 'email': {
+          const addr = document.getElementById('emailAddr').value.trim();
+          if (!addr) return '';
+          const subj = document.getElementById('emailSubject').value;
+          const body = document.getElementById('emailBody').value;
+          let mailto = `mailto:${addr}`;
+          const params = [];
+          if (subj) params.push(`subject=${encodeURIComponent(subj)}`);
+          if (body) params.push(`body=${encodeURIComponent(body)}`);
+          if (params.length) mailto += '?' + params.join('&');
+          return mailto;
+        }
+        case 'phone': {
+          const ph = document.getElementById('phoneInput').value.trim();
+          return ph ? `tel:${ph}` : '';
+        }
+        case 'sms': {
+          const ph = document.getElementById('smsPhone').value.trim();
+          const body = document.getElementById('smsBody').value;
+          if (!ph) return '';
+          return body ? `smsto:${ph}:${body}` : `smsto:${ph}`;
+        }
+        case 'vcard': {
+          const first = document.getElementById('vcardFirst').value;
+          const last = document.getElementById('vcardLast').value;
+          const phone = document.getElementById('vcardPhone').value;
+          const email = document.getElementById('vcardEmail').value;
+          const org = document.getElementById('vcardOrg').value;
+          const url = document.getElementById('vcardUrl').value;
+          if (!first && !last) return '';
+          let v = 'BEGIN:VCARD\nVERSION:3.0\n';
+          v += `N:${last};${first};;;\n`;
+          v += `FN:${first} ${last}\n`;
+          if (phone) v += `TEL:${phone}\n`;
+          if (email) v += `EMAIL:${email}\n`;
+          if (org) v += `ORG:${org}\n`;
+          if (url) v += `URL:${url}\n`;
+          v += 'END:VCARD';
+          return v;
+        }
+      }
+      return '';
+    }
+
+    function renderQR() {
+      const text = getQRText();
+      const ecLevel = document.getElementById('ecLevel').value;
+      const size = parseInt(document.getElementById('sizeSlider').value);
+      const fgColor = document.getElementById('fgHex').value || '#000000';
+      const bgColor = document.getElementById('bgHex').value || '#ffffff';
+
+      errorMsg.style.display = 'none';
+
+      if (!text) {
+        canvas.width = size;
+        canvas.height = size;
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Enter content to generate', size / 2, size / 2);
+        canvasWrap.style.background = bgColor;
+        return;
+      }
+
+      const qr = generateQR(text, ecLevel);
+      if (!qr) {
+        canvas.width = size;
+        canvas.height = size;
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+        errorMsg.textContent = 'Text too long for QR versions 1-10. Try shorter input or lower error correction.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const modules = qr.size;
+      const quiet = 4; // quiet zone
+      const totalModules = modules + quiet * 2;
+      const moduleSize = size / totalModules;
+
+      canvas.width = size;
+      canvas.height = size;
+      canvasWrap.style.background = bgColor;
+
+      // Background
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, size, size);
+
+      // Draw modules
+      ctx.fillStyle = fgColor;
+      for (let r = 0; r < modules; r++) {
+        for (let c = 0; c < modules; c++) {
+          if (qr.matrix[r][c] === 1) {
+            const x = Math.round((c + quiet) * moduleSize);
+            const y = Math.round((r + quiet) * moduleSize);
+            const w = Math.round((c + quiet + 1) * moduleSize) - x;
+            const h = Math.round((r + quiet + 1) * moduleSize) - y;
+            ctx.fillRect(x, y, w, h);
+          }
+        }
+      }
+    }
+
+    function scheduleGenerate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(renderQR, 80);
+    }
+
+    // Color sync
+    document.getElementById('fgColor').addEventListener('input', function() {
+      document.getElementById('fgHex').value = this.value;
+      scheduleGenerate();
+    });
+    document.getElementById('bgColor').addEventListener('input', function() {
+      document.getElementById('bgHex').value = this.value;
+      scheduleGenerate();
+    });
+    document.getElementById('fgHex').addEventListener('input', function() {
+      if (/^#[0-9a-f]{6}$/i.test(this.value)) {
+        document.getElementById('fgColor').value = this.value;
+        scheduleGenerate();
+      }
+    });
+    document.getElementById('bgHex').addEventListener('input', function() {
+      if (/^#[0-9a-f]{6}$/i.test(this.value)) {
+        document.getElementById('bgColor').value = this.value;
+        scheduleGenerate();
+      }
+    });
+
+    // Size slider
+    const sizeSlider = document.getElementById('sizeSlider');
+    const sizeVal = document.getElementById('sizeVal');
+    sizeSlider.addEventListener('input', function() {
+      sizeVal.textContent = this.value + 'px';
+      scheduleGenerate();
+    });
+
+    // Live input
+    document.querySelectorAll('.qr-input').forEach(el => {
+      el.addEventListener('input', scheduleGenerate);
+    });
+
+    // EC level
+    document.getElementById('ecLevel').addEventListener('change', scheduleGenerate);
+
+    // Download PNG
+    document.getElementById('downloadPng').addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Download SVG
+    document.getElementById('downloadSvg').addEventListener('click', function() {
+      const text = getQRText();
+      const ecLevel = document.getElementById('ecLevel').value;
+      const fgColor = document.getElementById('fgHex').value || '#000000';
+      const bgColor = document.getElementById('bgHex').value || '#ffffff';
+      const size = parseInt(document.getElementById('sizeSlider').value);
+
+      if (!text) return;
+      const qr = generateQR(text, ecLevel);
+      if (!qr) return;
+
+      const modules = qr.size;
+      const quiet = 4;
+      const total = modules + quiet * 2;
+      const cellSize = size / total;
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${total} ${total}">`;
+      svg += `<rect width="${total}" height="${total}" fill="${bgColor}"/>`;
+      for (let r = 0; r < modules; r++) {
+        for (let c = 0; c < modules; c++) {
+          if (qr.matrix[r][c] === 1) {
+            svg += `<rect x="${c + quiet}" y="${r + quiet}" width="1" height="1" fill="${fgColor}"/>`;
+          }
+        }
+      }
+      svg += '</svg>';
+
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const link = document.createElement('a');
+      link.download = 'qrcode.svg';
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // Initial render
+    renderQR();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Converter - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Convert between units of length, weight, temperature, area, volume, speed, time, data storage, pressure, and energy. Free online unit converter with live results.">
+  <meta property="og:title" content="Unit Converter - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Convert between hundreds of units across 10 categories. See all conversions at once with live results.">
+  <meta property="og:url" content="https://imseankim.com/tools/units">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/units">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .category-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .category-tab:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .category-tab.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Converter Card */
+    .converter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .converter-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .unit-select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      padding: 12px 14px;
+      width: 100%;
+      cursor: pointer;
+      transition: var(--transition);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    .unit-select:hover, .unit-select:focus {
+      border-color: var(--border-hover);
+      outline: none;
+    }
+
+    .value-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      padding: 12px 14px;
+      width: 100%;
+      transition: var(--transition);
+    }
+
+    .value-input:hover, .value-input:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .value-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .swap-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .swap-btn:hover {
+      background: var(--bg-hover);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .swap-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Result display */
+    .result-display {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg-input);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .result-value {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .result-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Formula */
+    .formula-display {
+      margin-top: 14px;
+      padding: 14px 18px;
+      background: rgba(79, 172, 254, 0.06);
+      border: 1px solid rgba(79, 172, 254, 0.15);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    /* Favorites */
+    .favorites-section {
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .favorites-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .favorite-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .favorite-chip:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-light);
+      color: var(--text-primary);
+    }
+
+    .favorite-chip .remove-fav {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .favorite-chip .remove-fav:hover {
+      color: var(--danger);
+    }
+
+    .no-favorites {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    /* All Conversions Table */
+    .all-conversions {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .all-conversions-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .all-conversions-title {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .pin-hint {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    .conversion-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(34, 34, 34, 0.5);
+      transition: var(--transition);
+      cursor: default;
+    }
+
+    .conversion-row:last-child {
+      border-bottom: none;
+    }
+
+    .conversion-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .conversion-row.is-source {
+      background: rgba(79, 172, 254, 0.04);
+    }
+
+    .conv-unit-name {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .conv-unit-name .unit-abbr {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+
+    .conv-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      text-align: right;
+      user-select: all;
+      cursor: text;
+    }
+
+    .conv-value.is-source {
+      color: var(--accent);
+    }
+
+    .pin-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 1rem;
+      line-height: 1;
+      transition: var(--transition);
+    }
+
+    .pin-btn:hover {
+      color: var(--accent);
+    }
+
+    .pin-btn.pinned {
+      color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .tool-content {
+        padding: 24px 16px 60px;
+      }
+
+      .converter-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .swap-btn {
+        width: 100%;
+        height: 36px;
+      }
+
+      .converter-card {
+        padding: 20px 16px;
+      }
+
+      .conversion-row {
+        padding: 10px 16px;
+        grid-template-columns: 1fr auto auto;
+      }
+
+      .result-value {
+        font-size: 1.2rem;
+      }
+
+      .category-tabs {
+        gap: 6px;
+      }
+
+      .category-tab {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Unit Converter</h1>
+    <p class="tool-subtitle">Convert between units across 10 categories</p>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs" id="categoryTabs"></div>
+
+    <!-- Favorites -->
+    <div class="favorites-section" id="favoritesSection" style="display:none">
+      <div class="section-label">
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>
+        Pinned Conversions
+      </div>
+      <div class="favorites-list" id="favoritesList"></div>
+    </div>
+
+    <!-- Converter -->
+    <div class="converter-card">
+      <div class="converter-row">
+        <div class="field-group">
+          <label class="field-label">From</label>
+          <select class="unit-select" id="fromUnit"></select>
+          <input type="number" class="value-input" id="fromValue" placeholder="Enter value" step="any">
+        </div>
+        <button class="swap-btn" id="swapBtn" title="Swap units">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+        </button>
+        <div class="field-group">
+          <label class="field-label">To</label>
+          <select class="unit-select" id="toUnit"></select>
+          <input type="number" class="value-input" id="toValue" placeholder="Result" step="any" readonly>
+        </div>
+      </div>
+
+      <div class="result-display" id="resultDisplay" style="display:none">
+        <div class="result-value" id="resultValue"></div>
+        <div class="result-label" id="resultLabel"></div>
+      </div>
+
+      <div class="formula-display" id="formulaDisplay" style="display:none"></div>
+    </div>
+
+    <!-- All Conversions -->
+    <div class="all-conversions" id="allConversions" style="display:none">
+      <div class="all-conversions-header">
+        <span class="all-conversions-title">All Conversions</span>
+        <span class="pin-hint">Click star to pin</span>
+      </div>
+      <div id="allConversionsList"></div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    // ===== UNIT DATA =====
+    const categories = {
+      Length: {
+        units: [
+          { name: 'Kilometer', abbr: 'km', factor: 1000 },
+          { name: 'Meter', abbr: 'm', factor: 1 },
+          { name: 'Centimeter', abbr: 'cm', factor: 0.01 },
+          { name: 'Millimeter', abbr: 'mm', factor: 0.001 },
+          { name: 'Micrometer', abbr: 'um', factor: 1e-6 },
+          { name: 'Nanometer', abbr: 'nm', factor: 1e-9 },
+          { name: 'Mile', abbr: 'mi', factor: 1609.344 },
+          { name: 'Yard', abbr: 'yd', factor: 0.9144 },
+          { name: 'Foot', abbr: 'ft', factor: 0.3048 },
+          { name: 'Inch', abbr: 'in', factor: 0.0254 },
+          { name: 'Nautical Mile', abbr: 'nmi', factor: 1852 },
+          { name: 'Light Year', abbr: 'ly', factor: 9.461e15 },
+          { name: 'Astronomical Unit', abbr: 'AU', factor: 1.496e11 },
+        ],
+        baseUnit: 'm'
+      },
+      Weight: {
+        units: [
+          { name: 'Metric Ton', abbr: 't', factor: 1000 },
+          { name: 'Kilogram', abbr: 'kg', factor: 1 },
+          { name: 'Gram', abbr: 'g', factor: 0.001 },
+          { name: 'Milligram', abbr: 'mg', factor: 1e-6 },
+          { name: 'Microgram', abbr: 'ug', factor: 1e-9 },
+          { name: 'Pound', abbr: 'lb', factor: 0.45359237 },
+          { name: 'Ounce', abbr: 'oz', factor: 0.028349523 },
+          { name: 'Stone', abbr: 'st', factor: 6.35029318 },
+          { name: 'US Ton', abbr: 'US ton', factor: 907.18474 },
+          { name: 'Imperial Ton', abbr: 'imp ton', factor: 1016.0469 },
+          { name: 'Carat', abbr: 'ct', factor: 0.0002 },
+        ],
+        baseUnit: 'kg'
+      },
+      Temperature: {
+        units: [
+          { name: 'Celsius', abbr: 'C' },
+          { name: 'Fahrenheit', abbr: 'F' },
+          { name: 'Kelvin', abbr: 'K' },
+          { name: 'Rankine', abbr: 'R' },
+        ],
+        isTemperature: true,
+        baseUnit: 'C'
+      },
+      Area: {
+        units: [
+          { name: 'Square Kilometer', abbr: 'km2', factor: 1e6 },
+          { name: 'Square Meter', abbr: 'm2', factor: 1 },
+          { name: 'Square Centimeter', abbr: 'cm2', factor: 1e-4 },
+          { name: 'Square Millimeter', abbr: 'mm2', factor: 1e-6 },
+          { name: 'Hectare', abbr: 'ha', factor: 10000 },
+          { name: 'Acre', abbr: 'ac', factor: 4046.8564 },
+          { name: 'Square Mile', abbr: 'mi2', factor: 2589988.11 },
+          { name: 'Square Yard', abbr: 'yd2', factor: 0.83612736 },
+          { name: 'Square Foot', abbr: 'ft2', factor: 0.09290304 },
+          { name: 'Square Inch', abbr: 'in2', factor: 6.4516e-4 },
+        ],
+        baseUnit: 'm2'
+      },
+      Volume: {
+        units: [
+          { name: 'Cubic Meter', abbr: 'm3', factor: 1000 },
+          { name: 'Liter', abbr: 'L', factor: 1 },
+          { name: 'Milliliter', abbr: 'mL', factor: 0.001 },
+          { name: 'US Gallon', abbr: 'US gal', factor: 3.785411784 },
+          { name: 'US Quart', abbr: 'US qt', factor: 0.946352946 },
+          { name: 'US Pint', abbr: 'US pt', factor: 0.473176473 },
+          { name: 'US Cup', abbr: 'US cup', factor: 0.2365882365 },
+          { name: 'US Fluid Ounce', abbr: 'US fl oz', factor: 0.0295735296 },
+          { name: 'US Tablespoon', abbr: 'US tbsp', factor: 0.0147867648 },
+          { name: 'US Teaspoon', abbr: 'US tsp', factor: 0.0049289216 },
+          { name: 'Imperial Gallon', abbr: 'imp gal', factor: 4.54609 },
+          { name: 'Imperial Pint', abbr: 'imp pt', factor: 0.56826125 },
+          { name: 'Cubic Foot', abbr: 'ft3', factor: 28.316846592 },
+          { name: 'Cubic Inch', abbr: 'in3', factor: 0.016387064 },
+        ],
+        baseUnit: 'L'
+      },
+      Speed: {
+        units: [
+          { name: 'Meter per Second', abbr: 'm/s', factor: 1 },
+          { name: 'Kilometer per Hour', abbr: 'km/h', factor: 0.277778 },
+          { name: 'Mile per Hour', abbr: 'mph', factor: 0.44704 },
+          { name: 'Knot', abbr: 'kn', factor: 0.514444 },
+          { name: 'Foot per Second', abbr: 'ft/s', factor: 0.3048 },
+          { name: 'Mach', abbr: 'Mach', factor: 340.29 },
+          { name: 'Speed of Light', abbr: 'c', factor: 299792458 },
+        ],
+        baseUnit: 'm/s'
+      },
+      Time: {
+        units: [
+          { name: 'Year', abbr: 'yr', factor: 31536000 },
+          { name: 'Month', abbr: 'mo', factor: 2592000 },
+          { name: 'Week', abbr: 'wk', factor: 604800 },
+          { name: 'Day', abbr: 'd', factor: 86400 },
+          { name: 'Hour', abbr: 'hr', factor: 3600 },
+          { name: 'Minute', abbr: 'min', factor: 60 },
+          { name: 'Second', abbr: 's', factor: 1 },
+          { name: 'Millisecond', abbr: 'ms', factor: 0.001 },
+          { name: 'Microsecond', abbr: 'us', factor: 1e-6 },
+          { name: 'Nanosecond', abbr: 'ns', factor: 1e-9 },
+        ],
+        baseUnit: 's'
+      },
+      'Data Storage': {
+        units: [
+          { name: 'Bit', abbr: 'b', factor: 1 },
+          { name: 'Byte', abbr: 'B', factor: 8 },
+          { name: 'Kilobyte', abbr: 'KB', factor: 8000 },
+          { name: 'Megabyte', abbr: 'MB', factor: 8e6 },
+          { name: 'Gigabyte', abbr: 'GB', factor: 8e9 },
+          { name: 'Terabyte', abbr: 'TB', factor: 8e12 },
+          { name: 'Petabyte', abbr: 'PB', factor: 8e15 },
+          { name: 'Kibibyte', abbr: 'KiB', factor: 8192 },
+          { name: 'Mebibyte', abbr: 'MiB', factor: 8388608 },
+          { name: 'Gibibyte', abbr: 'GiB', factor: 8589934592 },
+          { name: 'Tebibyte', abbr: 'TiB', factor: 8796093022208 },
+          { name: 'Kilobit', abbr: 'kb', factor: 1000 },
+          { name: 'Megabit', abbr: 'Mb', factor: 1e6 },
+          { name: 'Gigabit', abbr: 'Gb', factor: 1e9 },
+        ],
+        baseUnit: 'b'
+      },
+      Pressure: {
+        units: [
+          { name: 'Pascal', abbr: 'Pa', factor: 1 },
+          { name: 'Kilopascal', abbr: 'kPa', factor: 1000 },
+          { name: 'Megapascal', abbr: 'MPa', factor: 1e6 },
+          { name: 'Bar', abbr: 'bar', factor: 100000 },
+          { name: 'Millibar', abbr: 'mbar', factor: 100 },
+          { name: 'Atmosphere', abbr: 'atm', factor: 101325 },
+          { name: 'PSI', abbr: 'psi', factor: 6894.757 },
+          { name: 'Torr', abbr: 'Torr', factor: 133.3224 },
+          { name: 'mmHg', abbr: 'mmHg', factor: 133.3224 },
+        ],
+        baseUnit: 'Pa'
+      },
+      Energy: {
+        units: [
+          { name: 'Joule', abbr: 'J', factor: 1 },
+          { name: 'Kilojoule', abbr: 'kJ', factor: 1000 },
+          { name: 'Megajoule', abbr: 'MJ', factor: 1e6 },
+          { name: 'Calorie', abbr: 'cal', factor: 4.184 },
+          { name: 'Kilocalorie', abbr: 'kcal', factor: 4184 },
+          { name: 'Watt-hour', abbr: 'Wh', factor: 3600 },
+          { name: 'Kilowatt-hour', abbr: 'kWh', factor: 3600000 },
+          { name: 'Electronvolt', abbr: 'eV', factor: 1.602176634e-19 },
+          { name: 'BTU', abbr: 'BTU', factor: 1055.06 },
+          { name: 'Foot-pound', abbr: 'ft-lb', factor: 1.355818 },
+          { name: 'Therm', abbr: 'therm', factor: 105505600 },
+        ],
+        baseUnit: 'J'
+      }
+    };
+
+    // ===== TEMPERATURE CONVERSION =====
+    function tempToBase(value, abbr) {
+      switch (abbr) {
+        case 'C': return value;
+        case 'F': return (value - 32) * 5 / 9;
+        case 'K': return value - 273.15;
+        case 'R': return (value - 491.67) * 5 / 9;
+      }
+    }
+
+    function baseToTemp(celsius, abbr) {
+      switch (abbr) {
+        case 'C': return celsius;
+        case 'F': return celsius * 9 / 5 + 32;
+        case 'K': return celsius + 273.15;
+        case 'R': return (celsius + 273.15) * 9 / 5;
+      }
+    }
+
+    // ===== STATE =====
+    let activeCategory = 'Length';
+    let favorites = JSON.parse(localStorage.getItem('unitconv_favorites') || '[]');
+
+    // ===== DOM REFS =====
+    const $tabs = document.getElementById('categoryTabs');
+    const $fromUnit = document.getElementById('fromUnit');
+    const $toUnit = document.getElementById('toUnit');
+    const $fromValue = document.getElementById('fromValue');
+    const $toValue = document.getElementById('toValue');
+    const $swapBtn = document.getElementById('swapBtn');
+    const $resultDisplay = document.getElementById('resultDisplay');
+    const $resultValue = document.getElementById('resultValue');
+    const $resultLabel = document.getElementById('resultLabel');
+    const $formulaDisplay = document.getElementById('formulaDisplay');
+    const $allConversions = document.getElementById('allConversions');
+    const $allConversionsList = document.getElementById('allConversionsList');
+    const $favoritesSection = document.getElementById('favoritesSection');
+    const $favoritesList = document.getElementById('favoritesList');
+
+    // ===== BUILD TABS =====
+    function buildTabs() {
+      $tabs.innerHTML = '';
+      for (const cat of Object.keys(categories)) {
+        const btn = document.createElement('button');
+        btn.className = 'category-tab' + (cat === activeCategory ? ' active' : '');
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          activeCategory = cat;
+          buildTabs();
+          buildSelects();
+          convert();
+        });
+        $tabs.appendChild(btn);
+      }
+    }
+
+    // ===== BUILD SELECTS =====
+    function buildSelects() {
+      const cat = categories[activeCategory];
+      const prevFrom = $fromUnit.value;
+      const prevTo = $toUnit.value;
+
+      $fromUnit.innerHTML = '';
+      $toUnit.innerHTML = '';
+
+      cat.units.forEach((u, i) => {
+        const opt1 = new Option(`${u.name} (${u.abbr})`, u.abbr);
+        const opt2 = new Option(`${u.name} (${u.abbr})`, u.abbr);
+        $fromUnit.appendChild(opt1);
+        $toUnit.appendChild(opt2);
+      });
+
+      // Restore or set defaults
+      if (cat.units.some(u => u.abbr === prevFrom)) {
+        $fromUnit.value = prevFrom;
+      } else {
+        $fromUnit.selectedIndex = 0;
+      }
+
+      if (cat.units.some(u => u.abbr === prevTo)) {
+        $toUnit.value = prevTo;
+      } else {
+        $toUnit.selectedIndex = Math.min(1, cat.units.length - 1);
+      }
+    }
+
+    // ===== CONVERT =====
+    function convertValue(value, fromAbbr, toAbbr, cat) {
+      if (cat.isTemperature) {
+        const celsius = tempToBase(value, fromAbbr);
+        return baseToTemp(celsius, toAbbr);
+      }
+      const fromUnit = cat.units.find(u => u.abbr === fromAbbr);
+      const toUnit = cat.units.find(u => u.abbr === toAbbr);
+      if (!fromUnit || !toUnit) return 0;
+      const base = value * fromUnit.factor;
+      return base / toUnit.factor;
+    }
+
+    function formatNumber(n) {
+      if (n === 0) return '0';
+      const abs = Math.abs(n);
+      if (abs >= 1e15 || (abs < 1e-9 && abs !== 0)) {
+        return n.toExponential(8);
+      }
+      if (abs < 0.0001) {
+        return n.toExponential(6);
+      }
+      if (Number.isInteger(n) && abs < 1e15) return n.toLocaleString();
+      // Determine precision
+      const digits = abs >= 1000 ? 4 : abs >= 1 ? 6 : 8;
+      const result = parseFloat(n.toPrecision(digits));
+      return result.toLocaleString(undefined, { maximumSignificantDigits: digits });
+    }
+
+    function getFormula(fromAbbr, toAbbr, cat) {
+      if (cat.isTemperature) {
+        const formulas = {
+          'C-F': 'F = C * 9/5 + 32',
+          'F-C': 'C = (F - 32) * 5/9',
+          'C-K': 'K = C + 273.15',
+          'K-C': 'C = K - 273.15',
+          'F-K': 'K = (F - 32) * 5/9 + 273.15',
+          'K-F': 'F = (K - 273.15) * 9/5 + 32',
+          'C-R': 'R = (C + 273.15) * 9/5',
+          'R-C': 'C = (R - 491.67) * 5/9',
+          'F-R': 'R = F + 459.67',
+          'R-F': 'F = R - 459.67',
+          'K-R': 'R = K * 9/5',
+          'R-K': 'K = R * 5/9',
+        };
+        const key = fromAbbr + '-' + toAbbr;
+        if (fromAbbr === toAbbr) return `${fromAbbr} = ${toAbbr}`;
+        return formulas[key] || '';
+      }
+      const fromUnit = cat.units.find(u => u.abbr === fromAbbr);
+      const toUnit = cat.units.find(u => u.abbr === toAbbr);
+      if (!fromUnit || !toUnit) return '';
+      const ratio = fromUnit.factor / toUnit.factor;
+      return `1 ${fromAbbr} = ${formatNumber(ratio)} ${toAbbr}`;
+    }
+
+    function convert() {
+      const cat = categories[activeCategory];
+      const value = parseFloat($fromValue.value);
+
+      if (isNaN(value) || $fromValue.value === '') {
+        $toValue.value = '';
+        $resultDisplay.style.display = 'none';
+        $formulaDisplay.style.display = 'none';
+        $allConversions.style.display = 'none';
+        return;
+      }
+
+      const fromAbbr = $fromUnit.value;
+      const toAbbr = $toUnit.value;
+      const result = convertValue(value, fromAbbr, toAbbr, cat);
+
+      $toValue.value = formatNumber(result);
+      $resultDisplay.style.display = 'block';
+      $resultValue.textContent = `${formatNumber(result)} ${toAbbr}`;
+      $resultLabel.textContent = `${formatNumber(value)} ${fromAbbr} = ${formatNumber(result)} ${toAbbr}`;
+
+      const formula = getFormula(fromAbbr, toAbbr, cat);
+      if (formula) {
+        $formulaDisplay.style.display = 'block';
+        $formulaDisplay.textContent = formula;
+      } else {
+        $formulaDisplay.style.display = 'none';
+      }
+
+      // All conversions
+      buildAllConversions(value, fromAbbr, cat);
+    }
+
+    function buildAllConversions(value, fromAbbr, cat) {
+      $allConversions.style.display = 'block';
+      $allConversionsList.innerHTML = '';
+
+      cat.units.forEach(unit => {
+        const converted = convertValue(value, fromAbbr, unit.abbr, cat);
+        const isSource = unit.abbr === fromAbbr;
+        const favKey = `${activeCategory}:${fromAbbr}-${unit.abbr}`;
+        const isPinned = favorites.includes(favKey);
+
+        const row = document.createElement('div');
+        row.className = 'conversion-row' + (isSource ? ' is-source' : '');
+        row.innerHTML = `
+          <span class="conv-unit-name">${unit.name}<span class="unit-abbr">${unit.abbr}</span></span>
+          <span class="conv-value${isSource ? ' is-source' : ''}">${formatNumber(converted)}</span>
+          <button class="pin-btn${isPinned ? ' pinned' : ''}" data-key="${favKey}" title="${isPinned ? 'Unpin' : 'Pin'} conversion">
+            ${isPinned ? '\u2605' : '\u2606'}
+          </button>
+        `;
+
+        const pinBtn = row.querySelector('.pin-btn');
+        pinBtn.addEventListener('click', () => toggleFavorite(favKey));
+
+        $allConversionsList.appendChild(row);
+      });
+    }
+
+    // ===== FAVORITES =====
+    function toggleFavorite(key) {
+      const idx = favorites.indexOf(key);
+      if (idx >= 0) {
+        favorites.splice(idx, 1);
+      } else {
+        favorites.push(key);
+      }
+      localStorage.setItem('unitconv_favorites', JSON.stringify(favorites));
+      renderFavorites();
+      convert(); // Refresh pin states
+    }
+
+    function renderFavorites() {
+      if (favorites.length === 0) {
+        $favoritesSection.style.display = 'none';
+        return;
+      }
+      $favoritesSection.style.display = 'block';
+      $favoritesList.innerHTML = '';
+
+      favorites.forEach(key => {
+        const [catName, pair] = key.split(':');
+        const [fromA, toA] = pair.split('-');
+        const cat = categories[catName];
+        if (!cat) return;
+
+        const fromUnit = cat.units.find(u => u.abbr === fromA);
+        const toUnit = cat.units.find(u => u.abbr === toA);
+        if (!fromUnit || !toUnit) return;
+
+        const chip = document.createElement('div');
+        chip.className = 'favorite-chip';
+
+        const value = parseFloat($fromValue.value);
+        let preview = '';
+        if (!isNaN(value) && catName === activeCategory && fromA === $fromUnit.value) {
+          const result = convertValue(value, fromA, toA, cat);
+          preview = ` = ${formatNumber(result)}`;
+        }
+
+        chip.innerHTML = `
+          <span>${fromUnit.abbr} \u2192 ${toUnit.abbr}${preview}</span>
+          <span class="remove-fav" title="Remove">\u00d7</span>
+        `;
+
+        chip.addEventListener('click', (e) => {
+          if (e.target.classList.contains('remove-fav')) {
+            toggleFavorite(key);
+            return;
+          }
+          // Load this conversion
+          activeCategory = catName;
+          buildTabs();
+          buildSelects();
+          $fromUnit.value = fromA;
+          $toUnit.value = toA;
+          if ($fromValue.value === '') $fromValue.value = '1';
+          convert();
+        });
+
+        $favoritesList.appendChild(chip);
+      });
+    }
+
+    // ===== SWAP =====
+    $swapBtn.addEventListener('click', () => {
+      const tempUnit = $fromUnit.value;
+      $fromUnit.value = $toUnit.value;
+      $toUnit.value = tempUnit;
+
+      const tempVal = $fromValue.value;
+      if ($toValue.value && $toValue.value !== '') {
+        $fromValue.value = $toValue.value.replace(/,/g, '');
+      }
+      convert();
+    });
+
+    // ===== EVENT LISTENERS =====
+    $fromValue.addEventListener('input', convert);
+    $fromUnit.addEventListener('change', convert);
+    $toUnit.addEventListener('change', convert);
+
+    // ===== INIT =====
+    buildTabs();
+    buildSelects();
+    renderFavorites();
+    $fromValue.value = '1';
+    convert();
+    $fromValue.focus();
+  </script>
+</body>
+</html>

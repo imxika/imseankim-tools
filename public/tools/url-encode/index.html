@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Encoder & Decoder - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Free online URL encoder and decoder. Encode/decode URLs, parse URL components, build query strings. Fast, private, no data sent to servers.">
+  <meta name="keywords" content="URL encoder, URL decoder, encodeURIComponent, encodeURI, query string builder, URL parser, online URL tool">
+  <meta property="og:title" content="URL Encoder & Decoder - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Encode and decode URLs, parse components, and build query strings online.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imseankim.com/tools/url-encode/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://imseankim.com/tools/url-encode/">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .url-tool {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .url-tool h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .url-tool .subtitle {
+      color: var(--text-muted, #666);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    /* Panels */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .panel-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: #ccc;
+    }
+
+    .panel-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .char-count {
+      font-size: 0.7rem;
+      color: #555;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-copy {
+      background: none;
+      border: 1px solid #333;
+      color: #888;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      border-color: #555;
+      color: #ccc;
+    }
+
+    .btn-copy.copied {
+      border-color: #4a9;
+      color: #4a9;
+    }
+
+    .panel textarea {
+      width: 100%;
+      min-height: 160px;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      padding: 12px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .panel textarea:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      background: #222;
+      border-color: #444;
+      color: #fff;
+    }
+
+    .btn.primary {
+      background: #1a3a2a;
+      border-color: #2a5a3a;
+      color: #6fcf97;
+    }
+
+    .btn.primary:hover {
+      background: #1f4a32;
+      border-color: #3a7a4a;
+    }
+
+    .toggle-group {
+      display: flex;
+      border: 1px solid #333;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-left: auto;
+    }
+
+    .toggle-group button {
+      padding: 8px 14px;
+      border: none;
+      background: #1a1a1a;
+      color: #888;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .toggle-group button.active {
+      background: #222;
+      color: #e0e0e0;
+    }
+
+    .toggle-group button:hover:not(.active) {
+      color: #bbb;
+    }
+
+    /* Sections */
+    .section {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: #ccc;
+      margin-bottom: 14px;
+    }
+
+    /* URL Parser */
+    .url-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .url-input-row input {
+      flex: 1;
+      padding: 10px 14px;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+    }
+
+    .url-input-row input:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    .components-grid {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px 16px;
+      align-items: center;
+    }
+
+    .comp-label {
+      font-size: 0.72rem;
+      color: #666;
+      letter-spacing: 0.5px;
+      text-align: right;
+    }
+
+    .comp-value {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.78rem;
+      color: #b0b0b0;
+      background: #0d0d0d;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #1a1a1a;
+      word-break: break-all;
+      min-height: 20px;
+    }
+
+    /* Query Builder */
+    .qb-rows {
+      margin-bottom: 12px;
+    }
+
+    .qb-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .qb-row input {
+      flex: 1;
+      padding: 8px 12px;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-size: 0.78rem;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .qb-row input:focus {
+      outline: none;
+      border-color: #444;
+    }
+
+    .qb-row input::placeholder {
+      color: #444;
+    }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #666;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-icon:hover {
+      border-color: #555;
+      color: #ccc;
+    }
+
+    .btn-icon.remove:hover {
+      border-color: #a33;
+      color: #e55;
+    }
+
+    .qb-output {
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.78rem;
+      color: #b0b0b0;
+      word-break: break-all;
+      min-height: 20px;
+      position: relative;
+    }
+
+    .qb-output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .qb-output-label {
+      font-size: 0.72rem;
+      color: #555;
+    }
+
+    .separator {
+      width: 1px;
+      height: 24px;
+      background: #333;
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="url-tool">
+      <h1>URL ENCODER / DECODER</h1>
+      <p class="subtitle">Encode, decode, parse URLs and build query strings</p>
+
+      <!-- Encode Mode Toggle -->
+      <div class="actions">
+        <button class="btn primary" id="btnEncode">Encode &rarr;</button>
+        <button class="btn primary" id="btnDecode">&larr; Decode</button>
+        <button class="btn" id="btnAutoDetect">Auto-detect</button>
+        <button class="btn" id="btnClear">Clear</button>
+        <div class="separator"></div>
+        <div class="toggle-group">
+          <button class="active" id="toggleComponent" title="encodeURIComponent: encodes all special characters">encodeURIComponent</button>
+          <button id="toggleURI" title="encodeURI: preserves :, /, ?, #, etc.">encodeURI</button>
+        </div>
+      </div>
+
+      <!-- Two Panels -->
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-label">DECODED TEXT</span>
+            <div class="panel-info">
+              <span class="char-count" id="decodedCount">0 chars</span>
+              <button class="btn-copy" id="copyDecoded">Copy</button>
+            </div>
+          </div>
+          <textarea id="decodedText" placeholder="Enter text to encode..." spellcheck="false"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-label">ENCODED TEXT</span>
+            <div class="panel-info">
+              <span class="char-count" id="encodedCount">0 chars</span>
+              <button class="btn-copy" id="copyEncoded">Copy</button>
+            </div>
+          </div>
+          <textarea id="encodedText" placeholder="Enter text to decode..." spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <!-- URL Parser -->
+      <div class="section">
+        <div class="section-title">URL PARSER</div>
+        <div class="url-input-row">
+          <input type="text" id="urlInput" placeholder="https://example.com/path?key=value&foo=bar#section" spellcheck="false">
+          <button class="btn" id="btnParse">Parse</button>
+        </div>
+        <div class="components-grid" id="componentsGrid">
+          <span class="comp-label">Protocol</span>
+          <div class="comp-value" id="compProtocol"></div>
+          <span class="comp-label">Host</span>
+          <div class="comp-value" id="compHost"></div>
+          <span class="comp-label">Port</span>
+          <div class="comp-value" id="compPort"></div>
+          <span class="comp-label">Path</span>
+          <div class="comp-value" id="compPath"></div>
+          <span class="comp-label">Query Params</span>
+          <div class="comp-value" id="compQuery"></div>
+          <span class="comp-label">Fragment</span>
+          <div class="comp-value" id="compFragment"></div>
+        </div>
+      </div>
+
+      <!-- Query String Builder -->
+      <div class="section">
+        <div class="section-title">QUERY STRING BUILDER</div>
+        <div class="qb-rows" id="qbRows">
+          <div class="qb-row">
+            <input type="text" class="qb-key" placeholder="Key">
+            <input type="text" class="qb-value" placeholder="Value">
+            <button class="btn-icon remove" onclick="removeQBRow(this)" title="Remove">&times;</button>
+          </div>
+        </div>
+        <button class="btn" id="btnAddParam" style="margin-bottom: 14px;">+ Add Parameter</button>
+        <div class="qb-output-header">
+          <span class="qb-output-label">GENERATED QUERY STRING</span>
+          <button class="btn-copy" id="copyQB">Copy</button>
+        </div>
+        <div class="qb-output" id="qbOutput"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (function () {
+      const decodedText = document.getElementById('decodedText');
+      const encodedText = document.getElementById('encodedText');
+      const decodedCount = document.getElementById('decodedCount');
+      const encodedCount = document.getElementById('encodedCount');
+      const toggleComponent = document.getElementById('toggleComponent');
+      const toggleURI = document.getElementById('toggleURI');
+
+      let useComponent = true;
+
+      // --- Encode Mode Toggle ---
+      toggleComponent.addEventListener('click', function () {
+        useComponent = true;
+        toggleComponent.classList.add('active');
+        toggleURI.classList.remove('active');
+      });
+
+      toggleURI.addEventListener('click', function () {
+        useComponent = false;
+        toggleURI.classList.add('active');
+        toggleComponent.classList.remove('active');
+      });
+
+      // --- Character Counts ---
+      function updateCounts() {
+        decodedCount.textContent = decodedText.value.length + ' chars';
+        encodedCount.textContent = encodedText.value.length + ' chars';
+      }
+
+      decodedText.addEventListener('input', updateCounts);
+      encodedText.addEventListener('input', updateCounts);
+
+      // --- Encode ---
+      document.getElementById('btnEncode').addEventListener('click', function () {
+        try {
+          encodedText.value = useComponent
+            ? encodeURIComponent(decodedText.value)
+            : encodeURI(decodedText.value);
+          updateCounts();
+        } catch (e) {
+          encodedText.value = 'Error: ' + e.message;
+        }
+      });
+
+      // --- Decode ---
+      document.getElementById('btnDecode').addEventListener('click', function () {
+        try {
+          decodedText.value = useComponent
+            ? decodeURIComponent(encodedText.value)
+            : decodeURI(encodedText.value);
+          updateCounts();
+        } catch (e) {
+          decodedText.value = 'Error: ' + e.message;
+        }
+      });
+
+      // --- Auto-detect ---
+      document.getElementById('btnAutoDetect').addEventListener('click', function () {
+        var decoded = decodedText.value;
+        var encoded = encodedText.value;
+
+        if (decoded && !encoded) {
+          // Encode the decoded text
+          try {
+            encodedText.value = useComponent
+              ? encodeURIComponent(decoded)
+              : encodeURI(decoded);
+          } catch (e) {
+            encodedText.value = 'Error: ' + e.message;
+          }
+        } else if (encoded && !decoded) {
+          // Decode the encoded text
+          try {
+            decodedText.value = useComponent
+              ? decodeURIComponent(encoded)
+              : decodeURI(encoded);
+          } catch (e) {
+            decodedText.value = 'Error: ' + e.message;
+          }
+        } else if (decoded) {
+          // Both have content; check if decoded looks like it has encoded chars
+          if (/%[0-9A-Fa-f]{2}/.test(decoded)) {
+            try {
+              encodedText.value = decoded;
+              decodedText.value = useComponent
+                ? decodeURIComponent(decoded)
+                : decodeURI(decoded);
+            } catch (e) {
+              decodedText.value = 'Error: ' + e.message;
+            }
+          } else {
+            try {
+              encodedText.value = useComponent
+                ? encodeURIComponent(decoded)
+                : encodeURI(decoded);
+            } catch (e) {
+              encodedText.value = 'Error: ' + e.message;
+            }
+          }
+        }
+        updateCounts();
+      });
+
+      // --- Clear ---
+      document.getElementById('btnClear').addEventListener('click', function () {
+        decodedText.value = '';
+        encodedText.value = '';
+        updateCounts();
+      });
+
+      // --- Copy Buttons ---
+      function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.classList.add('copied');
+          btn.textContent = 'Copied!';
+          setTimeout(function () {
+            btn.classList.remove('copied');
+            btn.textContent = 'Copy';
+          }, 1500);
+        });
+      }
+
+      document.getElementById('copyDecoded').addEventListener('click', function () {
+        copyToClipboard(decodedText.value, this);
+      });
+
+      document.getElementById('copyEncoded').addEventListener('click', function () {
+        copyToClipboard(encodedText.value, this);
+      });
+
+      document.getElementById('copyQB').addEventListener('click', function () {
+        copyToClipboard(document.getElementById('qbOutput').textContent, this);
+      });
+
+      // --- URL Parser ---
+      document.getElementById('btnParse').addEventListener('click', function () {
+        var raw = document.getElementById('urlInput').value.trim();
+        if (!raw) return;
+
+        try {
+          var url = new URL(raw);
+          document.getElementById('compProtocol').textContent = url.protocol.replace(':', '');
+          document.getElementById('compHost').textContent = url.hostname;
+          document.getElementById('compPort').textContent = url.port || '(default)';
+          document.getElementById('compPath').textContent = url.pathname;
+          document.getElementById('compFragment').textContent = url.hash ? url.hash.slice(1) : '';
+
+          // Parse query params into readable format
+          var params = url.searchParams;
+          var parts = [];
+          params.forEach(function (value, key) {
+            parts.push(key + ' = ' + value);
+          });
+          document.getElementById('compQuery').textContent = parts.length ? parts.join('\n') : '(none)';
+          if (parts.length > 1) {
+            document.getElementById('compQuery').style.whiteSpace = 'pre-wrap';
+          }
+        } catch (e) {
+          document.getElementById('compProtocol').textContent = '';
+          document.getElementById('compHost').textContent = '';
+          document.getElementById('compPort').textContent = '';
+          document.getElementById('compPath').textContent = '';
+          document.getElementById('compQuery').textContent = 'Invalid URL: ' + e.message;
+          document.getElementById('compFragment').textContent = '';
+        }
+      });
+
+      // Also parse on Enter key
+      document.getElementById('urlInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          document.getElementById('btnParse').click();
+        }
+      });
+
+      // --- Query String Builder ---
+      function addQBRow() {
+        var row = document.createElement('div');
+        row.className = 'qb-row';
+        row.innerHTML =
+          '<input type="text" class="qb-key" placeholder="Key">' +
+          '<input type="text" class="qb-value" placeholder="Value">' +
+          '<button class="btn-icon remove" onclick="removeQBRow(this)" title="Remove">&times;</button>';
+        document.getElementById('qbRows').appendChild(row);
+        attachQBListeners(row);
+      }
+
+      document.getElementById('btnAddParam').addEventListener('click', addQBRow);
+
+      window.removeQBRow = function (btn) {
+        var rows = document.getElementById('qbRows');
+        if (rows.children.length > 1) {
+          btn.parentElement.remove();
+          buildQueryString();
+        }
+      };
+
+      function buildQueryString() {
+        var rows = document.querySelectorAll('.qb-row');
+        var parts = [];
+        rows.forEach(function (row) {
+          var key = row.querySelector('.qb-key').value.trim();
+          var value = row.querySelector('.qb-value').value;
+          if (key) {
+            parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+          }
+        });
+        document.getElementById('qbOutput').textContent = parts.length ? '?' + parts.join('&') : '';
+      }
+
+      function attachQBListeners(row) {
+        row.querySelector('.qb-key').addEventListener('input', buildQueryString);
+        row.querySelector('.qb-value').addEventListener('input', buildQueryString);
+      }
+
+      // Attach to initial row
+      var initialRows = document.querySelectorAll('.qb-row');
+      initialRows.forEach(function (row) {
+        attachQBListeners(row);
+      });
+    })();
+  </script>
+</body>
+</html>

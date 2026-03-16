@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Palette Studio - Free Online Tool | imseankim.com</title>
+<meta name="description" content="Free online color palette studio. Generate harmonies, tints, shades, gradients, and export to CSS, JSON, SVG, or Tailwind. Save and manage your palettes.">
+<meta name="keywords" content="color palette generator, color harmony, complementary colors, triadic colors, gradient generator, CSS colors, Tailwind colors, free online tool">
+<meta property="og:title" content="Color Palette Studio - Free Online Tool | imseankim.com">
+<meta property="og:description" content="Generate beautiful color palettes with harmonies, tints, shades, and gradients. Export to CSS, JSON, SVG, or Tailwind.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://imseankim.com/tools/colors/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Color Palette Studio - Free Online Tool">
+<meta name="twitter:description" content="Generate beautiful color palettes with harmonies, tints, shades, and gradients.">
+<link rel="canonical" href="https://imseankim.com/tools/colors/">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  /* ============ Color Studio Tool Styles ============ */
+
+  /* Top Bar (tool-specific, below site header) */
+  .cs-topbar {
+    position: sticky; top: 56px; z-index: 90;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid #222;
+    padding: 12px 30px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cs-topbar h1 {
+    font-size: 1.1rem; font-weight: 300; letter-spacing: 6px; text-transform: uppercase;
+    background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .cs-topbar-actions { display: flex; gap: 8px; }
+  .cs-topbar-actions button {
+    background: #1a1a1a; border: 1px solid #333; color: #aaa;
+    padding: 6px 16px; border-radius: 8px; font-size: 0.75rem;
+    cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    font-family: var(--font-sans);
+  }
+  .cs-topbar-actions button:hover { background: #252525; color: #fff; border-color: #555; }
+
+  .cs-main { display: flex; height: calc(100vh - 56px - 90px - 50px); }
+
+  /* Sidebar */
+  .cs-sidebar {
+    width: 300px; min-width: 300px;
+    background: #111; border-right: 1px solid #1e1e1e;
+    overflow-y: auto; padding: 20px;
+  }
+  .cs-sidebar::-webkit-scrollbar { width: 4px; }
+  .cs-sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .cs-panel { margin-bottom: 24px; }
+  .cs-panel-title {
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: #555; margin-bottom: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cs-panel-title::after { content: '\25BE'; font-size: 0.6rem; }
+  .cs-panel-title.collapsed::after { content: '\25B8'; }
+
+  .cs-panel-body { transition: all 0.3s; }
+  .cs-panel-body.hidden { display: none; }
+
+  .cs-control-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .cs-control-row label {
+    font-size: 0.72rem; color: #888; width: 65px; flex-shrink: 0;
+  }
+  .cs-control-row input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 4px;
+    background: #333; border-radius: 2px; outline: none;
+  }
+  .cs-control-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: #fff; cursor: pointer;
+  }
+  .cs-control-row .cs-val {
+    font-size: 0.7rem; color: #666; width: 32px; text-align: right;
+  }
+  .cs-control-row input[type="color"] {
+    width: 32px; height: 26px; border: none; background: none;
+    cursor: pointer; border-radius: 4px;
+  }
+  .cs-control-row input[type="text"] {
+    flex: 1; background: #1a1a1a; border: 1px solid #333; color: #fff;
+    padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; outline: none;
+    font-family: var(--font-sans);
+  }
+  .cs-control-row input[type="text"]:focus { border-color: #555; }
+
+  .cs-sidebar select {
+    width: 100%; background: #1a1a1a; border: 1px solid #333; color: #fff;
+    padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; outline: none;
+    cursor: pointer; margin-bottom: 10px;
+  }
+
+  .cs-btn {
+    width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #333;
+    background: #1a1a1a; color: #aaa; font-size: 0.72rem; cursor: pointer;
+    letter-spacing: 1px; transition: all 0.2s; margin-bottom: 6px;
+    font-family: var(--font-sans);
+  }
+  .cs-btn:hover { background: #252525; color: #fff; border-color: #555; }
+  .cs-btn.cs-primary { background: #1a3a5c; border-color: #2a5a8c; color: #7ab8ff; }
+  .cs-btn.cs-primary:hover { background: #224a6c; }
+  .cs-btn.cs-danger { background: #3a1a1a; border-color: #5c2a2a; color: #ff7a7a; }
+
+  /* Saved palettes */
+  .cs-saved-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px; background: #1a1a1a; border-radius: 8px;
+    margin-bottom: 6px; cursor: pointer; transition: all 0.2s;
+  }
+  .cs-saved-item:hover { background: #222; }
+  .cs-saved-item .cs-saved-colors {
+    display: flex; gap: 2px; flex: 1;
+  }
+  .cs-saved-item .cs-saved-colors div {
+    width: 16px; height: 16px; border-radius: 4px;
+  }
+  .cs-saved-item .cs-saved-name {
+    font-size: 0.7rem; color: #888; max-width: 80px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .cs-saved-item .cs-saved-delete {
+    font-size: 0.7rem; color: #555; cursor: pointer; padding: 2px 6px;
+  }
+  .cs-saved-item .cs-saved-delete:hover { color: #ff5555; }
+
+  /* Canvas Area */
+  .cs-canvas {
+    flex: 1; overflow-y: auto; padding: 30px;
+  }
+  .cs-canvas::-webkit-scrollbar { width: 6px; }
+  .cs-canvas::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  .cs-section { margin-bottom: 40px; }
+  .cs-section-title {
+    font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase;
+    color: #555; margin-bottom: 16px;
+  }
+
+  /* My Palette */
+  .cs-my-palette {
+    display: flex; gap: 8px; flex-wrap: wrap; min-height: 100px;
+    padding: 15px; background: #111; border-radius: 16px;
+    border: 2px dashed #222; transition: border-color 0.2s;
+  }
+  .cs-my-palette.dragover { border-color: #555; }
+  .cs-my-swatch {
+    width: 80px; height: 80px; border-radius: 12px; cursor: grab;
+    position: relative; transition: all 0.2s;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding: 6px; user-select: none;
+  }
+  .cs-my-swatch:hover { transform: scale(1.08); z-index: 5; }
+  .cs-my-swatch .cs-swatch-hex {
+    font-size: 0.6rem; letter-spacing: 0.5px; opacity: 0;
+    transition: opacity 0.2s; font-weight: 500;
+  }
+  .cs-my-swatch:hover .cs-swatch-hex { opacity: 1; }
+  .cs-my-swatch .cs-swatch-remove {
+    position: absolute; top: 4px; right: 4px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(0,0,0,0.6); color: #fff;
+    font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s; cursor: pointer;
+  }
+  .cs-my-swatch:hover .cs-swatch-remove { opacity: 1; }
+  .cs-my-swatch.dragging { opacity: 0.4; }
+
+  /* Generated Palettes */
+  .cs-gen-row {
+    display: flex; gap: 4px; margin-bottom: 4px;
+  }
+  .cs-gen-card {
+    flex: 1; height: 70px; border-radius: 10px; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; align-items: flex-end; padding: 8px;
+    position: relative;
+  }
+  .cs-gen-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    z-index: 5;
+  }
+  .cs-gen-card .cs-hex-label {
+    font-size: 0.6rem; letter-spacing: 0.5px; opacity: 0;
+    transition: opacity 0.2s; font-weight: 500;
+  }
+  .cs-gen-card:hover .cs-hex-label { opacity: 1; }
+  .cs-gen-card .cs-add-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); color: #fff;
+    font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: all 0.2s; cursor: pointer; backdrop-filter: blur(4px);
+  }
+  .cs-gen-card:hover .cs-add-btn { opacity: 1; }
+  .cs-gen-card .cs-add-btn:hover { background: rgba(255,255,255,0.3); transform: translate(-50%, -50%) scale(1.2); }
+
+  /* Gradient cards */
+  .cs-gradient-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .cs-gradient-card {
+    height: 100px; border-radius: 14px; cursor: pointer;
+    transition: all 0.3s; display: flex; align-items: flex-end;
+    justify-content: center; padding: 12px;
+  }
+  .cs-gradient-card:hover {
+    transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .cs-gradient-card .cs-g-name {
+    font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase;
+    opacity: 0; transition: opacity 0.2s; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .cs-gradient-card:hover .cs-g-name { opacity: 1; }
+
+  /* Color wheel */
+  .cs-wheel-wrap {
+    display: flex; justify-content: center; padding: 20px 0;
+    position: relative; height: 340px;
+  }
+  .cs-wheel-dot {
+    position: absolute; border-radius: 50%; cursor: pointer;
+    transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+  }
+  .cs-wheel-dot:hover { transform: scale(1.6); z-index: 10; }
+  .cs-wheel-dot .cs-dot-add {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .cs-wheel-dot:hover .cs-dot-add { opacity: 1; }
+
+  /* Harmonies */
+  .cs-harmony-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .cs-harmony-set {
+    background: #141414; border-radius: 14px; padding: 16px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .cs-harmony-set:hover { background: #1a1a1a; transform: translateY(-3px); }
+  .cs-harmony-name {
+    font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+    color: #555; margin-bottom: 10px;
+  }
+  .cs-harmony-colors { display: flex; gap: 4px; height: 50px; }
+  .cs-harmony-colors div {
+    flex: 1; border-radius: 8px; transition: all 0.2s;
+  }
+
+  /* Export modal */
+  .cs-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 200; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+  }
+  .cs-modal-overlay.show { display: flex; }
+  .cs-modal {
+    background: #181818; border: 1px solid #333; border-radius: 16px;
+    padding: 30px; width: 500px; max-height: 80vh; overflow-y: auto;
+  }
+  .cs-modal h2 {
+    font-size: 0.9rem; font-weight: 400; letter-spacing: 3px;
+    text-transform: uppercase; color: #888; margin-bottom: 20px;
+  }
+  .cs-modal textarea {
+    width: 100%; height: 200px; background: #111; border: 1px solid #333;
+    color: #ccc; padding: 12px; border-radius: 8px; font-family: var(--font-mono);
+    font-size: 0.75rem; resize: vertical; outline: none;
+  }
+  .cs-modal textarea:focus { border-color: #555; }
+  .cs-modal-actions { display: flex; gap: 8px; margin-top: 15px; }
+  .cs-modal-actions button {
+    flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #333;
+    background: #1a1a1a; color: #aaa; font-size: 0.75rem; cursor: pointer;
+    transition: all 0.2s; font-family: var(--font-sans);
+  }
+  .cs-modal-actions button:hover { background: #252525; color: #fff; }
+  .cs-modal-actions button.cs-primary { background: #1a3a5c; border-color: #2a5a8c; color: #7ab8ff; }
+
+  /* Spectrum */
+  .cs-spectrum-bar {
+    height: 35px; border-radius: 10px; margin-bottom: 5px;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .cs-spectrum-bar:hover { height: 50px; border-radius: 12px; }
+
+  .cs-empty-msg {
+    color: #333; font-size: 0.8rem; text-align: center;
+    padding: 25px; letter-spacing: 1px;
+  }
+
+  @media (max-width: 900px) {
+    .cs-main { flex-direction: column; height: auto; }
+    .cs-sidebar { width: 100%; min-width: auto; max-height: 40vh; }
+    .cs-gradient-grid { grid-template-columns: repeat(2, 1fr); }
+    .cs-harmony-grid { grid-template-columns: repeat(2, 1fr); }
+    .cs-topbar { top: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<script src="/shared/header.js"></script>
+
+<main class="tool-content">
+
+<div class="cs-topbar">
+  <h1>Color Studio</h1>
+  <div class="cs-topbar-actions">
+    <button onclick="randomizeBase()">Random</button>
+    <button onclick="openExport('css')">Export CSS</button>
+    <button onclick="openExport('json')">Export JSON</button>
+    <button onclick="openExport('svg')">Export SVG</button>
+    <button onclick="openExport('tailwind')">Tailwind</button>
+  </div>
+</div>
+
+<div class="cs-main">
+  <!-- Sidebar Controls -->
+  <div class="cs-sidebar">
+    <!-- Base Color -->
+    <div class="cs-panel">
+      <div class="cs-panel-title" onclick="togglePanel(this)">Base Color</div>
+      <div class="cs-panel-body">
+        <div class="cs-control-row">
+          <label>Color</label>
+          <input type="color" id="baseColor" value="#4facfe" onchange="onBaseChange()">
+          <input type="text" id="baseHex" value="#4facfe" onchange="onHexInput()" style="width:80px">
+        </div>
+        <div class="cs-control-row">
+          <label>Hue</label>
+          <input type="range" id="hueSlider" min="0" max="360" value="205" oninput="onSliderChange()">
+          <span class="cs-val" id="hueVal">205</span>
+        </div>
+        <div class="cs-control-row">
+          <label>Saturation</label>
+          <input type="range" id="satSlider" min="0" max="100" value="75" oninput="onSliderChange()">
+          <span class="cs-val" id="satVal">75</span>
+        </div>
+        <div class="cs-control-row">
+          <label>Lightness</label>
+          <input type="range" id="lightSlider" min="0" max="100" value="55" oninput="onSliderChange()">
+          <span class="cs-val" id="lightVal">55</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generation Settings -->
+    <div class="cs-panel">
+      <div class="cs-panel-title" onclick="togglePanel(this)">Generation</div>
+      <div class="cs-panel-body">
+        <select id="harmonyType" onchange="generate()">
+          <option value="complementary">Complementary</option>
+          <option value="analogous">Analogous</option>
+          <option value="triadic">Triadic</option>
+          <option value="split">Split Complementary</option>
+          <option value="tetradic">Tetradic</option>
+          <option value="monochromatic">Monochromatic</option>
+        </select>
+        <div class="cs-control-row">
+          <label>Count</label>
+          <input type="range" id="countSlider" min="3" max="12" value="5" oninput="generate()">
+          <span class="cs-val" id="countVal">5</span>
+        </div>
+        <div class="cs-control-row">
+          <label>Spread</label>
+          <input type="range" id="spreadSlider" min="5" max="60" value="30" oninput="generate()">
+          <span class="cs-val" id="spreadVal">30</span>
+        </div>
+        <button class="cs-btn cs-primary" onclick="addGeneratedToPalette()">+ Add All to My Palette</button>
+      </div>
+    </div>
+
+    <!-- Tints & Shades Settings -->
+    <div class="cs-panel">
+      <div class="cs-panel-title" onclick="togglePanel(this)">Tints & Shades</div>
+      <div class="cs-panel-body">
+        <div class="cs-control-row">
+          <label>Steps</label>
+          <input type="range" id="stepsSlider" min="5" max="20" value="10" oninput="generate()">
+          <span class="cs-val" id="stepsVal">10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Palette -->
+    <div class="cs-panel">
+      <div class="cs-panel-title" onclick="togglePanel(this)">My Palette</div>
+      <div class="cs-panel-body">
+        <div class="cs-control-row">
+          <input type="text" id="paletteName" placeholder="Palette name..." value="Untitled">
+        </div>
+        <button class="cs-btn cs-primary" onclick="savePalette()">Save Palette</button>
+        <button class="cs-btn cs-danger" onclick="clearMyPalette()">Clear All</button>
+      </div>
+    </div>
+
+    <!-- Saved Palettes -->
+    <div class="cs-panel">
+      <div class="cs-panel-title" onclick="togglePanel(this)">Saved Palettes</div>
+      <div class="cs-panel-body" id="savedList">
+        <div class="cs-empty-msg">No saved palettes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="cs-canvas">
+    <!-- My Palette -->
+    <div class="cs-section">
+      <div class="cs-section-title">My Palette — drag to reorder, click to copy</div>
+      <div class="cs-my-palette" id="myPalette">
+        <div class="cs-empty-msg">Click + on any color to add it here</div>
+      </div>
+    </div>
+
+    <!-- Generated Harmony -->
+    <div class="cs-section">
+      <div class="cs-section-title">Generated Harmony</div>
+      <div class="cs-gen-row" id="genRow"></div>
+    </div>
+
+    <!-- Tints & Shades -->
+    <div class="cs-section">
+      <div class="cs-section-title">Tints & Shades</div>
+      <div id="tintsArea"></div>
+    </div>
+
+    <!-- Spectrum -->
+    <div class="cs-section">
+      <div class="cs-section-title">Spectrum</div>
+      <div id="spectrumArea"></div>
+    </div>
+
+    <!-- Gradients from palette -->
+    <div class="cs-section">
+      <div class="cs-section-title">Gradient Presets</div>
+      <div class="cs-gradient-grid" id="gradientArea"></div>
+    </div>
+
+    <!-- Color Wheel -->
+    <div class="cs-section">
+      <div class="cs-section-title">Color Wheel</div>
+      <div class="cs-wheel-wrap" id="wheelArea"></div>
+    </div>
+
+    <!-- All Harmonies -->
+    <div class="cs-section">
+      <div class="cs-section-title">All Harmony Types</div>
+      <div class="cs-harmony-grid" id="harmonyArea"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">Copied!</div>
+
+<!-- Export Modal -->
+<div class="cs-modal-overlay" id="exportModal">
+  <div class="cs-modal">
+    <h2 id="exportTitle">Export</h2>
+    <textarea id="exportCode" readonly></textarea>
+    <div class="cs-modal-actions">
+      <button onclick="copyExport()">Copy to Clipboard</button>
+      <button onclick="downloadExport()">Download</button>
+      <button onclick="closeExport()">Close</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script src="/shared/footer.js"></script>
+
+<script>
+// ============ State ============
+let baseH = 205, baseS = 75, baseL = 55;
+let myColors = [];
+let savedPalettes = JSON.parse(localStorage.getItem('colorStudioPalettes') || '[]');
+let currentExportType = 'css';
+let dragIdx = null;
+
+// ============ Utility ============
+function hslToHex(h, s, l) {
+  h = ((h % 360) + 360) % 360;
+  s = Math.max(0, Math.min(100, s));
+  l = Math.max(0, Math.min(100, l));
+  const s1 = s / 100, l1 = l / 100;
+  const a = s1 * Math.min(l1, 1 - l1);
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const c = l1 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * c).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function hexToHsl(hex) {
+  let r = parseInt(hex.slice(1,3),16)/255;
+  let g = parseInt(hex.slice(3,5),16)/255;
+  let b = parseInt(hex.slice(5,7),16)/255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h, s, l = (max+min)/2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d + 2)/6; break;
+      case b: h = ((r-g)/d + 4)/6; break;
+    }
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+
+function lum(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  return 0.299*r + 0.587*g + 0.114*b;
+}
+
+function textColor(hex) { return lum(hex) > 0.5 ? '#000' : '#fff'; }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+function copyHex(hex) {
+  navigator.clipboard.writeText(hex);
+  toast(`Copied ${hex}`);
+}
+
+// ============ Controls ============
+function togglePanel(el) {
+  el.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('hidden');
+}
+
+function syncControls() {
+  document.getElementById('hueSlider').value = baseH;
+  document.getElementById('satSlider').value = baseS;
+  document.getElementById('lightSlider').value = baseL;
+  document.getElementById('hueVal').textContent = baseH;
+  document.getElementById('satVal').textContent = baseS;
+  document.getElementById('lightVal').textContent = baseL;
+  const hex = hslToHex(baseH, baseS, baseL);
+  document.getElementById('baseColor').value = hex;
+  document.getElementById('baseHex').value = hex;
+}
+
+function onSliderChange() {
+  baseH = +document.getElementById('hueSlider').value;
+  baseS = +document.getElementById('satSlider').value;
+  baseL = +document.getElementById('lightSlider').value;
+  syncControls();
+  generate();
+}
+
+function onBaseChange() {
+  const hex = document.getElementById('baseColor').value;
+  [baseH, baseS, baseL] = hexToHsl(hex);
+  syncControls();
+  generate();
+}
+
+function onHexInput() {
+  let hex = document.getElementById('baseHex').value.trim();
+  if (!hex.startsWith('#')) hex = '#' + hex;
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    [baseH, baseS, baseL] = hexToHsl(hex);
+    syncControls();
+    generate();
+  }
+}
+
+function randomizeBase() {
+  baseH = Math.floor(Math.random() * 360);
+  baseS = 50 + Math.floor(Math.random() * 40);
+  baseL = 40 + Math.floor(Math.random() * 30);
+  syncControls();
+  generate();
+}
+
+// ============ Generation ============
+function getHarmonyHues() {
+  const type = document.getElementById('harmonyType').value;
+  const spread = +document.getElementById('spreadSlider').value;
+  switch(type) {
+    case 'complementary': return [baseH, baseH + 180];
+    case 'analogous': return [baseH - spread, baseH, baseH + spread];
+    case 'triadic': return [baseH, baseH + 120, baseH + 240];
+    case 'split': return [baseH, baseH + 150, baseH + 210];
+    case 'tetradic': return [baseH, baseH + 90, baseH + 180, baseH + 270];
+    case 'monochromatic': return [baseH];
+  }
+}
+
+function generateColors() {
+  const count = +document.getElementById('countSlider').value;
+  document.getElementById('countVal').textContent = count;
+  document.getElementById('spreadVal').textContent = document.getElementById('spreadSlider').value;
+  const hues = getHarmonyHues();
+  const type = document.getElementById('harmonyType').value;
+  const colors = [];
+
+  if (type === 'monochromatic') {
+    for (let i = 0; i < count; i++) {
+      const l = 15 + (70 / (count - 1)) * i;
+      const s = baseS - 10 + Math.random() * 20;
+      colors.push(hslToHex(baseH, s, l));
+    }
+  } else {
+    const perHue = Math.ceil(count / hues.length);
+    for (const h of hues) {
+      for (let i = 0; i < perHue && colors.length < count; i++) {
+        const lOff = (i - perHue/2) * 8;
+        const sOff = (i - perHue/2) * 5;
+        colors.push(hslToHex(h, baseS + sOff, baseL + lOff));
+      }
+    }
+  }
+  return colors;
+}
+
+function generate() {
+  document.getElementById('stepsVal').textContent = document.getElementById('stepsSlider').value;
+  renderGenerated();
+  renderTints();
+  renderSpectrum();
+  renderGradients();
+  renderWheel();
+  renderHarmonies();
+}
+
+// ============ Render: Generated ============
+function renderGenerated() {
+  const colors = generateColors();
+  const row = document.getElementById('genRow');
+  row.innerHTML = '';
+  colors.forEach(hex => {
+    const card = document.createElement('div');
+    card.className = 'cs-gen-card';
+    card.style.background = hex;
+    card.innerHTML = `
+      <span class="cs-hex-label" style="color:${textColor(hex)}">${hex}</span>
+      <div class="cs-add-btn" onclick="event.stopPropagation();addToMyPalette('${hex}')">+</div>
+    `;
+    card.onclick = () => copyHex(hex);
+    row.appendChild(card);
+  });
+}
+
+// ============ Render: Tints ============
+function renderTints() {
+  const area = document.getElementById('tintsArea');
+  area.innerHTML = '';
+  const steps = +document.getElementById('stepsSlider').value;
+  const hues = getHarmonyHues();
+  hues.forEach(h => {
+    const row = document.createElement('div');
+    row.className = 'cs-gen-row';
+    for (let i = 0; i < steps; i++) {
+      const l = 5 + (90 / (steps - 1)) * i;
+      const hex = hslToHex(h, baseS, l);
+      const card = document.createElement('div');
+      card.className = 'cs-gen-card';
+      card.style.background = hex;
+      card.innerHTML = `
+        <span class="cs-hex-label" style="color:${textColor(hex)}">${hex}</span>
+        <div class="cs-add-btn" onclick="event.stopPropagation();addToMyPalette('${hex}')">+</div>
+      `;
+      card.onclick = () => copyHex(hex);
+      row.appendChild(card);
+    }
+    area.appendChild(row);
+  });
+}
+
+// ============ Render: Spectrum ============
+function renderSpectrum() {
+  const area = document.getElementById('spectrumArea');
+  area.innerHTML = '';
+  const hex = hslToHex(baseH, baseS, baseL);
+  const spectrums = [
+    `linear-gradient(90deg, ${hslToHex(baseH,baseS,10)}, ${hex}, ${hslToHex(baseH,baseS,95)})`,
+    `linear-gradient(90deg, ${hslToHex(baseH,0,baseL)}, ${hex}, ${hslToHex(baseH,100,baseL)})`,
+    `linear-gradient(90deg, ${hslToHex(0,baseS,baseL)}, ${hslToHex(60,baseS,baseL)}, ${hslToHex(120,baseS,baseL)}, ${hslToHex(180,baseS,baseL)}, ${hslToHex(240,baseS,baseL)}, ${hslToHex(300,baseS,baseL)}, ${hslToHex(360,baseS,baseL)})`,
+    `linear-gradient(90deg, ${hex}, ${hslToHex(baseH+180, baseS, baseL)})`,
+  ];
+  spectrums.forEach(g => {
+    const bar = document.createElement('div');
+    bar.className = 'cs-spectrum-bar';
+    bar.style.background = g;
+    area.appendChild(bar);
+  });
+}
+
+// ============ Render: Gradients ============
+function renderGradients() {
+  const area = document.getElementById('gradientArea');
+  area.innerHTML = '';
+  const h = baseH;
+  const presets = [
+    { c: [hslToHex(h,80,55), hslToHex(h+40,70,45)], n: 'Warm Shift' },
+    { c: [hslToHex(h,80,55), hslToHex(h+180,70,55)], n: 'Complement' },
+    { c: [hslToHex(h,90,65), hslToHex(h+120,80,50)], n: 'Triadic' },
+    { c: [hslToHex(h,70,80), hslToHex(h+60,60,90)], n: 'Pastel' },
+    { c: [hslToHex(h,80,20), hslToHex(h,80,55)], n: 'Deep Rise' },
+    { c: [hslToHex(h,100,55), hslToHex(h+30,100,55), hslToHex(h+60,100,55)], n: 'Rainbow' },
+    { c: [hslToHex(h,20,25), hslToHex(h,60,55)], n: 'Muted' },
+    { c: [hslToHex(h,80,55), '#ffffff'], n: 'Fade Out' },
+    { c: ['#000000', hslToHex(h,80,55)], n: 'From Dark' },
+    { c: [hslToHex(h,80,55), hslToHex(h+90,80,55), hslToHex(h+180,80,55)], n: 'Spectrum' },
+    { c: [hslToHex(h,40,80), hslToHex(h+180,40,80)], n: 'Soft Dual' },
+    { c: [hslToHex(h,90,45), hslToHex(h+60,90,65), hslToHex(h+120,90,45)], n: 'Vivid Arc' },
+  ];
+  presets.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'cs-gradient-card';
+    const grad = `linear-gradient(135deg, ${p.c.join(', ')})`;
+    card.style.background = grad;
+    card.innerHTML = `<span class="cs-g-name">${p.n}</span>`;
+    card.onclick = () => { navigator.clipboard.writeText(grad); toast('Gradient copied'); };
+    area.appendChild(card);
+  });
+}
+
+// ============ Render: Wheel ============
+function renderWheel() {
+  const area = document.getElementById('wheelArea');
+  area.innerHTML = '';
+  const cx = area.offsetWidth / 2 || 350;
+  const cy = 155;
+  const rings = [
+    { count: 24, r: 140, size: 40, s: baseS, l: baseL },
+    { count: 16, r: 90, s: Math.max(20, baseS - 20), size: 32, l: Math.min(85, baseL + 15) },
+    { count: 8, r: 38, size: 26, s: Math.max(10, baseS - 40), l: Math.min(90, baseL + 25) },
+  ];
+  rings.forEach(ring => {
+    for (let i = 0; i < ring.count; i++) {
+      const angle = (i / ring.count) * Math.PI * 2 - Math.PI / 2;
+      const x = cx + Math.cos(angle) * ring.r;
+      const y = cy + Math.sin(angle) * ring.r;
+      const hue = (i / ring.count) * 360;
+      const hex = hslToHex(hue, ring.s, ring.l);
+      const dot = document.createElement('div');
+      dot.className = 'cs-wheel-dot';
+      dot.style.cssText = `
+        width:${ring.size}px;height:${ring.size}px;background:${hex};color:${hex};
+        left:${x - ring.size/2}px;top:${y - ring.size/2}px;
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+      `;
+      dot.innerHTML = `<div class="cs-dot-add" onclick="event.stopPropagation();addToMyPalette('${hex}')">+</div>`;
+      dot.onclick = () => copyHex(hex);
+      area.appendChild(dot);
+    }
+  });
+}
+
+// ============ Render: Harmonies ============
+function renderHarmonies() {
+  const area = document.getElementById('harmonyArea');
+  area.innerHTML = '';
+  const types = [
+    { n: 'Complementary', h: [baseH, baseH+180] },
+    { n: 'Triadic', h: [baseH, baseH+120, baseH+240] },
+    { n: 'Analogous', h: [baseH-30, baseH, baseH+30] },
+    { n: 'Split Comp.', h: [baseH, baseH+150, baseH+210] },
+    { n: 'Tetradic', h: [baseH, baseH+90, baseH+180, baseH+270] },
+    { n: 'Warm', h: [baseH, baseH+15, baseH+30, baseH+45] },
+    { n: 'Cool', h: [baseH+180, baseH+195, baseH+210, baseH+225] },
+    { n: 'Monochrome', h: [baseH, baseH, baseH, baseH], lOff: [-20, -5, 10, 25] },
+    { n: 'Pastel', h: [baseH, baseH+72, baseH+144, baseH+216, baseH+288], sOff: -25, lOff2: 25 },
+  ];
+  types.forEach(t => {
+    const set = document.createElement('div');
+    set.className = 'cs-harmony-set';
+    set.onclick = () => {
+      const colors = t.h.map((h, i) => {
+        const lO = t.lOff ? t.lOff[i] : (t.lOff2 || 0);
+        return hslToHex(h, baseS + (t.sOff || 0), baseL + lO);
+      });
+      colors.forEach(c => addToMyPalette(c));
+      toast(`Added ${colors.length} colors`);
+    };
+    const colorsHtml = t.h.map((h, i) => {
+      const lO = t.lOff ? t.lOff[i] : (t.lOff2 || 0);
+      return `<div style="background:${hslToHex(h, baseS + (t.sOff||0), baseL + lO)}"></div>`;
+    }).join('');
+    set.innerHTML = `<div class="cs-harmony-name">${t.n}</div><div class="cs-harmony-colors">${colorsHtml}</div>`;
+    area.appendChild(set);
+  });
+}
+
+// ============ My Palette ============
+function addToMyPalette(hex) {
+  myColors.push(hex);
+  renderMyPalette();
+  toast(`Added ${hex}`);
+}
+
+function removeFromPalette(idx) {
+  myColors.splice(idx, 1);
+  renderMyPalette();
+}
+
+function clearMyPalette() {
+  myColors = [];
+  renderMyPalette();
+}
+
+function addGeneratedToPalette() {
+  const colors = generateColors();
+  colors.forEach(c => myColors.push(c));
+  renderMyPalette();
+  toast(`Added ${colors.length} colors`);
+}
+
+function renderMyPalette() {
+  const area = document.getElementById('myPalette');
+  if (myColors.length === 0) {
+    area.innerHTML = '<div class="cs-empty-msg">Click + on any color to add it here</div>';
+    return;
+  }
+  area.innerHTML = '';
+  myColors.forEach((hex, i) => {
+    const sw = document.createElement('div');
+    sw.className = 'cs-my-swatch';
+    sw.style.background = hex;
+    sw.draggable = true;
+    sw.dataset.index = i;
+    sw.innerHTML = `
+      <span class="cs-swatch-hex" style="color:${textColor(hex)}">${hex}</span>
+      <div class="cs-swatch-remove" onclick="event.stopPropagation();removeFromPalette(${i})">&#215;</div>
+    `;
+    sw.onclick = () => copyHex(hex);
+    sw.ondragstart = e => { dragIdx = i; sw.classList.add('dragging'); };
+    sw.ondragend = () => { sw.classList.remove('dragging'); dragIdx = null; };
+    sw.ondragover = e => e.preventDefault();
+    sw.ondrop = e => {
+      e.preventDefault();
+      if (dragIdx !== null && dragIdx !== i) {
+        const item = myColors.splice(dragIdx, 1)[0];
+        myColors.splice(i, 0, item);
+        renderMyPalette();
+      }
+    };
+    area.appendChild(sw);
+  });
+}
+
+// ============ Save / Load ============
+function savePalette() {
+  if (myColors.length === 0) { toast('Palette is empty'); return; }
+  const name = document.getElementById('paletteName').value || 'Untitled';
+  savedPalettes.push({ name, colors: [...myColors], date: Date.now() });
+  localStorage.setItem('colorStudioPalettes', JSON.stringify(savedPalettes));
+  renderSaved();
+  toast(`Saved "${name}"`);
+}
+
+function loadPalette(idx) {
+  myColors = [...savedPalettes[idx].colors];
+  document.getElementById('paletteName').value = savedPalettes[idx].name;
+  renderMyPalette();
+  toast(`Loaded "${savedPalettes[idx].name}"`);
+}
+
+function deletePalette(idx) {
+  savedPalettes.splice(idx, 1);
+  localStorage.setItem('colorStudioPalettes', JSON.stringify(savedPalettes));
+  renderSaved();
+}
+
+function renderSaved() {
+  const area = document.getElementById('savedList');
+  if (savedPalettes.length === 0) {
+    area.innerHTML = '<div class="cs-empty-msg">No saved palettes</div>';
+    return;
+  }
+  area.innerHTML = '';
+  savedPalettes.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'cs-saved-item';
+    item.onclick = () => loadPalette(i);
+    const swatches = p.colors.slice(0, 8).map(c => `<div style="background:${c}"></div>`).join('');
+    item.innerHTML = `
+      <span class="cs-saved-name">${p.name}</span>
+      <div class="cs-saved-colors">${swatches}</div>
+      <span class="cs-saved-delete" onclick="event.stopPropagation();deletePalette(${i})">&#215;</span>
+    `;
+    area.appendChild(item);
+  });
+}
+
+// ============ Export ============
+function openExport(type) {
+  currentExportType = type;
+  const modal = document.getElementById('exportModal');
+  const title = document.getElementById('exportTitle');
+  const code = document.getElementById('exportCode');
+  const colors = myColors.length > 0 ? myColors : generateColors();
+
+  title.textContent = `Export \u2014 ${type.toUpperCase()}`;
+
+  if (type === 'css') {
+    code.value = `:root {\n${colors.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n')}\n}`;
+  } else if (type === 'json') {
+    code.value = JSON.stringify({ name: document.getElementById('paletteName').value, colors }, null, 2);
+  } else if (type === 'svg') {
+    const w = colors.length * 60;
+    const rects = colors.map((c, i) => `  <rect x="${i * 60}" y="0" width="60" height="60" fill="${c}"/>`).join('\n');
+    code.value = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="60">\n${rects}\n</svg>`;
+  } else if (type === 'tailwind') {
+    const obj = {};
+    colors.forEach((c, i) => obj[`${(i + 1) * 100}`] = c);
+    code.value = `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n        custom: ${JSON.stringify(obj, null, 10).replace(/"/g, "'")}\n      }\n    }\n  }\n}`;
+  }
+  modal.classList.add('show');
+}
+
+function closeExport() { document.getElementById('exportModal').classList.remove('show'); }
+
+function copyExport() {
+  navigator.clipboard.writeText(document.getElementById('exportCode').value);
+  toast('Copied to clipboard');
+}
+
+function downloadExport() {
+  const ext = { css: 'css', json: 'json', svg: 'svg', tailwind: 'js' }[currentExportType];
+  const blob = new Blob([document.getElementById('exportCode').value], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `palette.${ext}`;
+  a.click();
+}
+
+document.getElementById('exportModal').onclick = e => {
+  if (e.target === document.getElementById('exportModal')) closeExport();
+};
+
+// ============ Init ============
+syncControls();
+generate();
+renderMyPalette();
+renderSaved();
+</script>
+</body>
+</html>

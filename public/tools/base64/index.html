@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Encoder &amp; Decoder - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Encode and decode Base64 strings instantly. Supports text, files, images, Data URIs, and URL-safe Base64. Free online tool with no data sent to any server.">
+  <meta name="keywords" content="base64, encoder, decoder, data uri, file to base64, image preview, url-safe base64, online tool">
+  <meta property="og:title" content="Base64 Encoder & Decoder - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Encode and decode Base64 strings instantly. Supports text, files, images, and Data URIs.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imseankim.com/tools/base64/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://imseankim.com/tools/base64/">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-header {
+      text-align: center;
+      padding: 40px 24px 20px;
+    }
+    .tool-header h1 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .tool-header p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px 16px;
+      flex-wrap: wrap;
+    }
+    .controls-bar .btn { font-size: 0.72rem; padding: 7px 16px; }
+    .controls-bar .btn.active {
+      background: #1a3a5c;
+      border-color: #2a5a8c;
+      color: #7ab8ff;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+      padding-left: 12px;
+      border-left: 1px solid var(--border);
+    }
+    .toggle-group label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .toggle-group input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 14px;
+      height: 14px;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 24px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-title {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .panel-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .panel-actions button {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+    .panel-actions button:hover {
+      color: var(--text-primary);
+      border-color: var(--border-light);
+      background: var(--bg-hover);
+    }
+
+    .panel textarea {
+      width: 100%;
+      min-height: 280px;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      padding: 16px;
+      resize: vertical;
+      outline: none;
+    }
+    .panel textarea::placeholder { color: var(--text-dim); }
+
+    .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      margin: 0 24px 24px;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 24px 24px;
+    }
+    .drop-area {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .drop-area:hover,
+    .drop-area.dragover {
+      border-color: var(--accent);
+      background: rgba(79, 172, 254, 0.04);
+    }
+    .drop-area .drop-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .drop-area .drop-text {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+    .drop-area .drop-sub {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+    .drop-area input[type="file"] { display: none; }
+
+    /* Image preview */
+    .image-preview {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+      display: none;
+    }
+    .image-preview.visible { display: block; }
+    .image-preview-inner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+    }
+    .image-preview-inner img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+    }
+    .image-preview-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Error state */
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 8px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    @media (max-width: 768px) {
+      .panels { grid-template-columns: 1fr; }
+      .tool-header h1 { font-size: 1.3rem; }
+      .controls-bar { gap: 6px; }
+      .toggle-group { margin-left: 0; padding-left: 0; border-left: none; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="tool-header">
+      <h1>Base64 Encoder &amp; Decoder</h1>
+      <p>Encode text to Base64 or decode Base64 to text. Supports files, images, and Data URIs.</p>
+    </div>
+
+    <div class="controls-bar">
+      <button class="btn btn-primary" id="btnEncode" title="Encode text to Base64">Encode</button>
+      <button class="btn btn-primary" id="btnDecode" title="Decode Base64 to text">Decode</button>
+      <button class="btn" id="btnAuto" title="Auto-detect and convert">Auto Detect</button>
+      <button class="btn" id="btnSwap" title="Swap panels">Swap</button>
+      <button class="btn" id="btnClear" title="Clear both panels">Clear</button>
+      <div class="toggle-group">
+        <label><input type="checkbox" id="toggleDataUri"> Data URI</label>
+      </div>
+      <div class="toggle-group">
+        <label><input type="checkbox" id="toggleUrlSafe"> URL-safe</label>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Text</span>
+          <div class="panel-actions">
+            <button id="copyText" title="Copy text">Copy</button>
+          </div>
+        </div>
+        <textarea id="textInput" placeholder="Enter text to encode..." spellcheck="false"></textarea>
+        <div class="panel-footer">
+          <span id="textChars">0 chars</span>
+          <span id="textBytes">0 bytes</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Base64</span>
+          <div class="panel-actions">
+            <button id="copyBase64" title="Copy Base64">Copy</button>
+          </div>
+        </div>
+        <textarea id="base64Input" placeholder="Enter Base64 to decode..." spellcheck="false"></textarea>
+        <div class="panel-footer">
+          <span id="b64Chars">0 chars</span>
+          <span id="b64Bytes">0 bytes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="drop-zone">
+      <div class="drop-area" id="dropArea">
+        <div class="drop-icon">📂</div>
+        <div class="drop-text">Drop a file here or click to browse</div>
+        <div class="drop-sub">The file will be converted to Base64</div>
+        <input type="file" id="fileInput">
+      </div>
+    </div>
+
+    <div class="image-preview" id="imagePreview">
+      <div class="image-preview-inner">
+        <img id="previewImg" alt="Base64 image preview">
+        <div class="image-preview-label">Image Preview</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    const textEl = document.getElementById('textInput');
+    const b64El = document.getElementById('base64Input');
+    const errorEl = document.getElementById('errorMsg');
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('fileInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const toggleDataUri = document.getElementById('toggleDataUri');
+    const toggleUrlSafe = document.getElementById('toggleUrlSafe');
+
+    // Stats
+    function updateStats() {
+      const tv = textEl.value;
+      const bv = b64El.value;
+      document.getElementById('textChars').textContent = tv.length.toLocaleString() + ' chars';
+      document.getElementById('textBytes').textContent = new Blob([tv]).size.toLocaleString() + ' bytes';
+      document.getElementById('b64Chars').textContent = bv.length.toLocaleString() + ' chars';
+      document.getElementById('b64Bytes').textContent = new Blob([bv]).size.toLocaleString() + ' bytes';
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+      setTimeout(function() { errorEl.classList.remove('visible'); }, 4000);
+    }
+
+    function clearError() {
+      errorEl.classList.remove('visible');
+    }
+
+    // URL-safe conversions
+    function toUrlSafe(str) {
+      return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    function fromUrlSafe(str) {
+      var s = str.replace(/-/g, '+').replace(/_/g, '/');
+      while (s.length % 4) s += '=';
+      return s;
+    }
+
+    // Strip data URI prefix
+    function stripDataUri(str) {
+      var match = str.match(/^data:[^;]*;base64,/);
+      return match ? { prefix: match[0], data: str.slice(match[0].length) } : { prefix: '', data: str };
+    }
+
+    // Encode
+    function encode() {
+      clearError();
+      try {
+        var text = textEl.value;
+        // Use TextEncoder for proper UTF-8 handling
+        var bytes = new TextEncoder().encode(text);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        var result = btoa(binary);
+        if (toggleUrlSafe.checked) result = toUrlSafe(result);
+        if (toggleDataUri.checked) result = 'data:text/plain;base64,' + result;
+        b64El.value = result;
+        updateStats();
+        tryImagePreview(result);
+      } catch (e) {
+        showError('Encoding failed: ' + e.message);
+      }
+    }
+
+    // Decode
+    function decode() {
+      clearError();
+      try {
+        var raw = b64El.value.trim();
+        if (!raw) { textEl.value = ''; updateStats(); return; }
+        var parsed = stripDataUri(raw);
+        var b64 = parsed.data;
+        if (toggleUrlSafe.checked || /[-_]/.test(b64)) b64 = fromUrlSafe(b64);
+        var binary = atob(b64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        textEl.value = new TextDecoder().decode(bytes);
+        updateStats();
+        tryImagePreview(raw);
+      } catch (e) {
+        showError('Decoding failed: Invalid Base64 string');
+      }
+    }
+
+    // Auto-detect
+    function autoDetect() {
+      clearError();
+      var tv = textEl.value.trim();
+      var bv = b64El.value.trim();
+      if (bv && !tv) { decode(); return; }
+      if (tv && !bv) { encode(); return; }
+      // If both have content, check if b64 looks like base64
+      if (bv) {
+        var stripped = stripDataUri(bv).data;
+        if (/^[A-Za-z0-9+/\-_=\s]+$/.test(stripped)) { decode(); return; }
+      }
+      encode();
+    }
+
+    // Image preview
+    function tryImagePreview(str) {
+      var parsed = stripDataUri(str);
+      var src = '';
+      if (parsed.prefix && parsed.prefix.match(/^data:image\//)) {
+        src = str;
+      } else {
+        // Try to detect if the base64 is an image by checking magic bytes
+        try {
+          var b64 = parsed.data;
+          if (/[-_]/.test(b64)) b64 = fromUrlSafe(b64);
+          var binary = atob(b64.substring(0, 20));
+          var isPNG = binary.charCodeAt(0) === 0x89 && binary.substring(1, 4) === 'PNG';
+          var isJPEG = binary.charCodeAt(0) === 0xFF && binary.charCodeAt(1) === 0xD8;
+          var isGIF = binary.substring(0, 3) === 'GIF';
+          var isWebP = binary.substring(0, 4) === 'RIFF' && binary.substring(8, 12) === 'WEBP';
+          if (isPNG) src = 'data:image/png;base64,' + parsed.data;
+          else if (isJPEG) src = 'data:image/jpeg;base64,' + parsed.data;
+          else if (isGIF) src = 'data:image/gif;base64,' + parsed.data;
+          else if (isWebP) src = 'data:image/webp;base64,' + parsed.data;
+        } catch (e) { /* not an image */ }
+      }
+      if (src) {
+        previewImg.src = src;
+        imagePreview.classList.add('visible');
+      } else {
+        imagePreview.classList.remove('visible');
+      }
+    }
+
+    // Buttons
+    document.getElementById('btnEncode').addEventListener('click', encode);
+    document.getElementById('btnDecode').addEventListener('click', decode);
+    document.getElementById('btnAuto').addEventListener('click', autoDetect);
+
+    document.getElementById('btnSwap').addEventListener('click', function() {
+      var tmp = textEl.value;
+      textEl.value = b64El.value;
+      b64El.value = tmp;
+      updateStats();
+    });
+
+    document.getElementById('btnClear').addEventListener('click', function() {
+      textEl.value = '';
+      b64El.value = '';
+      clearError();
+      imagePreview.classList.remove('visible');
+      updateStats();
+    });
+
+    // Copy buttons
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      });
+    }
+    document.getElementById('copyText').addEventListener('click', function() {
+      copyToClipboard(textEl.value, this);
+    });
+    document.getElementById('copyBase64').addEventListener('click', function() {
+      copyToClipboard(b64El.value, this);
+    });
+
+    // Toggle: Data URI
+    toggleDataUri.addEventListener('change', function() {
+      var val = b64El.value.trim();
+      if (!val) return;
+      if (this.checked) {
+        var parsed = stripDataUri(val);
+        if (!parsed.prefix) {
+          b64El.value = 'data:text/plain;base64,' + val;
+        }
+      } else {
+        var parsed = stripDataUri(val);
+        if (parsed.prefix) {
+          b64El.value = parsed.data;
+        }
+      }
+      updateStats();
+    });
+
+    // Toggle: URL-safe
+    toggleUrlSafe.addEventListener('change', function() {
+      var val = b64El.value.trim();
+      if (!val) return;
+      var parsed = stripDataUri(val);
+      var b64 = parsed.data;
+      if (this.checked) {
+        b64 = toUrlSafe(b64);
+      } else {
+        b64 = fromUrlSafe(b64);
+      }
+      b64El.value = parsed.prefix + b64;
+      updateStats();
+    });
+
+    // File drop & select
+    dropArea.addEventListener('click', function() { fileInput.click(); });
+
+    dropArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+    dropArea.addEventListener('dragleave', function() {
+      dropArea.classList.remove('dragover');
+    });
+    dropArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', function() {
+      if (this.files.length) handleFile(this.files[0]);
+      this.value = '';
+    });
+
+    function handleFile(file) {
+      clearError();
+      var reader = new FileReader();
+      reader.onload = function() {
+        var dataUri = reader.result;
+        if (toggleDataUri.checked) {
+          b64El.value = dataUri;
+        } else {
+          var parsed = stripDataUri(dataUri);
+          var b64 = parsed.data;
+          if (toggleUrlSafe.checked) b64 = toUrlSafe(b64);
+          b64El.value = b64;
+        }
+        textEl.value = '[File: ' + file.name + ' (' + formatSize(file.size) + ')]';
+        updateStats();
+        tryImagePreview(dataUri);
+      };
+      reader.onerror = function() { showError('Failed to read file'); };
+      reader.readAsDataURL(file);
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    // Update stats on typing
+    textEl.addEventListener('input', updateStats);
+    b64El.addEventListener('input', function() {
+      updateStats();
+      tryImagePreview(b64El.value.trim());
+    });
+
+    updateStats();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gradient Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Create beautiful CSS gradients with a visual editor. Linear, radial, and conic gradients with color stops, presets, and export to CSS, SVG, or PNG.">
+  <meta property="og:title" content="Gradient Generator - Free Online Tool">
+  <meta property="og:description" content="Create beautiful CSS gradients visually. Export as CSS, SVG, or PNG.">
+  <meta property="og:url" content="https://imseankim.com/tools/gradient">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/gradient">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --border: #222;
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --accent: #6c5ce7;
+      --accent-hover: #7d6ff0;
+      --danger: #e74c3c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    .gradient-app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .gradient-app {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-area {
+      width: 100%;
+      min-height: 360px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: min-height 0.3s;
+    }
+
+    .preview-area.fullscreen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      min-height: 100vh;
+      border-radius: 0;
+      z-index: 9999;
+      border: none;
+    }
+
+    .preview-area.fullscreen .fullscreen-exit {
+      display: flex;
+    }
+
+    .fullscreen-exit {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+    }
+    .fullscreen-exit:hover { background: rgba(0,0,0,0.8); }
+
+    .controls-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .type-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .type-btn:hover { border-color: #444; color: var(--text); }
+    .type-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .angle-control {
+      margin-top: 12px;
+    }
+
+    .angle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .angle-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      height: 4px;
+    }
+
+    .angle-value {
+      min-width: 42px;
+      text-align: right;
+      font-size: 13px;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .direction-presets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .dir-btn {
+      padding: 6px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .dir-btn:hover { border-color: #444; color: var(--text); }
+    .dir-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .stops-bar {
+      position: relative;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      cursor: pointer;
+      overflow: visible;
+    }
+
+    .stops-bar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 7px;
+    }
+
+    .stop-handle {
+      position: absolute;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      transition: transform 0.1s;
+      z-index: 2;
+    }
+    .stop-handle:hover { transform: translate(-50%, -50%) scale(1.15); }
+    .stop-handle.active {
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 0 0 3px var(--accent), 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .stop-editor {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stop-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+    }
+
+    .stop-row .color-input-wrap {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .stop-row input[type="color"] {
+      position: absolute;
+      top: -4px; left: -4px;
+      width: 40px; height: 40px;
+      border: none;
+      cursor: pointer;
+      background: none;
+    }
+
+    .stop-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      min-width: 0;
+    }
+
+    .stop-pos-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 32px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stop-remove {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 4px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+    .stop-remove:hover { opacity: 1; }
+
+    .add-stop-btn {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .add-stop-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .preset-swatch {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .preset-swatch:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    .code-box {
+      position: relative;
+    }
+
+    .code-output {
+      width: 100%;
+      min-height: 80px;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #a0e8af;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+      padding: 12px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .code-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 7px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn:hover { border-color: #444; color: var(--text); }
+    .action-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .action-btn.primary:hover { background: var(--accent-hover); }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar .action-btn {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a2e;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 13px;
+      border: 1px solid var(--accent);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 10000;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    canvas#exportCanvas { display: none; }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="gradient-app">
+      <div class="preview-section">
+        <div class="preview-area" id="previewArea">
+          <button class="fullscreen-exit" id="exitFullscreen">Esc &mdash; Exit Fullscreen</button>
+        </div>
+
+        <div class="card code-box">
+          <div class="card-title">CSS Code</div>
+          <textarea class="code-output" id="codeOutput" readonly></textarea>
+          <div class="code-actions">
+            <button class="action-btn primary" id="copyBtn">Copy CSS</button>
+            <button class="action-btn" id="exportSvg">Export SVG</button>
+            <button class="action-btn" id="exportPng">Export PNG</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-section">
+        <div class="card">
+          <div class="card-title">Gradient Type</div>
+          <div class="type-selector">
+            <button class="type-btn active" data-type="linear">Linear</button>
+            <button class="type-btn" data-type="radial">Radial</button>
+            <button class="type-btn" data-type="conic">Conic</button>
+          </div>
+          <div class="angle-control" id="angleControl">
+            <div class="angle-row">
+              <input type="range" id="angleSlider" min="0" max="360" value="135">
+              <span class="angle-value" id="angleValue">135&deg;</span>
+            </div>
+            <div class="direction-presets" id="dirPresets">
+              <button class="dir-btn" data-angle="0">&uarr; Top</button>
+              <button class="dir-btn" data-angle="45">&nearr; TR</button>
+              <button class="dir-btn" data-angle="90">&rarr; Right</button>
+              <button class="dir-btn" data-angle="135" style="background:var(--accent);border-color:var(--accent);color:#fff">&searr; BR</button>
+              <button class="dir-btn" data-angle="180">&darr; Bottom</button>
+              <button class="dir-btn" data-angle="225">&swarr; BL</button>
+              <button class="dir-btn" data-angle="270">&larr; Left</button>
+              <button class="dir-btn" data-angle="315">&nwarr; TL</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Color Stops</div>
+          <div class="stops-bar" id="stopsBar">
+            <div class="stops-bar-inner" id="stopsBarInner"></div>
+          </div>
+          <div class="stop-editor" id="stopEditor"></div>
+          <button class="add-stop-btn" id="addStopBtn">+ Add Color Stop</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Presets</div>
+          <div class="presets-grid" id="presetsGrid"></div>
+        </div>
+
+        <div class="card toolbar">
+          <button class="action-btn" id="randomBtn">Random</button>
+          <button class="action-btn" id="fullscreenBtn">Fullscreen</button>
+        </div>
+      </div>
+    </div>
+    <canvas id="exportCanvas"></canvas>
+    <div class="toast" id="toast"></div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    // ---- State ----
+    let gradientType = 'linear';
+    let angle = 135;
+    let stops = [
+      { color: '#6c5ce7', position: 0 },
+      { color: '#a29bfe', position: 50 },
+      { color: '#fd79a8', position: 100 }
+    ];
+    let activeStopIndex = 0;
+    let draggingStop = null;
+
+    // ---- DOM refs ----
+    const previewArea = document.getElementById('previewArea');
+    const codeOutput = document.getElementById('codeOutput');
+    const angleSlider = document.getElementById('angleSlider');
+    const angleValueEl = document.getElementById('angleValue');
+    const angleControl = document.getElementById('angleControl');
+    const stopsBar = document.getElementById('stopsBar');
+    const stopsBarInner = document.getElementById('stopsBarInner');
+    const stopEditor = document.getElementById('stopEditor');
+    const presetsGrid = document.getElementById('presetsGrid');
+    const toast = document.getElementById('toast');
+
+    // ---- Presets ----
+    const presets = [
+      { type: 'linear', angle: 135, stops: [{ color: '#667eea', position: 0 }, { color: '#764ba2', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#f093fb', position: 0 }, { color: '#f5576c', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#4facfe', position: 0 }, { color: '#00f2fe', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#43e97b', position: 0 }, { color: '#38f9d7', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#fa709a', position: 0 }, { color: '#fee140', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#a18cd1', position: 0 }, { color: '#fbc2eb', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#fccb90', position: 0 }, { color: '#d57eeb', position: 100 }] },
+      { type: 'linear', angle: 90, stops: [{ color: '#0c0c1d', position: 0 }, { color: '#1a1a3e', position: 50 }, { color: '#6c5ce7', position: 100 }] },
+      { type: 'radial', angle: 0, stops: [{ color: '#ffecd2', position: 0 }, { color: '#fcb69f', position: 100 }] },
+      { type: 'conic', angle: 0, stops: [{ color: '#ff6b6b', position: 0 }, { color: '#feca57', position: 25 }, { color: '#48dbfb', position: 50 }, { color: '#ff9ff3', position: 75 }, { color: '#ff6b6b', position: 100 }] },
+      { type: 'linear', angle: 180, stops: [{ color: '#0f0c29', position: 0 }, { color: '#302b63', position: 50 }, { color: '#24243e', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#ee0979', position: 0 }, { color: '#ff6a00', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#36d1dc', position: 0 }, { color: '#5b86e5', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#c6ffdd', position: 0 }, { color: '#fbd786', position: 50 }, { color: '#f7797d', position: 100 }] },
+      { type: 'linear', angle: 135, stops: [{ color: '#2c3e50', position: 0 }, { color: '#3498db', position: 100 }] },
+      { type: 'radial', angle: 0, stops: [{ color: '#ffd89b', position: 0 }, { color: '#19547b', position: 100 }] }
+    ];
+
+    // ---- Gradient string builder ----
+    function buildGradientCSS() {
+      const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+      const stopsStr = sortedStops.map(s => `${s.color} ${s.position}%`).join(', ');
+
+      if (gradientType === 'linear') {
+        return `linear-gradient(${angle}deg, ${stopsStr})`;
+      } else if (gradientType === 'radial') {
+        return `radial-gradient(circle, ${stopsStr})`;
+      } else {
+        return `conic-gradient(from ${angle}deg, ${stopsStr})`;
+      }
+    }
+
+    function buildLinearStopsCSS() {
+      const sortedStops = [...stops].sort((a, b) => a.position - b.position);
+      return sortedStops.map(s => `${s.color} ${s.position}%`).join(', ');
+    }
+
+    // ---- Render functions ----
+    function render() {
+      const css = buildGradientCSS();
+      previewArea.style.background = css;
+
+      // Code output
+      codeOutput.value = `background: ${css};`;
+
+      // Stops bar
+      const barStops = [...stops].sort((a, b) => a.position - b.position);
+      const barCSS = barStops.map(s => `${s.color} ${s.position}%`).join(', ');
+      stopsBarInner.style.background = `linear-gradient(90deg, ${barCSS})`;
+
+      renderStopHandles();
+      renderStopRows();
+      updateAngleUI();
+    }
+
+    function renderStopHandles() {
+      stopsBar.querySelectorAll('.stop-handle').forEach(el => el.remove());
+      stops.forEach((s, i) => {
+        const handle = document.createElement('div');
+        handle.className = 'stop-handle' + (i === activeStopIndex ? ' active' : '');
+        handle.style.left = s.position + '%';
+        handle.style.backgroundColor = s.color;
+        handle.dataset.index = i;
+
+        handle.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          activeStopIndex = i;
+          draggingStop = i;
+          render();
+        });
+
+        handle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          activeStopIndex = i;
+          render();
+        });
+
+        stopsBar.appendChild(handle);
+      });
+    }
+
+    function renderStopRows() {
+      stopEditor.innerHTML = '';
+      stops.forEach((s, i) => {
+        const row = document.createElement('div');
+        row.className = 'stop-row';
+        if (i === activeStopIndex) row.style.outline = '1px solid ' + 'var(--accent)';
+
+        row.innerHTML = `
+          <div class="color-input-wrap">
+            <input type="color" value="${s.color}" data-index="${i}" class="stop-color-input">
+          </div>
+          <input type="range" min="0" max="100" value="${s.position}" data-index="${i}" class="stop-pos-input">
+          <span class="stop-pos-label">${s.position}%</span>
+          <button class="stop-remove" data-index="${i}" title="Remove stop">&times;</button>
+        `;
+
+        row.addEventListener('click', () => {
+          activeStopIndex = i;
+          render();
+        });
+
+        stopEditor.appendChild(row);
+      });
+
+      // Wire events
+      stopEditor.querySelectorAll('.stop-color-input').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          const idx = +e.target.dataset.index;
+          stops[idx].color = e.target.value;
+          render();
+        });
+      });
+
+      stopEditor.querySelectorAll('.stop-pos-input').forEach(inp => {
+        inp.addEventListener('input', (e) => {
+          const idx = +e.target.dataset.index;
+          stops[idx].position = +e.target.value;
+          render();
+        });
+      });
+
+      stopEditor.querySelectorAll('.stop-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (stops.length <= 2) return showToast('Need at least 2 stops');
+          const idx = +e.target.dataset.index;
+          stops.splice(idx, 1);
+          if (activeStopIndex >= stops.length) activeStopIndex = stops.length - 1;
+          render();
+        });
+      });
+    }
+
+    function updateAngleUI() {
+      if (gradientType === 'radial') {
+        angleControl.style.display = 'none';
+      } else {
+        angleControl.style.display = '';
+      }
+
+      angleSlider.value = angle;
+      angleValueEl.textContent = angle + '\u00B0';
+
+      document.querySelectorAll('.dir-btn').forEach(btn => {
+        const a = +btn.dataset.angle;
+        if (a === angle) {
+          btn.style.background = 'var(--accent)';
+          btn.style.borderColor = 'var(--accent)';
+          btn.style.color = '#fff';
+        } else {
+          btn.style.background = '';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }
+      });
+    }
+
+    // ---- Preset rendering ----
+    function renderPresets() {
+      presetsGrid.innerHTML = '';
+      presets.forEach((p, i) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'preset-swatch';
+        const sortedStops = [...p.stops].sort((a, b) => a.position - b.position);
+        const stopsStr = sortedStops.map(s => `${s.color} ${s.position}%`).join(', ');
+
+        if (p.type === 'linear') {
+          swatch.style.background = `linear-gradient(${p.angle}deg, ${stopsStr})`;
+        } else if (p.type === 'radial') {
+          swatch.style.background = `radial-gradient(circle, ${stopsStr})`;
+        } else {
+          swatch.style.background = `conic-gradient(from ${p.angle}deg, ${stopsStr})`;
+        }
+
+        swatch.addEventListener('click', () => {
+          gradientType = p.type;
+          angle = p.angle;
+          stops = p.stops.map(s => ({ ...s }));
+          activeStopIndex = 0;
+          updateTypeButtons();
+          render();
+        });
+
+        presetsGrid.appendChild(swatch);
+      });
+    }
+
+    function updateTypeButtons() {
+      document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === gradientType);
+      });
+    }
+
+    // ---- Events ----
+
+    // Type selector
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        gradientType = btn.dataset.type;
+        updateTypeButtons();
+        render();
+      });
+    });
+
+    // Angle slider
+    angleSlider.addEventListener('input', () => {
+      angle = +angleSlider.value;
+      render();
+    });
+
+    // Direction presets
+    document.querySelectorAll('.dir-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        angle = +btn.dataset.angle;
+        render();
+      });
+    });
+
+    // Add stop
+    document.getElementById('addStopBtn').addEventListener('click', () => {
+      const sorted = [...stops].sort((a, b) => a.position - b.position);
+      let newPos = 50;
+      // Find biggest gap
+      let maxGap = 0;
+      let gapMid = 50;
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const gap = sorted[i + 1].position - sorted[i].position;
+        if (gap > maxGap) {
+          maxGap = gap;
+          gapMid = Math.round((sorted[i].position + sorted[i + 1].position) / 2);
+        }
+      }
+      newPos = gapMid;
+
+      const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      stops.push({ color: randomColor, position: newPos });
+      activeStopIndex = stops.length - 1;
+      render();
+    });
+
+    // Click on stops bar to add
+    stopsBar.addEventListener('click', (e) => {
+      if (e.target.classList.contains('stop-handle')) return;
+      const rect = stopsBar.getBoundingClientRect();
+      const pos = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      stops.push({ color: randomColor, position: Math.max(0, Math.min(100, pos)) });
+      activeStopIndex = stops.length - 1;
+      render();
+    });
+
+    // Drag stop handles
+    document.addEventListener('mousemove', (e) => {
+      if (draggingStop === null) return;
+      const rect = stopsBar.getBoundingClientRect();
+      let pos = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      pos = Math.max(0, Math.min(100, pos));
+      stops[draggingStop].position = pos;
+      render();
+    });
+
+    document.addEventListener('mouseup', () => {
+      draggingStop = null;
+    });
+
+    // Copy CSS
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(codeOutput.value).then(() => showToast('CSS copied to clipboard'));
+    });
+
+    // Random gradient
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      const types = ['linear', 'radial', 'conic'];
+      gradientType = types[Math.floor(Math.random() * types.length)];
+      angle = Math.floor(Math.random() * 360);
+      const numStops = 2 + Math.floor(Math.random() * 3);
+      stops = [];
+      for (let i = 0; i < numStops; i++) {
+        stops.push({
+          color: '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'),
+          position: Math.round((i / (numStops - 1)) * 100)
+        });
+      }
+      activeStopIndex = 0;
+      updateTypeButtons();
+      render();
+    });
+
+    // Fullscreen
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      previewArea.classList.add('fullscreen');
+    });
+
+    document.getElementById('exitFullscreen').addEventListener('click', (e) => {
+      e.stopPropagation();
+      previewArea.classList.remove('fullscreen');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') previewArea.classList.remove('fullscreen');
+    });
+
+    // Export SVG
+    document.getElementById('exportSvg').addEventListener('click', () => {
+      const sorted = [...stops].sort((a, b) => a.position - b.position);
+      let svgContent = '';
+
+      if (gradientType === 'linear') {
+        const rad = (angle - 90) * Math.PI / 180;
+        const x1 = 50 - 50 * Math.cos(rad);
+        const y1 = 50 - 50 * Math.sin(rad);
+        const x2 = 50 + 50 * Math.cos(rad);
+        const y2 = 50 + 50 * Math.sin(rad);
+
+        let gradStops = sorted.map(s => `      <stop offset="${s.position}%" stop-color="${s.color}"/>`).join('\n');
+        svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <defs>
+    <linearGradient id="g" x1="${x1.toFixed(1)}%" y1="${y1.toFixed(1)}%" x2="${x2.toFixed(1)}%" y2="${y2.toFixed(1)}%">
+${gradStops}
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+</svg>`;
+      } else if (gradientType === 'radial') {
+        let gradStops = sorted.map(s => `      <stop offset="${s.position}%" stop-color="${s.color}"/>`).join('\n');
+        svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%" r="50%">
+${gradStops}
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+</svg>`;
+      } else {
+        // Conic: SVG does not natively support conic gradients, fallback to image
+        showToast('SVG does not support conic gradients natively. Use PNG export instead.');
+        return;
+      }
+
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gradient.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('SVG downloaded');
+    });
+
+    // Export PNG
+    document.getElementById('exportPng').addEventListener('click', () => {
+      const canvas = document.getElementById('exportCanvas');
+      const w = 1600, h = 1200;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      const sorted = [...stops].sort((a, b) => a.position - b.position);
+
+      if (gradientType === 'linear') {
+        const rad = (angle - 90) * Math.PI / 180;
+        const cx = w / 2, cy = h / 2;
+        const len = Math.max(w, h);
+        const x1 = cx - len * Math.cos(rad);
+        const y1 = cy - len * Math.sin(rad);
+        const x2 = cx + len * Math.cos(rad);
+        const y2 = cy + len * Math.sin(rad);
+        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+        sorted.forEach(s => grad.addColorStop(s.position / 100, s.color));
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (gradientType === 'radial') {
+        const r = Math.max(w, h) / 2;
+        const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, r);
+        sorted.forEach(s => grad.addColorStop(s.position / 100, s.color));
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        const grad = ctx.createConicGradient(angle * Math.PI / 180, w / 2, h / 2);
+        sorted.forEach(s => grad.addColorStop(s.position / 100, s.color));
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'gradient.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('PNG downloaded');
+      });
+    });
+
+    // ---- Toast ----
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // ---- Init ----
+    renderPresets();
+    render();
+  })();
+  </script>
+</body>
+</html>

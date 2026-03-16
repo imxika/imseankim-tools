@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorem Ipsum Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate placeholder text instantly. Choose from Classic, Hipster, Tech, and Food styles. Customize paragraphs, sentences, words, and lists.">
+  <meta name="keywords" content="lorem ipsum generator, placeholder text, dummy text, hipster ipsum, tech ipsum, food ipsum">
+  <meta property="og:title" content="Lorem Ipsum Generator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Generate placeholder text instantly with multiple styles and customization options.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lorem Ipsum Generator - Free Online Tool | imseankim.com">
+  <meta name="twitter:description" content="Generate placeholder text instantly with multiple styles and customization options.">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .lorem-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 860px) {
+      .lorem-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .control-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .control-card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-row input[type="range"] {
+      flex: 1;
+    }
+
+    .control-row .range-value {
+      min-width: 28px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--bg-input);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .type-grid, .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .type-btn, .style-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      font-family: var(--font-sans);
+    }
+
+    .type-btn:hover, .style-btn:hover {
+      border-color: var(--border-light);
+      color: var(--text-primary);
+    }
+
+    .type-btn.active, .style-btn.active {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-light);
+      border-radius: 4px;
+      background: var(--bg-input);
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .checkbox-row input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox-row input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 4px;
+      height: 8px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-row label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .output-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .stat span {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .copy-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+    }
+
+    .output-area {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      min-height: 400px;
+      max-height: 70vh;
+      overflow-y: auto;
+      line-height: 1.75;
+      font-size: 15px;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .output-area p {
+      margin-bottom: 16px;
+    }
+
+    .output-area p:last-child {
+      margin-bottom: 0;
+    }
+
+    .output-area ul, .output-area ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .output-area li {
+      margin-bottom: 6px;
+    }
+
+    .output-area code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="lorem-container">
+      <!-- Controls -->
+      <div class="controls-panel">
+        <div class="control-card">
+          <h3>Type</h3>
+          <div class="type-grid">
+            <button class="type-btn active" data-type="paragraphs">Paragraphs</button>
+            <button class="type-btn" data-type="sentences">Sentences</button>
+            <button class="type-btn" data-type="words">Words</button>
+            <button class="type-btn" data-type="lists">Lists</button>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3>Style</h3>
+          <div class="style-grid">
+            <button class="style-btn active" data-style="classic">Classic</button>
+            <button class="style-btn" data-style="hipster">Hipster</button>
+            <button class="style-btn" data-style="tech">Tech</button>
+            <button class="style-btn" data-style="food">Food</button>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3>Settings</h3>
+          <div class="control-group" id="paragraphs-control">
+            <label>Paragraphs</label>
+            <div class="control-row">
+              <input type="range" id="paragraphs" min="1" max="20" value="5">
+              <div class="range-value" id="paragraphs-val">5</div>
+            </div>
+          </div>
+          <div class="control-group" id="sentences-control">
+            <label>Sentences per paragraph</label>
+            <div class="control-row">
+              <input type="range" id="sentences" min="1" max="15" value="5">
+              <div class="range-value" id="sentences-val">5</div>
+            </div>
+          </div>
+          <div class="control-group" id="words-control">
+            <label>Words per sentence</label>
+            <div class="control-row">
+              <input type="range" id="wordsPerSentence" min="4" max="20" value="10">
+              <div class="range-value" id="wordsPerSentence-val">10</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <h3>Options</h3>
+          <div class="checkbox-row">
+            <input type="checkbox" id="startLorem" checked>
+            <label for="startLorem">Start with "Lorem ipsum dolor sit amet"</label>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="htmlTags">
+            <label for="htmlTags">Include HTML tags</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div class="output-panel">
+        <div class="output-header">
+          <div class="stats">
+            <div class="stat">Words: <span id="wordCount">0</span></div>
+            <div class="stat">Characters: <span id="charCount">0</span></div>
+          </div>
+          <button class="copy-btn" id="copyBtn">Copy to Clipboard</button>
+        </div>
+        <div class="output-area" id="output"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (() => {
+      // Word banks
+      const WORDS = {
+        classic: [
+          'lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do',
+          'eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim',
+          'ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi',
+          'aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit',
+          'voluptate','velit','esse','cillum','fugiat','nulla','pariatur','excepteur','sint',
+          'occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt',
+          'mollit','anim','id','est','laborum','pellentesque','habitant','morbi','tristique',
+          'senectus','netus','malesuada','fames','ac','turpis','egestas','maecenas','accumsan',
+          'lacus','vel','facilisis','volutpat','vitae','ultricies','leo','integer','feugiat',
+          'scelerisque','varius','nunc','mattis','quisque','sagittis','purus','sem','nec',
+          'nam','aliquam','eleifend','mi','orci','porta','massa','praesent','elementum',
+          'facilisi','nullam','vehicula','ipsum','a','arcu','cursus','mauris','libero',
+          'faucibus','nisl','tincidunt','eget','pretium','viverra','suspendisse','potenti',
+          'justo','laoreet','posuere','cubilia','curae','donec','pharetra','dignissim',
+          'suscipit','tellus','at','urna','condimentum','interdum','ante','auctor','eu',
+          'augue','cras','ornare','pulvinar','neque','sapien','etiam','diam','vulputate',
+          'hendrerit','tortor','gravida','proin','imperdiet','fermentum','blandit','convallis',
+          'sollicitudin','tempus','quam','congue','nisi','dictum','risus','placerat','dapibus',
+          'hac','habitasse','platea','dictumst','vestibulum','rhoncus','finibus','luctus'
+        ],
+        hipster: [
+          'artisan','aesthetic','sustainable','craft','vintage','organic','locally','sourced',
+          'small','batch','handcrafted','authentic','curated','minimal','ethical','conscious',
+          'slow','raw','wild','foraged','heritage','bespoke','botanical','reclaimed','natural',
+          'mindful','intentional','wholesome','artisanal','rustic','modern','thoughtful',
+          'vinyl','record','typewriter','polaroid','flannel','beard','fixie','bike','mason',
+          'jar','avocado','toast','cold','brew','latte','art','succulent','terrarium',
+          'macrame','sourdough','fermented','kombucha','matcha','oat','milk','thrift',
+          'upcycled','zero','waste','biodegradable','plant','based','fair','trade','single',
+          'origin','pour','over','linen','ceramic','pottery','woven','dyed','pressed',
+          'distilled','infused','smoked','aged','cured','roasted','blended','steeped',
+          'brewed','cultivated','gathered','harvested','milled','spun','woven','knitted',
+          'stitched','embroidered','painted','glazed','fired','carved','etched','printed',
+          'letterpress','calligraphy','illustration','sketch','watercolor','pastel','charcoal',
+          'ink','pigment','canvas','loom','kiln','workshop','studio','atelier','boutique',
+          'market','collective','cooperative','community','garden','apothecary','tincture',
+          'elixir','remedy','essence','spirit','soul','vibe','energy','flow','balance',
+          'harmony','zen','calm','peace','serenity','tranquil','gentle','soft','warm',
+          'cozy','hygge','nook','sanctuary','retreat','haven','oasis','refuge','nest'
+        ],
+        tech: [
+          'algorithm','blockchain','cloud','data','encryption','framework','github','hash',
+          'interface','javascript','kubernetes','lambda','machine','learning','neural',
+          'network','optimization','protocol','quantum','responsive','scalable','typescript',
+          'ubuntu','virtual','webpack','xcode','yaml','zero','day','agile','binary',
+          'compiler','database','endpoint','firewall','gateway','hypervisor','immutable',
+          'json','kernel','latency','middleware','namespace','orchestration','pipeline',
+          'query','runtime','serverless','terraform','upstream','vector','websocket','api',
+          'bandwidth','cache','deployment','edge','function','graphql','http','index',
+          'jwt','kafka','load','balancer','microservice','node','object','proxy','queue',
+          'redis','schema','token','uri','validation','worker','xml','async','buffer',
+          'container','docker','elastic','fetch','git','hook','instance','job','key',
+          'log','metrics','nginx','oauth','pod','rate','limiter','ssh','thread','unit',
+          'test','variable','wasm','syntax','parser','regex','module','import','export',
+          'promise','callback','iterator','generator','decorator','singleton','factory',
+          'observer','adapter','bridge','composite','facade','flyweight','proxy','chain',
+          'command','interpreter','mediator','memento','prototype','state','strategy',
+          'template','visitor','refactor','debug','deploy','iterate','sprint','standup',
+          'retro','backlog','kanban','scrum','devops','cicd','monitoring','alerting'
+        ],
+        food: [
+          'saffron','truffle','balsamic','reduction','caramelized','onion','roasted','garlic',
+          'infused','olive','oil','sea','salt','cracked','pepper','fresh','basil','thyme',
+          'rosemary','oregano','cilantro','parsley','dill','chive','tarragon','sage',
+          'fennel','cumin','coriander','cardamom','cinnamon','nutmeg','vanilla','bean',
+          'chocolate','ganache','espresso','cream','butter','poached','seared','braised',
+          'grilled','smoked','cured','pickled','fermented','sourdough','brioche','focaccia',
+          'ciabatta','prosciutto','burrata','mozzarella','parmesan','pecorino','gorgonzola',
+          'ricotta','mascarpone','fig','pomegranate','blood','orange','meyer','lemon','lime',
+          'zest','honey','maple','agave','bourbon','glaze','aioli','chimichurri','pesto',
+          'romesco','tahini','harissa','gochujang','miso','ponzu','yuzu','wasabi','kimchi',
+          'umami','dashi','bonito','nori','sesame','toasted','pine','nut','walnut','almond',
+          'pistachio','hazelnut','pecan','cashew','macadamia','coconut','avocado','arugula',
+          'radicchio','endive','watercress','microgreen','edible','flower','lavender','rosewater',
+          'elderflower','hibiscus','chamomile','jasmine','bergamot','lemongrass','ginger',
+          'turmeric','galangal','star','anise','clove','juniper','berry','peppercorn',
+          'fleur','de','sel','compound','emulsion','coulis','chutney','relish','compote',
+          'confit','ragu','veloute','bechamel','hollandaise','bearnaise','gastrique','jus'
+        ]
+      };
+
+      const LOREM_START = 'Lorem ipsum dolor sit amet';
+
+      let currentType = 'paragraphs';
+      let currentStyle = 'classic';
+
+      // DOM refs
+      const output = document.getElementById('output');
+      const copyBtn = document.getElementById('copyBtn');
+      const wordCountEl = document.getElementById('wordCount');
+      const charCountEl = document.getElementById('charCount');
+      const paragraphsSlider = document.getElementById('paragraphs');
+      const sentencesSlider = document.getElementById('sentences');
+      const wordsSlider = document.getElementById('wordsPerSentence');
+      const startLoremCb = document.getElementById('startLorem');
+      const htmlTagsCb = document.getElementById('htmlTags');
+      const paragraphsControl = document.getElementById('paragraphs-control');
+      const sentencesControl = document.getElementById('sentences-control');
+      const wordsControl = document.getElementById('words-control');
+
+      function randomWord(words) {
+        return words[Math.floor(Math.random() * words.length)];
+      }
+
+      function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+
+      function generateSentence(words, wordCount) {
+        const result = [];
+        for (let i = 0; i < wordCount; i++) {
+          result.push(randomWord(words));
+        }
+        return capitalize(result.join(' ')) + '.';
+      }
+
+      function generateParagraph(words, sentenceCount, wordsPerSentence) {
+        const sentences = [];
+        for (let i = 0; i < sentenceCount; i++) {
+          const variance = Math.floor(Math.random() * 5) - 2;
+          const wc = Math.max(4, wordsPerSentence + variance);
+          sentences.push(generateSentence(words, wc));
+        }
+        return sentences.join(' ');
+      }
+
+      function applyLoremStart(text) {
+        if (!startLoremCb.checked) return text;
+        // Replace beginning of first sentence
+        const dotIdx = text.indexOf('.');
+        if (dotIdx === -1) return LOREM_START + '.';
+        const rest = text.slice(dotIdx);
+        return LOREM_START + rest;
+      }
+
+      function generate() {
+        const words = WORDS[currentStyle];
+        const pCount = parseInt(paragraphsSlider.value);
+        const sCount = parseInt(sentencesSlider.value);
+        const wCount = parseInt(wordsSlider.value);
+        const useHtml = htmlTagsCb.checked;
+
+        let paragraphs = [];
+        let plainText = '';
+        let htmlText = '';
+
+        if (currentType === 'paragraphs') {
+          for (let i = 0; i < pCount; i++) {
+            let p = generateParagraph(words, sCount, wCount);
+            if (i === 0) p = applyLoremStart(p);
+            paragraphs.push(p);
+          }
+          plainText = paragraphs.join('\n\n');
+          if (useHtml) {
+            htmlText = paragraphs.map(p => '<p>' + p + '</p>').join('\n\n');
+          }
+
+        } else if (currentType === 'sentences') {
+          const total = pCount; // reuse paragraphs slider as count
+          for (let i = 0; i < total; i++) {
+            const variance = Math.floor(Math.random() * 5) - 2;
+            const wc = Math.max(4, wCount + variance);
+            paragraphs.push(generateSentence(words, wc));
+          }
+          if (paragraphs.length > 0) {
+            paragraphs[0] = applyLoremStart(paragraphs[0]);
+          }
+          plainText = paragraphs.join(' ');
+          if (useHtml) {
+            htmlText = '<p>' + plainText + '</p>';
+          }
+
+        } else if (currentType === 'words') {
+          const total = pCount * 10; // scale up
+          const result = [];
+          for (let i = 0; i < total; i++) {
+            result.push(randomWord(words));
+          }
+          plainText = result.join(' ');
+          if (startLoremCb.checked) {
+            plainText = LOREM_START + ' ' + plainText;
+          }
+          if (useHtml) {
+            htmlText = '<p>' + plainText + '</p>';
+          }
+
+        } else if (currentType === 'lists') {
+          const items = [];
+          for (let i = 0; i < pCount; i++) {
+            const variance = Math.floor(Math.random() * 5) - 2;
+            const wc = Math.max(4, wCount + variance);
+            let sentence = generateSentence(words, wc);
+            if (i === 0) sentence = applyLoremStart(sentence);
+            items.push(sentence);
+          }
+          plainText = items.map((item, i) => (i + 1) + '. ' + item).join('\n');
+          if (useHtml) {
+            htmlText = '<ul>\n' + items.map(item => '  <li>' + item + '</li>').join('\n') + '\n</ul>';
+          }
+        }
+
+        const displayText = useHtml ? htmlText : plainText;
+        const copyText = useHtml ? htmlText : plainText;
+
+        // Render preview (always rendered nicely)
+        if (useHtml) {
+          // Show raw HTML as code
+          output.textContent = htmlText;
+        } else {
+          if (currentType === 'paragraphs') {
+            output.innerHTML = paragraphs.map(p => '<p>' + escapeHtml(p) + '</p>').join('');
+          } else if (currentType === 'lists') {
+            output.innerHTML = '<ol>' + plainText.split('\n').map(line => {
+              const text = line.replace(/^\d+\.\s*/, '');
+              return '<li>' + escapeHtml(text) + '</li>';
+            }).join('') + '</ol>';
+          } else {
+            output.innerHTML = '<p>' + escapeHtml(plainText) + '</p>';
+          }
+        }
+
+        // Store for copy
+        output.dataset.copy = copyText;
+
+        // Stats — count from the plain version
+        const statText = useHtml ? plainText || displayText.replace(/<[^>]*>/g, ' ') : plainText;
+        const wds = statText.trim().split(/\s+/).filter(Boolean);
+        wordCountEl.textContent = wds.length;
+        charCountEl.textContent = copyText.length;
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      // Type buttons
+      document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentType = btn.dataset.type;
+          updateControlVisibility();
+          generate();
+        });
+      });
+
+      // Style buttons
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentStyle = btn.dataset.style;
+          generate();
+        });
+      });
+
+      function updateControlVisibility() {
+        // Always show paragraphs (used as count for all types)
+        const pLabel = paragraphsControl.querySelector('label');
+        if (currentType === 'paragraphs') {
+          pLabel.textContent = 'Paragraphs';
+          sentencesControl.style.display = '';
+          wordsControl.style.display = '';
+        } else if (currentType === 'sentences') {
+          pLabel.textContent = 'Number of sentences';
+          sentencesControl.style.display = 'none';
+          wordsControl.style.display = '';
+        } else if (currentType === 'words') {
+          pLabel.textContent = 'Amount (x10 words)';
+          sentencesControl.style.display = 'none';
+          wordsControl.style.display = 'none';
+        } else if (currentType === 'lists') {
+          pLabel.textContent = 'List items';
+          sentencesControl.style.display = 'none';
+          wordsControl.style.display = '';
+        }
+      }
+
+      // Sliders
+      [paragraphsSlider, sentencesSlider, wordsSlider].forEach(slider => {
+        slider.addEventListener('input', () => {
+          document.getElementById(slider.id + '-val').textContent = slider.value;
+          generate();
+        });
+      });
+
+      // Checkboxes
+      startLoremCb.addEventListener('change', generate);
+      htmlTagsCb.addEventListener('change', generate);
+
+      // Copy
+      copyBtn.addEventListener('click', () => {
+        const text = output.dataset.copy || output.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'Copy to Clipboard';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+
+      // Init
+      updateControlVisibility();
+      generate();
+    })();
+  </script>
+</body>
+</html>

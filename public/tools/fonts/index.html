@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Pairing Tool - Free Online Tool | imseankim.com</title>
+<meta name="description" content="Free online font pairing tool. Preview heading and body font combinations with live preview, curated suggestions, and CSS code export. Powered by Google Fonts.">
+<meta name="keywords" content="font pairing, google fonts, typography, font combination, heading font, body font, CSS fonts, free online tool">
+<meta property="og:title" content="Font Pairing Tool - Free Online Tool | imseankim.com">
+<meta property="og:description" content="Preview and discover beautiful font pairings with live preview, curated suggestions, and one-click CSS export.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://imseankim.com/tools/fonts/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Font Pairing Tool - Free Online Tool">
+<meta name="twitter:description" content="Preview and discover beautiful font pairings with live preview and CSS export.">
+<link rel="canonical" href="https://imseankim.com/tools/fonts/">
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .fp-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 56px - 50px);
+  }
+
+  @media (max-width: 900px) {
+    .fp-layout { grid-template-columns: 1fr; }
+    .fp-sidebar { border-right: none !important; border-bottom: 1px solid #222; max-height: 50vh; }
+  }
+
+  /* Sidebar */
+  .fp-sidebar {
+    background: #111;
+    border-right: 1px solid #1e1e1e;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .fp-sidebar::-webkit-scrollbar { width: 4px; }
+  .fp-sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .fp-section { margin-bottom: 22px; }
+  .fp-section-title {
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: #555; margin-bottom: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    user-select: none;
+  }
+  .fp-section-title::after { content: '\25BE'; font-size: 0.6rem; }
+  .fp-section-title.collapsed::after { content: '\25B8'; }
+  .fp-section-body { transition: all 0.3s; }
+  .fp-section-body.hidden { display: none; }
+
+  .fp-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .fp-row label {
+    font-size: 0.72rem; color: #888; width: 70px; flex-shrink: 0;
+  }
+  .fp-row select, .fp-row input[type="number"] {
+    flex: 1; background: #1a1a1a; border: 1px solid #333; color: #ccc;
+    padding: 7px 10px; border-radius: 8px; font-size: 0.78rem;
+    font-family: var(--font-sans); outline: none; transition: border 0.2s;
+  }
+  .fp-row select:hover, .fp-row input[type="number"]:hover { border-color: #555; }
+  .fp-row select:focus, .fp-row input[type="number"]:focus { border-color: var(--accent); }
+
+  .fp-row input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 4px;
+    background: #333; border-radius: 2px; outline: none;
+  }
+  .fp-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: #fff; cursor: pointer;
+  }
+  .fp-val {
+    font-size: 0.7rem; color: #666; width: 38px; text-align: right; flex-shrink: 0;
+    font-family: var(--font-mono);
+  }
+
+  .fp-row input[type="color"] {
+    -webkit-appearance: none; width: 32px; height: 32px; border: 1px solid #333;
+    border-radius: 6px; background: none; cursor: pointer; padding: 2px;
+  }
+  .fp-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  .fp-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+  .fp-color-hex {
+    font-size: 0.72rem; color: #666; font-family: var(--font-mono); width: 60px;
+  }
+
+  .fp-btn {
+    background: #1a1a1a; border: 1px solid #333; color: #aaa;
+    padding: 8px 16px; border-radius: 8px; font-size: 0.75rem;
+    cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    font-family: var(--font-sans); text-transform: uppercase;
+  }
+  .fp-btn:hover { background: #252525; color: #fff; border-color: #555; }
+  .fp-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+  .fp-btn.primary:hover { background: var(--accent-hover); }
+
+  .fp-swap-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 8px; margin: 6px 0;
+    background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
+    color: #888; font-size: 0.75rem; cursor: pointer;
+    transition: all 0.2s; font-family: var(--font-sans);
+  }
+  .fp-swap-btn:hover { background: #252525; color: #fff; border-color: #555; }
+  .fp-swap-btn svg { margin-right: 6px; }
+
+  /* Suggestions */
+  .fp-suggestions {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .fp-suggestion {
+    background: #1a1a1a; border: 1px solid #282828; border-radius: 8px;
+    padding: 10px 12px; cursor: pointer; transition: all 0.2s;
+  }
+  .fp-suggestion:hover { border-color: #444; background: #202020; }
+  .fp-suggestion-heading {
+    font-size: 0.85rem; color: #ddd; margin-bottom: 2px;
+  }
+  .fp-suggestion-body {
+    font-size: 0.7rem; color: #777;
+  }
+  .fp-suggestion-label {
+    font-size: 0.6rem; color: #555; letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Main Content */
+  .fp-main {
+    overflow-y: auto; padding: 30px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .fp-main::-webkit-scrollbar { width: 4px; }
+  .fp-main::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  /* Template Tabs */
+  .fp-template-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .fp-template-tab {
+    background: #1a1a1a; border: 1px solid #282828; border-radius: 8px;
+    padding: 7px 16px; font-size: 0.75rem; color: #888;
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-sans);
+  }
+  .fp-template-tab:hover { border-color: #444; color: #ccc; }
+  .fp-template-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(79,172,254,0.06); }
+
+  /* Preview */
+  .fp-preview-card {
+    background: #141414; border: 1px solid #222; border-radius: 16px;
+    padding: 40px; min-height: 300px; transition: all 0.3s;
+  }
+  .fp-preview-heading {
+    margin-bottom: 16px; line-height: 1.2;
+  }
+  .fp-preview-body {
+    line-height: 1.7;
+  }
+  .fp-preview-meta {
+    font-size: 0.72rem; color: #555; margin-bottom: 12px;
+    font-family: var(--font-sans);
+  }
+  .fp-preview-tag {
+    display: inline-block; background: #1a1a1a; border: 1px solid #282828;
+    border-radius: 20px; padding: 3px 10px; font-size: 0.65rem; color: #666;
+    margin-right: 6px; font-family: var(--font-sans);
+  }
+
+  /* Card Template */
+  .fp-card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;
+  }
+  .fp-card-item {
+    background: #141414; border: 1px solid #222; border-radius: 12px;
+    overflow: hidden;
+  }
+  .fp-card-image {
+    height: 140px; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  }
+  .fp-card-content { padding: 20px; }
+
+  /* Landing Template */
+  .fp-landing {
+    text-align: center; padding: 60px 40px;
+  }
+  .fp-landing .fp-preview-heading { font-size: 3rem; margin-bottom: 20px; }
+  .fp-landing .fp-preview-body { max-width: 600px; margin: 0 auto 30px; }
+  .fp-landing-cta {
+    display: inline-block; background: var(--accent); color: #000; font-weight: 600;
+    padding: 12px 32px; border-radius: 8px; font-size: 0.9rem;
+  }
+
+  /* CSS Output */
+  .fp-code-section {
+    background: #141414; border: 1px solid #222; border-radius: 12px;
+    overflow: hidden;
+  }
+  .fp-code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid #222; background: #111;
+  }
+  .fp-code-header span {
+    font-size: 0.72rem; color: #555; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .fp-code-output {
+    padding: 16px; font-family: var(--font-mono); font-size: 0.78rem;
+    color: #aaa; line-height: 1.7; white-space: pre-wrap; word-break: break-all;
+    max-height: 300px; overflow-y: auto;
+  }
+  .fp-code-output::-webkit-scrollbar { width: 4px; }
+  .fp-code-output::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .fp-copy-btn {
+    background: #1a1a1a; border: 1px solid #333; color: #aaa;
+    padding: 5px 12px; border-radius: 6px; font-size: 0.7rem;
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-sans);
+  }
+  .fp-copy-btn:hover { background: #252525; color: #fff; border-color: #555; }
+  .fp-copy-btn.copied { background: var(--success); color: #000; border-color: var(--success); }
+
+  /* Font info badges */
+  .fp-font-info {
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .fp-font-badge {
+    font-size: 0.65rem; color: #555; background: #1a1a1a;
+    border: 1px solid #282828; border-radius: 6px; padding: 3px 8px;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+<script src="/shared/header.js"></script>
+
+<main class="tool-content">
+<div class="fp-layout">
+  <!-- Sidebar -->
+  <div class="fp-sidebar">
+    <!-- Heading Font -->
+    <div class="fp-section">
+      <div class="fp-section-title" onclick="toggleSection(this)">Heading Font</div>
+      <div class="fp-section-body">
+        <div class="fp-row">
+          <label>Family</label>
+          <select id="headingFont" onchange="updatePreview()"></select>
+        </div>
+        <div class="fp-row">
+          <label>Size</label>
+          <input type="range" id="headingSize" min="16" max="96" value="42" oninput="updatePreview()">
+          <span class="fp-val" id="headingSizeVal">42px</span>
+        </div>
+        <div class="fp-row">
+          <label>Weight</label>
+          <select id="headingWeight" onchange="updatePreview()">
+            <option value="300">Light (300)</option>
+            <option value="400">Regular (400)</option>
+            <option value="500">Medium (500)</option>
+            <option value="600">Semi Bold (600)</option>
+            <option value="700" selected>Bold (700)</option>
+            <option value="800">Extra Bold (800)</option>
+            <option value="900">Black (900)</option>
+          </select>
+        </div>
+        <div class="fp-row">
+          <label>Line H.</label>
+          <input type="range" id="headingLineHeight" min="0.8" max="2" value="1.2" step="0.05" oninput="updatePreview()">
+          <span class="fp-val" id="headingLineHeightVal">1.2</span>
+        </div>
+        <div class="fp-row">
+          <label>Spacing</label>
+          <input type="range" id="headingLetterSpacing" min="-3" max="10" value="0" step="0.5" oninput="updatePreview()">
+          <span class="fp-val" id="headingLetterSpacingVal">0px</span>
+        </div>
+        <div class="fp-row">
+          <label>Color</label>
+          <input type="color" id="headingColor" value="#ffffff" oninput="updatePreview()">
+          <span class="fp-color-hex" id="headingColorHex">#ffffff</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Swap Button -->
+    <button class="fp-swap-btn" onclick="swapFonts()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 16 3 12 7 8"/><line x1="3" y1="12" x2="21" y2="12"/><polyline points="17 8 21 12 17 16"/></svg>
+      Swap Fonts
+    </button>
+
+    <!-- Body Font -->
+    <div class="fp-section">
+      <div class="fp-section-title" onclick="toggleSection(this)">Body Font</div>
+      <div class="fp-section-body">
+        <div class="fp-row">
+          <label>Family</label>
+          <select id="bodyFont" onchange="updatePreview()"></select>
+        </div>
+        <div class="fp-row">
+          <label>Size</label>
+          <input type="range" id="bodySize" min="10" max="32" value="16" oninput="updatePreview()">
+          <span class="fp-val" id="bodySizeVal">16px</span>
+        </div>
+        <div class="fp-row">
+          <label>Weight</label>
+          <select id="bodyWeight" onchange="updatePreview()">
+            <option value="300">Light (300)</option>
+            <option value="400" selected>Regular (400)</option>
+            <option value="500">Medium (500)</option>
+            <option value="600">Semi Bold (600)</option>
+            <option value="700">Bold (700)</option>
+          </select>
+        </div>
+        <div class="fp-row">
+          <label>Line H.</label>
+          <input type="range" id="bodyLineHeight" min="1" max="2.5" value="1.7" step="0.05" oninput="updatePreview()">
+          <span class="fp-val" id="bodyLineHeightVal">1.7</span>
+        </div>
+        <div class="fp-row">
+          <label>Spacing</label>
+          <input type="range" id="bodyLetterSpacing" min="-1" max="5" value="0" step="0.25" oninput="updatePreview()">
+          <span class="fp-val" id="bodyLetterSpacingVal">0px</span>
+        </div>
+        <div class="fp-row">
+          <label>Color</label>
+          <input type="color" id="bodyColor" value="#aaaaaa" oninput="updatePreview()">
+          <span class="fp-color-hex" id="bodyColorHex">#aaaaaa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Curated Pairings -->
+    <div class="fp-section">
+      <div class="fp-section-title" onclick="toggleSection(this)">Curated Pairings</div>
+      <div class="fp-section-body">
+        <div class="fp-suggestions" id="suggestions"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Preview -->
+  <div class="fp-main">
+    <!-- Template Tabs -->
+    <div class="fp-template-tabs">
+      <button class="fp-template-tab active" data-template="article" onclick="setTemplate('article', this)">Article</button>
+      <button class="fp-template-tab" data-template="landing" onclick="setTemplate('landing', this)">Landing Page</button>
+      <button class="fp-template-tab" data-template="card" onclick="setTemplate('card', this)">Card</button>
+      <button class="fp-template-tab" data-template="blog" onclick="setTemplate('blog', this)">Blog Post</button>
+    </div>
+
+    <!-- Font Info -->
+    <div class="fp-font-info" id="fontInfo"></div>
+
+    <!-- Preview Area -->
+    <div id="previewArea"></div>
+
+    <!-- CSS Output -->
+    <div class="fp-code-section">
+      <div class="fp-code-header">
+        <span>Generated CSS</span>
+        <button class="fp-copy-btn" id="copyBtn" onclick="copyCSS()">Copy</button>
+      </div>
+      <div class="fp-code-output" id="cssOutput"></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script src="/shared/footer.js"></script>
+<script>
+// ============ Fonts ============
+const FONTS = [
+  'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald', 'Raleway',
+  'Poppins', 'Playfair Display', 'Merriweather', 'Lora', 'PT Serif',
+  'Source Code Pro', 'Fira Code', 'Space Grotesk', 'DM Sans', 'Nunito',
+  'Quicksand', 'Bebas Neue', 'Cinzel', 'Crimson Text', 'Libre Baskerville',
+  'Work Sans', 'Karla', 'Rubik', 'Archivo', 'Josefin Sans',
+  'Cormorant Garamond', 'IBM Plex Sans', 'Space Mono'
+];
+
+const PAIRINGS = [
+  { heading: 'Playfair Display', body: 'Lato', label: 'Classic Elegance' },
+  { heading: 'Montserrat', body: 'Merriweather', label: 'Modern + Traditional' },
+  { heading: 'Oswald', body: 'Open Sans', label: 'Bold Contrast' },
+  { heading: 'Poppins', body: 'Inter', label: 'Clean & Friendly' },
+  { heading: 'Bebas Neue', body: 'Roboto', label: 'Strong Headlines' },
+  { heading: 'Raleway', body: 'Lora', label: 'Refined & Readable' },
+  { heading: 'Space Grotesk', body: 'DM Sans', label: 'Tech Forward' },
+  { heading: 'Cinzel', body: 'Crimson Text', label: 'Editorial Luxury' },
+  { heading: 'Josefin Sans', body: 'Libre Baskerville', label: 'Artistic Contrast' },
+  { heading: 'Work Sans', body: 'IBM Plex Sans', label: 'Corporate Clean' },
+  { heading: 'Archivo', body: 'Karla', label: 'Geometric Duo' },
+  { heading: 'Cormorant Garamond', body: 'Quicksand', label: 'Whimsical Serif' },
+  { heading: 'Rubik', body: 'Nunito', label: 'Soft & Rounded' },
+  { heading: 'Playfair Display', body: 'PT Serif', label: 'Double Serif' },
+  { heading: 'Space Mono', body: 'Source Code Pro', label: 'Developer' },
+];
+
+let loadedFonts = new Set();
+let currentTemplate = 'article';
+
+// ============ Load Google Fonts ============
+function loadFont(fontName) {
+  if (loadedFonts.has(fontName)) return;
+  loadedFonts.add(fontName);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}:wght@300;400;500;600;700;800;900&display=swap`;
+  document.head.appendChild(link);
+}
+
+// ============ Initialize Font Selects ============
+function initSelects() {
+  const headingSel = document.getElementById('headingFont');
+  const bodySel = document.getElementById('bodyFont');
+  FONTS.forEach(f => {
+    headingSel.add(new Option(f, f));
+    bodySel.add(new Option(f, f));
+  });
+  headingSel.value = 'Playfair Display';
+  bodySel.value = 'Lato';
+}
+
+// ============ Suggestions ============
+function renderSuggestions() {
+  const container = document.getElementById('suggestions');
+  container.innerHTML = PAIRINGS.map((p, i) => `
+    <div class="fp-suggestion" onclick="applySuggestion(${i})">
+      <div class="fp-suggestion-heading" style="font-family:'${p.heading}',serif">${p.heading}</div>
+      <div class="fp-suggestion-body" style="font-family:'${p.body}',sans-serif">${p.body}</div>
+      <div class="fp-suggestion-label">${p.label}</div>
+    </div>
+  `).join('');
+  // Preload suggestion fonts
+  PAIRINGS.forEach(p => { loadFont(p.heading); loadFont(p.body); });
+}
+
+function applySuggestion(i) {
+  const p = PAIRINGS[i];
+  document.getElementById('headingFont').value = p.heading;
+  document.getElementById('bodyFont').value = p.body;
+  updatePreview();
+}
+
+// ============ Swap ============
+function swapFonts() {
+  const h = document.getElementById('headingFont');
+  const b = document.getElementById('bodyFont');
+  const hv = h.value, bv = b.value;
+  h.value = bv; b.value = hv;
+
+  const hs = document.getElementById('headingSize');
+  const bs = document.getElementById('bodySize');
+  const hsv = hs.value, bsv = bs.value;
+  hs.value = bsv; bs.value = hsv;
+
+  const hw = document.getElementById('headingWeight');
+  const bw = document.getElementById('bodyWeight');
+  const hwv = hw.value, bwv = bw.value;
+  hw.value = bwv; bw.value = hwv;
+
+  const hc = document.getElementById('headingColor');
+  const bc = document.getElementById('bodyColor');
+  const hcv = hc.value, bcv = bc.value;
+  hc.value = bcv; bc.value = hcv;
+
+  updatePreview();
+}
+
+// ============ Toggle Section ============
+function toggleSection(el) {
+  el.classList.toggle('collapsed');
+  el.nextElementSibling.classList.toggle('hidden');
+}
+
+// ============ Templates ============
+function setTemplate(t, btn) {
+  currentTemplate = t;
+  document.querySelectorAll('.fp-template-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updatePreview();
+}
+
+function getPreviewHTML(hStyle, bStyle, hFont, bFont) {
+  const heading = 'The Art of Typography';
+  const subheading = 'Exploring the beauty of well-paired fonts';
+  const body1 = 'Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing.';
+  const body2 = 'Good typography establishes a strong visual hierarchy, provides a graphic balance to the website, and sets the overall tone of the product. It should guide and inform your users, optimize readability and accessibility, and ensure an excellent user experience.';
+  const body3 = 'The right font pairing can transform a design from ordinary to extraordinary. A well-chosen combination of heading and body fonts creates contrast, hierarchy, and visual interest that keeps readers engaged.';
+
+  if (currentTemplate === 'article') {
+    return `
+      <div class="fp-preview-card">
+        <div class="fp-preview-meta">March 16, 2026 &middot; 5 min read</div>
+        <div class="fp-preview-heading" style="${hStyle}">${heading}</div>
+        <div class="fp-preview-body" style="${bStyle}; margin-bottom: 16px;">${body1}</div>
+        <div class="fp-preview-body" style="${bStyle}">${body2}</div>
+      </div>`;
+  }
+
+  if (currentTemplate === 'landing') {
+    return `
+      <div class="fp-preview-card fp-landing">
+        <div class="fp-preview-heading" style="${hStyle}; font-size: ${Math.max(parseInt(hStyle.match(/font-size:(\d+)/)?.[1] || 42), 36)}px">${heading}</div>
+        <div class="fp-preview-body" style="${bStyle}; max-width: 600px; margin: 0 auto 30px;">${subheading}. ${body1}</div>
+        <span class="fp-landing-cta" style="font-family:'${bFont}',sans-serif">Get Started</span>
+      </div>`;
+  }
+
+  if (currentTemplate === 'card') {
+    return `
+      <div class="fp-card-grid">
+        ${[1,2,3].map((n) => `
+          <div class="fp-card-item">
+            <div class="fp-card-image" style="background: linear-gradient(${n*45}deg, #1a1a2e, #16213e, #0f3460);"></div>
+            <div class="fp-card-content">
+              <div class="fp-preview-heading" style="${hStyle}; font-size: ${Math.min(parseInt(hStyle.match(/font-size:(\d+)/)?.[1] || 42), 24)}px; margin-bottom: 8px;">Card Title ${n}</div>
+              <div class="fp-preview-body" style="${bStyle}; font-size: ${Math.min(parseInt(bStyle.match(/font-size:(\d+)/)?.[1] || 16), 14)}px;">${body1.slice(0, 120)}...</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  if (currentTemplate === 'blog') {
+    return `
+      <div class="fp-preview-card">
+        <div style="margin-bottom: 16px;">
+          <span class="fp-preview-tag">Typography</span>
+          <span class="fp-preview-tag">Design</span>
+          <span class="fp-preview-tag">Web</span>
+        </div>
+        <div class="fp-preview-heading" style="${hStyle}">${heading}</div>
+        <div class="fp-preview-meta" style="margin: 12px 0 20px;">By Sean Kim &middot; March 16, 2026</div>
+        <div class="fp-preview-body" style="${bStyle}; margin-bottom: 16px;">${body1}</div>
+        <div class="fp-preview-heading" style="${hStyle}; font-size: ${Math.round(parseInt(hStyle.match(/font-size:(\d+)/)?.[1] || 42) * 0.6)}px; margin-top: 24px;">Why Font Pairing Matters</div>
+        <div class="fp-preview-body" style="${bStyle}; margin-bottom: 16px;">${body3}</div>
+        <div class="fp-preview-body" style="${bStyle}">${body2}</div>
+      </div>`;
+  }
+
+  return '';
+}
+
+// ============ Update Preview ============
+function updatePreview() {
+  const hFont = document.getElementById('headingFont').value;
+  const bFont = document.getElementById('bodyFont').value;
+  const hSize = document.getElementById('headingSize').value;
+  const bSize = document.getElementById('bodySize').value;
+  const hWeight = document.getElementById('headingWeight').value;
+  const bWeight = document.getElementById('bodyWeight').value;
+  const hLH = document.getElementById('headingLineHeight').value;
+  const bLH = document.getElementById('bodyLineHeight').value;
+  const hLS = document.getElementById('headingLetterSpacing').value;
+  const bLS = document.getElementById('bodyLetterSpacing').value;
+  const hColor = document.getElementById('headingColor').value;
+  const bColor = document.getElementById('bodyColor').value;
+
+  loadFont(hFont);
+  loadFont(bFont);
+
+  // Update display values
+  document.getElementById('headingSizeVal').textContent = hSize + 'px';
+  document.getElementById('bodySizeVal').textContent = bSize + 'px';
+  document.getElementById('headingLineHeightVal').textContent = hLH;
+  document.getElementById('bodyLineHeightVal').textContent = bLH;
+  document.getElementById('headingLetterSpacingVal').textContent = hLS + 'px';
+  document.getElementById('bodyLetterSpacingVal').textContent = bLS + 'px';
+  document.getElementById('headingColorHex').textContent = hColor;
+  document.getElementById('bodyColorHex').textContent = bColor;
+
+  const hStyle = `font-family:'${hFont}',serif; font-size:${hSize}px; font-weight:${hWeight}; line-height:${hLH}; letter-spacing:${hLS}px; color:${hColor}`;
+  const bStyle = `font-family:'${bFont}',sans-serif; font-size:${bSize}px; font-weight:${bWeight}; line-height:${bLH}; letter-spacing:${bLS}px; color:${bColor}`;
+
+  document.getElementById('previewArea').innerHTML = getPreviewHTML(hStyle, bStyle, hFont, bFont);
+
+  // Font info badges
+  document.getElementById('fontInfo').innerHTML = `
+    <span class="fp-font-badge">Heading: ${hFont}</span>
+    <span class="fp-font-badge">Body: ${bFont}</span>
+    <span class="fp-font-badge">${hSize}px / ${bSize}px</span>
+    <span class="fp-font-badge">${hWeight} / ${bWeight}</span>
+  `;
+
+  // Generate CSS
+  generateCSS(hFont, bFont, hSize, bSize, hWeight, bWeight, hLH, bLH, hLS, bLS, hColor, bColor);
+}
+
+// ============ CSS Output ============
+function generateCSS(hFont, bFont, hSize, bSize, hWeight, bWeight, hLH, bLH, hLS, bLS, hColor, bColor) {
+  const hFontURL = hFont.replace(/ /g, '+');
+  const bFontURL = bFont.replace(/ /g, '+');
+  const importURL = hFont === bFont
+    ? `https://fonts.googleapis.com/css2?family=${hFontURL}:wght@${hWeight}&display=swap`
+    : `https://fonts.googleapis.com/css2?family=${hFontURL}:wght@${hWeight}&family=${bFontURL}:wght@${bWeight}&display=swap`;
+
+  const css = `/* Google Fonts Import */
+@import url('${importURL}');
+
+/* Heading */
+h1, h2, h3 {
+  font-family: '${hFont}', serif;
+  font-weight: ${hWeight};
+  font-size: ${hSize}px;
+  line-height: ${hLH};
+  letter-spacing: ${hLS}px;
+  color: ${hColor};
+}
+
+/* Body */
+body, p {
+  font-family: '${bFont}', sans-serif;
+  font-weight: ${bWeight};
+  font-size: ${bSize}px;
+  line-height: ${bLH};
+  letter-spacing: ${bLS}px;
+  color: ${bColor};
+}`;
+
+  document.getElementById('cssOutput').textContent = css;
+}
+
+// ============ Copy CSS ============
+function copyCSS() {
+  const css = document.getElementById('cssOutput').textContent;
+  navigator.clipboard.writeText(css).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ============ Init ============
+initSelects();
+renderSuggestions();
+updatePreview();
+</script>
+</body>
+</html>

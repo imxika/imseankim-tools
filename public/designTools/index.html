@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Online Design & Dev Tools | imseankim.com</title>
+  <meta name="description" content="20+ free online tools for designers and developers. Color palettes, gradient generator, JSON formatter, image tools, and more. No sign-up required.">
+  <meta property="og:title" content="Free Online Design & Dev Tools">
+  <meta property="og:description" content="20+ free online tools. No sign-up required.">
+  <meta property="og:url" content="https://imseankim.com/designTools">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/designTools">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 80px 24px 50px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 200;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .category {
+      padding: 0 24px 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .category-title {
+      font-size: 0.8rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      padding-left: 4px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--card-accent, #4facfe), var(--card-accent2, #48dbfb));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tool-card:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-light);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+    .tool-card:hover::before { opacity: 1; }
+
+    .tool-card .tc-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .tool-card .tc-name {
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .tool-card .tc-desc {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .tool-card .tc-tag {
+      display: inline-block;
+      background: var(--bg-input);
+      color: var(--text-dim);
+      font-size: 0.6rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+    .tool-card.coming-soon {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .tool-card.coming-soon .tc-tag {
+      background: #2a2a1a;
+      color: #aa9944;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      padding: 30px 24px 60px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2.5rem;
+      font-weight: 200;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    .stat-label {
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; letter-spacing: 5px; }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .tool-card { padding: 16px; }
+      .tool-card .tc-icon { font-size: 1.5rem; }
+      .stats { gap: 30px; }
+      .stat-num { font-size: 1.8rem; }
+    }
+    @media (max-width: 480px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main>
+    <section class="hero">
+      <h1>Design Tools</h1>
+      <p>Free online tools for designers & developers. No sign-up. No data uploaded. Everything runs in your browser.</p>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-num">20+</div>
+        <div class="stat-label">Free Tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Sign-ups Required</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Client-side</div>
+      </div>
+    </section>
+
+    <div id="toolsContainer"></div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+
+  <script>
+    const categories = [
+      {
+        name: 'Design Tools',
+        accent: ['#ff6b6b', '#feca57'],
+        tools: [
+          { slug: 'colors', icon: '🎨', name: 'Color Palette Studio', desc: 'Create, customize, and export beautiful color palettes with harmony generation.', live: true },
+          { slug: 'gradient', icon: '🌈', name: 'Gradient Generator', desc: 'Design stunning CSS gradients with live preview and code export.', live: true },
+          { slug: 'fonts', icon: '🔤', name: 'Font Pairing Tool', desc: 'Find perfect Google Font combinations with live preview.', live: true },
+          { slug: 'shadow', icon: '🔲', name: 'Box Shadow Generator', desc: 'Create layered CSS box shadows with visual controls.', live: true },
+          { slug: 'grid', icon: '📐', name: 'CSS Grid Builder', desc: 'Build complex CSS Grid layouts with drag-and-drop.', live: true },
+          { slug: 'flexbox', icon: '📦', name: 'Flexbox Playground', desc: 'Learn and experiment with CSS Flexbox properties.', live: true },
+        ]
+      },
+      {
+        name: 'Developer Tools',
+        accent: ['#4facfe', '#00f2fe'],
+        tools: [
+          { slug: 'json', icon: '{ }', name: 'JSON Formatter', desc: 'Format, validate, and beautify JSON with syntax highlighting.', live: true },
+          { slug: 'regex', icon: '.*', name: 'Regex Tester', desc: 'Test regular expressions with real-time matching and explanation.', live: true },
+          { slug: 'base64', icon: '🔑', name: 'Base64 Encoder', desc: 'Encode and decode Base64 strings and files instantly.', live: true },
+          { slug: 'url-encode', icon: '🔗', name: 'URL Encoder', desc: 'Encode and decode URLs and query parameters.', live: true },
+          { slug: 'minify', icon: '📦', name: 'Code Minifier', desc: 'Minify HTML, CSS, and JavaScript code.', live: true },
+          { slug: 'markdown', icon: '📝', name: 'Markdown Preview', desc: 'Write markdown and see live rendered preview side by side.', live: true },
+        ]
+      },
+      {
+        name: 'Productivity Tools',
+        accent: ['#43e97b', '#38f9d7'],
+        tools: [
+          { slug: 'lorem', icon: '📄', name: 'Lorem Ipsum Generator', desc: 'Generate placeholder text in various styles and lengths.', live: true },
+          { slug: 'qr', icon: '📱', name: 'QR Code Generator', desc: 'Create QR codes for URLs, text, WiFi, and more.', live: true },
+          { slug: 'password', icon: '🔒', name: 'Password Generator', desc: 'Generate secure passwords with custom rules.', live: true },
+          { slug: 'units', icon: '📏', name: 'Unit Converter', desc: 'Convert between length, weight, temperature, and more.', live: true },
+        ]
+      },
+      {
+        name: 'Media Tools',
+        accent: ['#ff9ff3', '#f093fb'],
+        tools: [
+          { slug: 'image-resize', icon: '🖼️', name: 'Image Resizer', desc: 'Resize images in your browser. No upload to servers.', live: true },
+          { slug: 'image-compress', icon: '🗜️', name: 'Image Compressor', desc: 'Compress images while maintaining quality.', live: true },
+          { slug: 'svg-editor', icon: '✏️', name: 'SVG Editor', desc: 'Edit and optimize SVG files visually.', live: true },
+          { slug: 'favicon', icon: '⭐', name: 'Favicon Generator', desc: 'Generate favicons in all sizes from any image.', live: true },
+        ]
+      }
+    ];
+
+    const container = document.getElementById('toolsContainer');
+
+    categories.forEach(cat => {
+      const section = document.createElement('section');
+      section.className = 'category';
+      section.innerHTML = `<h2 class="category-title">${cat.name}</h2>`;
+
+      const grid = document.createElement('div');
+      grid.className = 'tools-grid';
+
+      cat.tools.forEach(tool => {
+        const a = document.createElement('a');
+        a.href = tool.live ? `/tools/${tool.slug}/` : '#';
+        a.className = `tool-card${tool.live ? '' : ' coming-soon'}`;
+        a.style.setProperty('--card-accent', cat.accent[0]);
+        a.style.setProperty('--card-accent2', cat.accent[1]);
+        a.innerHTML = `
+          <span class="tc-icon">${tool.icon}</span>
+          <span class="tc-name">${tool.name}</span>
+          <span class="tc-desc">${tool.desc}</span>
+          <span class="tc-tag">${tool.live ? 'Available' : 'Coming Soon'}</span>
+        `;
+        grid.appendChild(a);
+      });
+
+      section.appendChild(grid);
+      container.appendChild(section);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favicon Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate favicons from images or text/emoji. Preview all sizes, download as PNG or ICO, and get HTML meta tags. Free online favicon generator.">
+  <meta property="og:title" content="Favicon Generator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Generate favicons from images or text/emoji. Preview all sizes, download as PNG or ICO.">
+  <meta property="og:url" content="https://imseankim.com/tools/favicon">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/favicon">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Mode Tabs */
+    .mode-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .mode-tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .mode-tab.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(79, 172, 254, 0.04);
+    }
+
+    .drop-zone-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+
+    .drop-zone-text {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .drop-zone-hint {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .drop-zone input[type="file"] {
+      display: none;
+    }
+
+    /* Text Mode Controls */
+    .text-controls {
+      display: grid;
+      gap: 16px;
+    }
+
+    .text-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group.flex-1 {
+      flex: 1;
+    }
+
+    .control-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+    }
+
+    .text-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 1.6rem;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      text-align: center;
+      width: 100%;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .text-input:focus {
+      border-color: var(--accent);
+    }
+
+    .color-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .color-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      flex: 1;
+    }
+
+    .color-input-wrap input[type="color"] {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    .color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-input-wrap input[type="color"]::-webkit-color-swatch {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+    }
+
+    .color-hex {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      outline: none;
+      width: 70px;
+    }
+
+    .slider-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .slider-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Browser Tab Mockup */
+    .tab-mockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #2a2a2a;
+      border-radius: 8px 8px 0 0;
+      padding: 8px 16px;
+      margin-bottom: -1px;
+    }
+
+    .tab-mockup-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      image-rendering: pixelated;
+    }
+
+    .tab-mockup-text {
+      font-size: 0.75rem;
+      color: #ccc;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tab-mockup-close {
+      font-size: 0.7rem;
+      color: #888;
+      margin-left: 8px;
+    }
+
+    .browser-bar {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 0 8px 8px 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.r { background: #ff5f57; }
+    .browser-dot.y { background: #febc2e; }
+    .browser-dot.g { background: #28c840; }
+
+    .browser-url {
+      flex: 1;
+      background: #2a2a2a;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #888;
+    }
+
+    /* Preview Grid */
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      min-width: 90px;
+    }
+
+    .preview-item canvas {
+      image-rendering: pixelated;
+      border-radius: 4px;
+    }
+
+    .preview-size-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .preview-download {
+      font-size: 0.65rem;
+      color: var(--accent);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-sans);
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+    }
+
+    .preview-download:hover {
+      color: var(--accent-hover);
+    }
+
+    /* Actions */
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #000;
+    }
+
+    /* Meta Tags */
+    .meta-output {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-all;
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      font-size: 0.65rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .section-gap {
+      margin-top: 24px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .source-preview-img {
+      max-width: 128px;
+      max-height: 128px;
+      border-radius: 8px;
+      margin-top: 12px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Favicon Generator</h1>
+    <p class="tool-subtitle">Create favicons from images or text</p>
+
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="upload">Upload Image</button>
+      <button class="mode-tab" data-mode="text">Text / Emoji</button>
+    </div>
+
+    <!-- Upload Mode -->
+    <div class="card" id="upload-panel">
+      <div class="drop-zone" id="drop-zone">
+        <div class="drop-zone-icon">&#xe2c3;</div>
+        <div class="drop-zone-text">Drop an image here or click to browse</div>
+        <div class="drop-zone-hint">PNG, JPG, SVG, or WebP</div>
+        <input type="file" id="file-input" accept="image/*">
+      </div>
+      <div id="source-preview-wrap" class="hidden" style="text-align:center;margin-top:16px;">
+        <img id="source-preview" class="source-preview-img" alt="Source image">
+      </div>
+    </div>
+
+    <!-- Text Mode -->
+    <div class="card hidden" id="text-panel">
+      <div class="text-controls">
+        <div class="control-group">
+          <span class="control-label">Character / Emoji</span>
+          <input type="text" class="text-input" id="text-char" maxlength="2" placeholder="A" value="A">
+        </div>
+
+        <div class="color-row">
+          <div class="control-group" style="flex:1">
+            <span class="control-label">Background</span>
+            <div class="color-input-wrap">
+              <input type="color" id="bg-color" value="#4facfe">
+              <input type="text" class="color-hex" id="bg-hex" value="#4facfe">
+            </div>
+          </div>
+          <div class="control-group" style="flex:1">
+            <span class="control-label">Font Color</span>
+            <div class="color-input-wrap">
+              <input type="color" id="font-color" value="#ffffff">
+              <input type="text" class="color-hex" id="font-hex" value="#ffffff">
+            </div>
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="control-label">Font Size</span>
+              <span class="slider-value" id="font-size-val">70%</span>
+            </div>
+            <input type="range" id="font-size" min="30" max="95" value="70">
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="control-label">Border Radius</span>
+              <span class="slider-value" id="radius-val">20%</span>
+            </div>
+            <input type="range" id="border-radius" min="0" max="50" value="20">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Section (hidden until generated) -->
+    <div id="output-section" class="hidden">
+
+      <!-- Browser Tab Mockup -->
+      <div class="card">
+        <div class="card-label">Browser Tab Preview</div>
+        <div style="display:inline-block">
+          <div class="tab-mockup">
+            <canvas class="tab-mockup-icon" id="tab-icon" width="16" height="16"></canvas>
+            <span class="tab-mockup-text">My Website</span>
+            <span class="tab-mockup-close">&#x2715;</span>
+          </div>
+          <div class="browser-bar">
+            <div class="browser-dots">
+              <span class="browser-dot r"></span>
+              <span class="browser-dot y"></span>
+              <span class="browser-dot g"></span>
+            </div>
+            <div class="browser-url">https://example.com</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Size Previews -->
+      <div class="card">
+        <div class="card-label">All Sizes</div>
+        <div class="preview-grid" id="preview-grid"></div>
+      </div>
+
+      <!-- Download Actions -->
+      <div class="actions-row">
+        <button class="btn btn-primary" id="download-ico">Download .ICO</button>
+        <button class="btn" id="download-all-png">Download All PNGs</button>
+      </div>
+
+      <!-- Meta Tags -->
+      <div class="card section-gap">
+        <div class="card-label">HTML Meta Tags</div>
+        <div class="meta-output" id="meta-output">
+          <button class="copy-btn" id="copy-meta">Copy</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    const SIZES = [16, 32, 48, 64, 128, 180, 192, 512];
+    const DISPLAY_SIZES = [16, 32, 48, 64, 128, 192, 512];
+    let sourceCanvas = null; // master 512x512 source
+
+    // Elements
+    const modeTabs = document.querySelectorAll('.mode-tab');
+    const uploadPanel = document.getElementById('upload-panel');
+    const textPanel = document.getElementById('text-panel');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const sourcePreviewWrap = document.getElementById('source-preview-wrap');
+    const sourcePreview = document.getElementById('source-preview');
+    const outputSection = document.getElementById('output-section');
+    const previewGrid = document.getElementById('preview-grid');
+    const tabIcon = document.getElementById('tab-icon');
+    const metaOutput = document.getElementById('meta-output');
+    const toast = document.getElementById('toast');
+
+    // Text mode elements
+    const textChar = document.getElementById('text-char');
+    const bgColor = document.getElementById('bg-color');
+    const bgHex = document.getElementById('bg-hex');
+    const fontColor = document.getElementById('font-color');
+    const fontHex = document.getElementById('font-hex');
+    const fontSize = document.getElementById('font-size');
+    const fontSizeVal = document.getElementById('font-size-val');
+    const borderRadius = document.getElementById('border-radius');
+    const radiusVal = document.getElementById('radius-val');
+
+    let currentMode = 'upload';
+
+    // Tab switching
+    modeTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        modeTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentMode = tab.dataset.mode;
+        uploadPanel.classList.toggle('hidden', currentMode !== 'upload');
+        textPanel.classList.toggle('hidden', currentMode !== 'text');
+        if (currentMode === 'text') {
+          generateFromText();
+        }
+      });
+    });
+
+    // Drop zone
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImage(file);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleImage(fileInput.files[0]);
+    });
+
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          sourcePreview.src = e.target.result;
+          sourcePreviewWrap.classList.remove('hidden');
+          sourceCanvas = drawImageToCanvas(img, 512);
+          renderAllPreviews();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function drawImageToCanvas(img, size) {
+      const c = document.createElement('canvas');
+      c.width = size;
+      c.height = size;
+      const ctx = c.getContext('2d');
+      // Fit image into square (cover)
+      const s = Math.min(img.width, img.height);
+      const sx = (img.width - s) / 2;
+      const sy = (img.height - s) / 2;
+      ctx.drawImage(img, sx, sy, s, s, 0, 0, size, size);
+      return c;
+    }
+
+    // Text mode generation
+    function generateFromText() {
+      const char = textChar.value || 'A';
+      const bg = bgColor.value;
+      const fc = fontColor.value;
+      const fs = parseInt(fontSize.value);
+      const br = parseInt(borderRadius.value);
+
+      sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = 512;
+      sourceCanvas.height = 512;
+      const ctx = sourceCanvas.getContext('2d');
+
+      // Background with border radius
+      const r = (br / 100) * 256;
+      ctx.beginPath();
+      roundRect(ctx, 0, 0, 512, 512, r);
+      ctx.fillStyle = bg;
+      ctx.fill();
+
+      // Text
+      const px = Math.round(512 * (fs / 100));
+      ctx.fillStyle = fc;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `bold ${px}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${getComputedStyle(document.body).fontFamily}`;
+      ctx.fillText(char, 256, 256 + px * 0.04);
+
+      renderAllPreviews();
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    // Sync color inputs
+    bgColor.addEventListener('input', () => { bgHex.value = bgColor.value; if (currentMode === 'text') generateFromText(); });
+    bgHex.addEventListener('change', () => { bgColor.value = bgHex.value; if (currentMode === 'text') generateFromText(); });
+    fontColor.addEventListener('input', () => { fontHex.value = fontColor.value; if (currentMode === 'text') generateFromText(); });
+    fontHex.addEventListener('change', () => { fontColor.value = fontHex.value; if (currentMode === 'text') generateFromText(); });
+    fontSize.addEventListener('input', () => { fontSizeVal.textContent = fontSize.value + '%'; if (currentMode === 'text') generateFromText(); });
+    borderRadius.addEventListener('input', () => { radiusVal.textContent = borderRadius.value + '%'; if (currentMode === 'text') generateFromText(); });
+    textChar.addEventListener('input', () => { if (currentMode === 'text') generateFromText(); });
+
+    // Render previews
+    function renderAllPreviews() {
+      if (!sourceCanvas) return;
+      outputSection.classList.remove('hidden');
+      previewGrid.innerHTML = '';
+
+      // Tab mockup icon
+      const tCtx = tabIcon.getContext('2d');
+      tCtx.clearRect(0, 0, 16, 16);
+      tCtx.drawImage(sourceCanvas, 0, 0, 16, 16);
+
+      // Size previews
+      DISPLAY_SIZES.forEach(size => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        const displaySize = Math.min(size, 64);
+        c.style.width = displaySize + 'px';
+        c.style.height = displaySize + 'px';
+        const ctx = c.getContext('2d');
+        ctx.drawImage(sourceCanvas, 0, 0, size, size);
+
+        const label = document.createElement('span');
+        label.className = 'preview-size-label';
+        label.textContent = size + 'x' + size;
+
+        const dl = document.createElement('button');
+        dl.className = 'preview-download';
+        dl.textContent = 'Download';
+        dl.addEventListener('click', () => downloadPNG(size));
+
+        item.appendChild(c);
+        item.appendChild(label);
+        item.appendChild(dl);
+        previewGrid.appendChild(item);
+      });
+
+      // Meta tags
+      updateMetaTags();
+    }
+
+    function updateMetaTags() {
+      const copyBtn = document.getElementById('copy-meta');
+      const tags = `<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">`;
+      metaOutput.textContent = tags;
+      metaOutput.appendChild(copyBtn);
+    }
+
+    // Copy meta
+    document.getElementById('copy-meta').addEventListener('click', () => {
+      const text = metaOutput.textContent.replace('Copy', '').trim();
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+    });
+
+    // Download PNG
+    function downloadPNG(size) {
+      if (!sourceCanvas) return;
+      const c = document.createElement('canvas');
+      c.width = size;
+      c.height = size;
+      c.getContext('2d').drawImage(sourceCanvas, 0, 0, size, size);
+      const a = document.createElement('a');
+      a.download = size === 180 ? 'apple-touch-icon.png' : `favicon-${size}x${size}.png`;
+      a.href = c.toDataURL('image/png');
+      a.click();
+    }
+
+    // Download all PNGs
+    document.getElementById('download-all-png').addEventListener('click', () => {
+      if (!sourceCanvas) return;
+      SIZES.forEach((size, i) => {
+        setTimeout(() => downloadPNG(size), i * 150);
+      });
+    });
+
+    // ICO generation
+    document.getElementById('download-ico').addEventListener('click', () => {
+      if (!sourceCanvas) return;
+      const icoSizes = [16, 32, 48];
+      const images = icoSizes.map(size => {
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        c.getContext('2d').drawImage(sourceCanvas, 0, 0, size, size);
+        return { size, canvas: c };
+      });
+
+      const pngDatas = images.map(img => {
+        const dataUrl = img.canvas.toDataURL('image/png');
+        const binary = atob(dataUrl.split(',')[1]);
+        const arr = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+        return { size: img.size, data: arr };
+      });
+
+      // Build ICO
+      const headerSize = 6;
+      const entrySize = 16;
+      const dataOffset = headerSize + entrySize * pngDatas.length;
+      let totalDataSize = 0;
+      pngDatas.forEach(p => totalDataSize += p.data.length);
+
+      const buffer = new ArrayBuffer(dataOffset + totalDataSize);
+      const view = new DataView(buffer);
+
+      // ICONDIR header
+      view.setUint16(0, 0, true);      // reserved
+      view.setUint16(2, 1, true);      // ICO type
+      view.setUint16(4, pngDatas.length, true); // image count
+
+      let currentOffset = dataOffset;
+      pngDatas.forEach((png, i) => {
+        const offset = headerSize + i * entrySize;
+        view.setUint8(offset, png.size < 256 ? png.size : 0);      // width
+        view.setUint8(offset + 1, png.size < 256 ? png.size : 0);  // height
+        view.setUint8(offset + 2, 0);   // color palette
+        view.setUint8(offset + 3, 0);   // reserved
+        view.setUint16(offset + 4, 1, true);  // color planes
+        view.setUint16(offset + 6, 32, true); // bits per pixel
+        view.setUint32(offset + 8, png.data.length, true);  // image size
+        view.setUint32(offset + 12, currentOffset, true);   // image offset
+
+        const arr = new Uint8Array(buffer, currentOffset, png.data.length);
+        arr.set(png.data);
+        currentOffset += png.data.length;
+      });
+
+      const blob = new Blob([buffer], { type: 'image/x-icon' });
+      const a = document.createElement('a');
+      a.download = 'favicon.ico';
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('favicon.ico downloaded');
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Resizer - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Resize images online for free. Supports batch resize, preset social media sizes, custom dimensions, and multiple output formats. All processing done in your browser.">
+  <meta property="og:title" content="Image Resizer - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Resize images instantly in your browser. Batch mode, social media presets, and multiple export formats.">
+  <meta property="og:url" content="https://imseankim.com/tools/image-resize">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/image-resize">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted, #777);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      background: #141414;
+      border: 2px dashed #333;
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #fff;
+      background: #1a1a1a;
+    }
+
+    .drop-zone-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .drop-zone-text {
+      color: #999;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .drop-zone-text strong {
+      color: #fff;
+    }
+
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+
+    .mode-btn {
+      background: #141414;
+      border: 1px solid #222;
+      color: #999;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: #fff;
+      color: #0a0a0a;
+      border-color: #fff;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      display: none;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .controls-panel.visible {
+      display: block;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-section {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #777;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Dimension Inputs */
+    .dimension-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dim-input-group {
+      flex: 1;
+    }
+
+    .dim-input-group label {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .dim-input-group input {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .dim-input-group input:focus {
+      border-color: #555;
+    }
+
+    .lock-btn {
+      background: none;
+      border: 1px solid #333;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+
+    .lock-btn.locked {
+      border-color: #fff;
+      background: #222;
+    }
+
+    /* Percentage Buttons */
+    .percent-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .percent-btn {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      color: #ccc;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      transition: all 0.2s;
+    }
+
+    .percent-btn:hover,
+    .percent-btn.active {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .custom-percent {
+      width: 64px;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-size: 0.78rem;
+      outline: none;
+      text-align: center;
+    }
+
+    .custom-percent:focus {
+      border-color: #555;
+    }
+
+    /* Presets */
+    .preset-group-title {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin: 12px 0 6px;
+    }
+
+    .preset-group-title:first-child {
+      margin-top: 0;
+    }
+
+    .preset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-btn {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      color: #ccc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .preset-btn:hover,
+    .preset-btn.active {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    /* Format & Quality */
+    .format-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .format-select {
+      background: #0a0a0a;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .quality-slider-wrap {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .quality-slider-wrap.visible {
+      display: flex;
+    }
+
+    .quality-slider-wrap input[type="range"] {
+      flex: 1;
+      accent-color: #fff;
+      height: 4px;
+    }
+
+    .quality-value {
+      font-size: 0.8rem;
+      color: #999;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* Preview Area */
+    .preview-area {
+      display: none;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .preview-area.visible {
+      display: block;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .preview-title {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #777;
+    }
+
+    .file-info {
+      display: flex;
+      gap: 16px;
+      font-size: 0.78rem;
+      color: #555;
+    }
+
+    .file-info span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .file-info .size-reduced {
+      color: #4ade80;
+    }
+
+    .file-info .size-increased {
+      color: #f87171;
+    }
+
+    .preview-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .preview-compare {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .preview-pane {
+      text-align: center;
+    }
+
+    .preview-pane-label {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .preview-pane img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 6px;
+      border: 1px solid #222;
+      background: repeating-conic-gradient(#1a1a1a 0% 25%, #111 0% 50%) 0 0 / 16px 16px;
+    }
+
+    .preview-pane .dim-info {
+      font-size: 0.72rem;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    /* Batch List */
+    .batch-list {
+      display: none;
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .batch-list.visible {
+      display: block;
+    }
+
+    .batch-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .batch-title {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #777;
+    }
+
+    .batch-count {
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .batch-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .batch-item:last-child {
+      border-bottom: none;
+    }
+
+    .batch-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #222;
+    }
+
+    .batch-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .batch-item-name {
+      font-size: 0.8rem;
+      color: #ccc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .batch-item-meta {
+      font-size: 0.7rem;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .batch-item-remove {
+      background: none;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+
+    .batch-item-remove:hover {
+      color: #f87171;
+    }
+
+    /* Buttons */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #222;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #0a0a0a;
+      border-color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #ddd;
+      border-color: #ddd;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #141414;
+      color: #ccc;
+    }
+
+    .btn-secondary:hover {
+      border-color: #555;
+      color: #fff;
+    }
+
+    /* Hidden file input */
+    .file-input-hidden {
+      display: none;
+    }
+
+    /* Scrollbar */
+    .batch-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .batch-list::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    .batch-list::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Image Resizer</h1>
+    <p class="tool-subtitle">Resize images in your browser. Nothing leaves your device.</p>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="single">Single</button>
+      <button class="mode-btn" data-mode="batch">Batch</button>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">&#x1F5BC;</div>
+      <div class="drop-zone-text">
+        <strong>Drop image here</strong> or click to browse<br>
+        PNG, JPEG, WebP, GIF, BMP, SVG
+      </div>
+      <input type="file" class="file-input-hidden" id="fileInput" accept="image/*">
+    </div>
+
+    <!-- Batch List -->
+    <div class="batch-list" id="batchList">
+      <div class="batch-header">
+        <span class="batch-title">Queued Images</span>
+        <span class="batch-count" id="batchCount">0 files</span>
+      </div>
+      <div id="batchItems"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel" id="controlsPanel">
+      <div class="controls-grid">
+        <!-- Left Column -->
+        <div>
+          <!-- Dimensions -->
+          <div class="control-section">
+            <span class="control-label">Dimensions</span>
+            <div class="dimension-row">
+              <div class="dim-input-group">
+                <label>Width (px)</label>
+                <input type="number" id="widthInput" min="1" max="16384" placeholder="Width">
+              </div>
+              <button class="lock-btn locked" id="lockBtn" title="Lock aspect ratio">&#x1F512;</button>
+              <div class="dim-input-group">
+                <label>Height (px)</label>
+                <input type="number" id="heightInput" min="1" max="16384" placeholder="Height">
+              </div>
+            </div>
+          </div>
+
+          <!-- Percentage -->
+          <div class="control-section" style="margin-top: 20px;">
+            <span class="control-label">Scale by Percentage</span>
+            <div class="percent-grid">
+              <button class="percent-btn" data-percent="25">25%</button>
+              <button class="percent-btn" data-percent="50">50%</button>
+              <button class="percent-btn" data-percent="75">75%</button>
+              <button class="percent-btn" data-percent="100">100%</button>
+              <button class="percent-btn" data-percent="150">150%</button>
+              <button class="percent-btn" data-percent="200">200%</button>
+              <input type="number" class="custom-percent" id="customPercent" placeholder="%" min="1" max="1000" title="Custom percentage">
+            </div>
+          </div>
+
+          <!-- Format & Quality -->
+          <div class="control-section" style="margin-top: 20px;">
+            <span class="control-label">Output Format</span>
+            <div class="format-row">
+              <select class="format-select" id="formatSelect">
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+              </select>
+              <div class="quality-slider-wrap" id="qualityWrap">
+                <span style="font-size: 0.75rem; color: #555;">Quality</span>
+                <input type="range" id="qualitySlider" min="1" max="100" value="92">
+                <span class="quality-value" id="qualityValue">92%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+          <!-- Presets -->
+          <div class="control-section">
+            <span class="control-label">Presets</span>
+
+            <div class="preset-group-title">Social Media</div>
+            <div class="preset-grid">
+              <button class="preset-btn" data-w="1080" data-h="1080">Instagram Post</button>
+              <button class="preset-btn" data-w="1080" data-h="1920">Story</button>
+              <button class="preset-btn" data-w="820" data-h="312">FB Cover</button>
+              <button class="preset-btn" data-w="1500" data-h="500">Twitter Header</button>
+              <button class="preset-btn" data-w="1280" data-h="720">YT Thumbnail</button>
+            </div>
+
+            <div class="preset-group-title">Common Sizes</div>
+            <div class="preset-grid">
+              <button class="preset-btn" data-w="640" data-h="480">640 x 480</button>
+              <button class="preset-btn" data-w="800" data-h="600">800 x 600</button>
+              <button class="preset-btn" data-w="1024" data-h="768">1024 x 768</button>
+              <button class="preset-btn" data-w="1920" data-h="1080">1920 x 1080</button>
+              <button class="preset-btn" data-w="3840" data-h="2160">4K</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-area" id="previewArea">
+      <div class="preview-header">
+        <span class="preview-title">Preview</span>
+        <div class="file-info" id="fileInfo"></div>
+      </div>
+      <div class="preview-compare">
+        <div class="preview-pane">
+          <div class="preview-pane-label">Original</div>
+          <img id="previewOriginal" alt="Original">
+          <div class="dim-info" id="originalDimInfo"></div>
+        </div>
+        <div class="preview-pane">
+          <div class="preview-pane-label">Resized</div>
+          <img id="previewResized" alt="Resized">
+          <div class="dim-info" id="resizedDimInfo"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row" id="actionRow" style="display: none;">
+      <button class="btn btn-primary" id="resizeBtn" disabled>Resize & Download</button>
+      <button class="btn btn-secondary" id="clearBtn">Clear</button>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+  (function() {
+    // State
+    let mode = 'single';
+    let files = [];
+    let currentImage = null; // { file, img, width, height }
+    let aspectLocked = true;
+    let aspectRatio = 1;
+    let resizedBlob = null;
+
+    // Elements
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const batchList = document.getElementById('batchList');
+    const batchItems = document.getElementById('batchItems');
+    const batchCount = document.getElementById('batchCount');
+    const controlsPanel = document.getElementById('controlsPanel');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const lockBtn = document.getElementById('lockBtn');
+    const customPercent = document.getElementById('customPercent');
+    const formatSelect = document.getElementById('formatSelect');
+    const qualityWrap = document.getElementById('qualityWrap');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const qualityValue = document.getElementById('qualityValue');
+    const previewArea = document.getElementById('previewArea');
+    const previewOriginal = document.getElementById('previewOriginal');
+    const previewResized = document.getElementById('previewResized');
+    const originalDimInfo = document.getElementById('originalDimInfo');
+    const resizedDimInfo = document.getElementById('resizedDimInfo');
+    const fileInfo = document.getElementById('fileInfo');
+    const actionRow = document.getElementById('actionRow');
+    const resizeBtn = document.getElementById('resizeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Mode toggle
+    document.querySelectorAll('.mode-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        mode = btn.dataset.mode;
+        fileInput.multiple = mode === 'batch';
+        if (mode === 'batch') {
+          dropZone.querySelector('.drop-zone-text').innerHTML = '<strong>Drop images here</strong> or click to browse<br>PNG, JPEG, WebP, GIF, BMP, SVG';
+        } else {
+          dropZone.querySelector('.drop-zone-text').innerHTML = '<strong>Drop image here</strong> or click to browse<br>PNG, JPEG, WebP, GIF, BMP, SVG';
+        }
+        clearAll();
+      });
+    });
+
+    // Drop zone
+    dropZone.addEventListener('click', function() { fileInput.click(); });
+
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', function() {
+      dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    fileInput.addEventListener('change', function() {
+      handleFiles(fileInput.files);
+      fileInput.value = '';
+    });
+
+    function handleFiles(fileList) {
+      var imageFiles = Array.from(fileList).filter(function(f) { return f.type.startsWith('image/'); });
+      if (imageFiles.length === 0) return;
+
+      if (mode === 'single') {
+        files = [imageFiles[0]];
+        loadSingleImage(imageFiles[0]);
+      } else {
+        files = files.concat(imageFiles);
+        renderBatchList();
+        showControls();
+      }
+    }
+
+    function loadSingleImage(file) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function() {
+        currentImage = { file: file, img: img, width: img.naturalWidth, height: img.naturalHeight };
+        aspectRatio = img.naturalWidth / img.naturalHeight;
+        widthInput.value = img.naturalWidth;
+        heightInput.value = img.naturalHeight;
+        previewOriginal.src = url;
+        originalDimInfo.textContent = img.naturalWidth + ' x ' + img.naturalHeight + ' | ' + formatFileSize(file.size);
+        showControls();
+        updatePreview();
+      };
+      img.src = url;
+    }
+
+    function showControls() {
+      controlsPanel.classList.add('visible');
+      actionRow.style.display = 'flex';
+      resizeBtn.disabled = false;
+      if (mode === 'batch') {
+        batchList.classList.add('visible');
+        previewArea.classList.remove('visible');
+        resizeBtn.textContent = 'Resize All & Download';
+      } else {
+        batchList.classList.remove('visible');
+        previewArea.classList.add('visible');
+        resizeBtn.textContent = 'Resize & Download';
+      }
+    }
+
+    // Batch list rendering
+    function renderBatchList() {
+      batchItems.innerHTML = '';
+      batchCount.textContent = files.length + ' file' + (files.length !== 1 ? 's' : '');
+      files.forEach(function(file, i) {
+        var item = document.createElement('div');
+        item.className = 'batch-item';
+        var thumb = document.createElement('img');
+        thumb.className = 'batch-thumb';
+        thumb.src = URL.createObjectURL(file);
+        var info = document.createElement('div');
+        info.className = 'batch-item-info';
+        info.innerHTML = '<div class="batch-item-name">' + escapeHtml(file.name) + '</div><div class="batch-item-meta">' + formatFileSize(file.size) + '</div>';
+        var removeBtn = document.createElement('button');
+        removeBtn.className = 'batch-item-remove';
+        removeBtn.innerHTML = '&#x2715;';
+        removeBtn.title = 'Remove';
+        removeBtn.addEventListener('click', function() {
+          files.splice(i, 1);
+          renderBatchList();
+          if (files.length === 0) clearAll();
+        });
+        item.appendChild(thumb);
+        item.appendChild(info);
+        item.appendChild(removeBtn);
+        batchItems.appendChild(item);
+      });
+    }
+
+    // Aspect ratio lock
+    lockBtn.addEventListener('click', function() {
+      aspectLocked = !aspectLocked;
+      lockBtn.classList.toggle('locked', aspectLocked);
+      lockBtn.innerHTML = aspectLocked ? '&#x1F512;' : '&#x1F513;';
+    });
+
+    // Width/Height inputs
+    widthInput.addEventListener('input', function() {
+      if (aspectLocked && currentImage) {
+        var w = parseInt(widthInput.value) || 0;
+        heightInput.value = Math.round(w / aspectRatio) || '';
+      }
+      clearActivePercent();
+      clearActivePreset();
+      updatePreview();
+    });
+
+    heightInput.addEventListener('input', function() {
+      if (aspectLocked && currentImage) {
+        var h = parseInt(heightInput.value) || 0;
+        widthInput.value = Math.round(h * aspectRatio) || '';
+      }
+      clearActivePercent();
+      clearActivePreset();
+      updatePreview();
+    });
+
+    // Percentage buttons
+    document.querySelectorAll('.percent-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (!currentImage && mode === 'single') return;
+        document.querySelectorAll('.percent-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        customPercent.value = '';
+        clearActivePreset();
+        var pct = parseInt(btn.dataset.percent);
+        applyPercent(pct);
+      });
+    });
+
+    customPercent.addEventListener('input', function() {
+      document.querySelectorAll('.percent-btn').forEach(function(b) { b.classList.remove('active'); });
+      clearActivePreset();
+      var pct = parseInt(customPercent.value);
+      if (pct > 0) applyPercent(pct);
+    });
+
+    function applyPercent(pct) {
+      if (mode === 'single' && currentImage) {
+        var w = Math.round(currentImage.width * pct / 100);
+        var h = Math.round(currentImage.height * pct / 100);
+        widthInput.value = w;
+        heightInput.value = h;
+        updatePreview();
+      }
+      // For batch mode, percentage is applied at resize time
+    }
+
+    function clearActivePercent() {
+      document.querySelectorAll('.percent-btn').forEach(function(b) { b.classList.remove('active'); });
+      customPercent.value = '';
+    }
+
+    // Preset buttons
+    document.querySelectorAll('.preset-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        clearActivePercent();
+        widthInput.value = btn.dataset.w;
+        heightInput.value = btn.dataset.h;
+        updatePreview();
+      });
+    });
+
+    function clearActivePreset() {
+      document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+    }
+
+    // Format & quality
+    formatSelect.addEventListener('change', function() {
+      qualityWrap.classList.toggle('visible', formatSelect.value === 'jpeg' || formatSelect.value === 'webp');
+      updatePreview();
+    });
+
+    qualitySlider.addEventListener('input', function() {
+      qualityValue.textContent = qualitySlider.value + '%';
+      updatePreview();
+    });
+
+    // Preview update
+    var previewTimeout = null;
+    function updatePreview() {
+      if (mode !== 'single' || !currentImage) return;
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(doUpdatePreview, 200);
+    }
+
+    function doUpdatePreview() {
+      if (!currentImage) return;
+      var w = parseInt(widthInput.value) || currentImage.width;
+      var h = parseInt(heightInput.value) || currentImage.height;
+      if (w < 1 || h < 1) return;
+
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(currentImage.img, 0, 0, w, h);
+
+      var mimeType = getMimeType();
+      var quality = getQuality();
+
+      canvas.toBlob(function(blob) {
+        if (!blob) return;
+        resizedBlob = blob;
+        var url = URL.createObjectURL(blob);
+        previewResized.src = url;
+        resizedDimInfo.textContent = w + ' x ' + h + ' | ' + formatFileSize(blob.size);
+
+        var origSize = currentImage.file.size;
+        var newSize = blob.size;
+        var diff = newSize - origSize;
+        var pctChange = ((diff / origSize) * 100).toFixed(1);
+        var cls = diff <= 0 ? 'size-reduced' : 'size-increased';
+        var sign = diff <= 0 ? '' : '+';
+        fileInfo.innerHTML =
+          '<span>Original: ' + formatFileSize(origSize) + '</span>' +
+          '<span>Resized: ' + formatFileSize(newSize) + '</span>' +
+          '<span class="' + cls + '">' + sign + pctChange + '%</span>';
+      }, mimeType, quality);
+    }
+
+    function getMimeType() {
+      var fmt = formatSelect.value;
+      if (fmt === 'jpeg') return 'image/jpeg';
+      if (fmt === 'webp') return 'image/webp';
+      return 'image/png';
+    }
+
+    function getQuality() {
+      var fmt = formatSelect.value;
+      if (fmt === 'jpeg' || fmt === 'webp') return parseInt(qualitySlider.value) / 100;
+      return undefined;
+    }
+
+    function getExtension() {
+      var fmt = formatSelect.value;
+      if (fmt === 'jpeg') return '.jpg';
+      if (fmt === 'webp') return '.webp';
+      return '.png';
+    }
+
+    // Resize & Download
+    resizeBtn.addEventListener('click', function() {
+      if (mode === 'single') {
+        downloadSingle();
+      } else {
+        downloadBatch();
+      }
+    });
+
+    function downloadSingle() {
+      if (!currentImage) return;
+      var w = parseInt(widthInput.value) || currentImage.width;
+      var h = parseInt(heightInput.value) || currentImage.height;
+
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(currentImage.img, 0, 0, w, h);
+
+      canvas.toBlob(function(blob) {
+        if (!blob) return;
+        var baseName = currentImage.file.name.replace(/\.[^.]+$/, '');
+        triggerDownload(blob, baseName + '_' + w + 'x' + h + getExtension());
+      }, getMimeType(), getQuality());
+    }
+
+    function downloadBatch() {
+      if (files.length === 0) return;
+      resizeBtn.disabled = true;
+      resizeBtn.textContent = 'Processing...';
+
+      var targetW = parseInt(widthInput.value) || 0;
+      var targetH = parseInt(heightInput.value) || 0;
+      var pct = getActivePercent();
+
+      var remaining = files.length;
+
+      files.forEach(function(file) {
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function() {
+          var w, h;
+          if (pct > 0) {
+            w = Math.round(img.naturalWidth * pct / 100);
+            h = Math.round(img.naturalHeight * pct / 100);
+          } else if (targetW > 0 && targetH > 0) {
+            w = targetW;
+            h = targetH;
+          } else if (targetW > 0) {
+            w = targetW;
+            h = Math.round(img.naturalHeight * (targetW / img.naturalWidth));
+          } else if (targetH > 0) {
+            h = targetH;
+            w = Math.round(img.naturalWidth * (targetH / img.naturalHeight));
+          } else {
+            w = img.naturalWidth;
+            h = img.naturalHeight;
+          }
+
+          var canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+
+          canvas.toBlob(function(blob) {
+            if (blob) {
+              var baseName = file.name.replace(/\.[^.]+$/, '');
+              triggerDownload(blob, baseName + '_' + w + 'x' + h + getExtension());
+            }
+            URL.revokeObjectURL(url);
+            remaining--;
+            if (remaining <= 0) {
+              resizeBtn.disabled = false;
+              resizeBtn.textContent = 'Resize All & Download';
+            }
+          }, getMimeType(), getQuality());
+        };
+        img.src = url;
+      });
+    }
+
+    function getActivePercent() {
+      var active = document.querySelector('.percent-btn.active');
+      if (active) return parseInt(active.dataset.percent);
+      var custom = parseInt(customPercent.value);
+      if (custom > 0) return custom;
+      return 0;
+    }
+
+    function triggerDownload(blob, filename) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+    }
+
+    // Clear
+    clearBtn.addEventListener('click', clearAll);
+
+    function clearAll() {
+      files = [];
+      currentImage = null;
+      resizedBlob = null;
+      widthInput.value = '';
+      heightInput.value = '';
+      previewOriginal.src = '';
+      previewResized.src = '';
+      originalDimInfo.textContent = '';
+      resizedDimInfo.textContent = '';
+      fileInfo.innerHTML = '';
+      batchItems.innerHTML = '';
+      batchCount.textContent = '0 files';
+      controlsPanel.classList.remove('visible');
+      previewArea.classList.remove('visible');
+      batchList.classList.remove('visible');
+      actionRow.style.display = 'none';
+      resizeBtn.disabled = true;
+      clearActivePercent();
+      clearActivePreset();
+    }
+
+    // Utilities
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  })();
+  </script>
+</body>
+</html>

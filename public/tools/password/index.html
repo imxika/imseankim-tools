@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Generator - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Generate strong, secure passwords with customizable length, character sets, and strength analysis. Free online password generator with entropy display.">
+  <meta property="og:title" content="Password Generator - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Generate strong, secure passwords instantly. Customize length, characters, and view entropy bits.">
+  <meta property="og:url" content="https://imseankim.com/tools/password">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/password">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Password Display */
+    .password-display {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .password-text {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      word-break: break-all;
+      line-height: 1.6;
+      color: var(--text-primary);
+      min-height: 2em;
+      user-select: all;
+      letter-spacing: 0.5px;
+    }
+
+    .password-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: var(--transition);
+      flex: 1;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-hover);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: #000;
+    }
+
+    /* Strength Meter */
+    .strength-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin-bottom: 24px;
+    }
+
+    .strength-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .strength-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .strength-value {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .entropy-display {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 8px;
+    }
+
+    .strength-bar-track {
+      height: 4px;
+      background: var(--bg-input);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.4s ease, background 0.4s ease;
+      width: 0%;
+    }
+
+    /* Controls */
+    .controls-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .control-label span {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .control-label .value {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--bg-input);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg-primary);
+      box-shadow: 0 0 6px rgba(79, 172, 254, 0.4);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg-primary);
+    }
+
+    .checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .checkbox-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkmark {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border-light);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .checkbox-item input:checked + .checkmark {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkmark::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: solid #000;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) translateY(-1px);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .checkbox-item input:checked + .checkmark::after {
+      opacity: 1;
+    }
+
+    .checkbox-text {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.3px;
+    }
+
+    /* Batch Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .batch-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .batch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .batch-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .batch-password {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+      flex: 1;
+      margin-right: 12px;
+    }
+
+    .batch-copy {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .batch-copy:hover {
+      color: var(--accent);
+      background: rgba(79, 172, 254, 0.08);
+    }
+
+    .batch-copy.copied {
+      color: var(--success);
+    }
+
+    /* History */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .history-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .history-password {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      word-break: break-all;
+      flex: 1;
+      margin-right: 12px;
+    }
+
+    .history-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .history-time {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .history-copy {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      transition: var(--transition);
+    }
+
+    .history-copy:hover {
+      color: var(--accent);
+    }
+
+    .history-copy.copied {
+      color: var(--success);
+    }
+
+    .clear-history {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+    }
+
+    .clear-history:hover {
+      color: var(--danger);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+
+    .batch-count-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .batch-count-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .batch-count-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .batch-count-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      min-width: 18px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .tool-title { font-size: 1.3rem; letter-spacing: 3px; }
+      .password-text { font-size: 1rem; }
+      .checkboxes { grid-template-columns: 1fr; }
+      .password-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Password Generator</h1>
+    <p class="tool-subtitle">Secure, random passwords in one click</p>
+
+    <!-- Main Password Display -->
+    <div class="password-display">
+      <div class="password-text" id="mainPassword"></div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="password-actions">
+      <button class="btn btn-primary" id="generateBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10"/><path d="M20.49 15a9 9 0 01-14.85 3.36L1 14"/></svg>
+        Generate
+      </button>
+      <button class="btn" id="copyBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+
+    <!-- Strength Meter -->
+    <div class="strength-section">
+      <div class="strength-header">
+        <span class="strength-label">Strength</span>
+        <span class="strength-value" id="strengthLabel">--</span>
+      </div>
+      <div class="strength-bar-track">
+        <div class="strength-bar-fill" id="strengthBar"></div>
+      </div>
+      <div class="entropy-display" id="entropyDisplay">Entropy: -- bits</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-card">
+      <div class="control-group">
+        <div class="control-label">
+          <span>Password Length</span>
+          <span class="value" id="lengthValue">16</span>
+        </div>
+        <input type="range" class="slider" id="lengthSlider" min="4" max="128" value="16">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Character Sets</span>
+        </div>
+        <div class="checkboxes">
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkUpper" checked>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Uppercase (A-Z)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkLower" checked>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Lowercase (a-z)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkNumbers" checked>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Numbers (0-9)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkSymbols" checked>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Symbols (!@#$...)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="chkExcludeAmbiguous">
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Exclude Ambiguous</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Batch Passwords -->
+    <div class="section-header">
+      <span class="section-title">Batch Generate</span>
+      <div class="batch-count-control">
+        <button class="batch-count-btn" id="batchMinus">-</button>
+        <span class="batch-count-value" id="batchCountValue">5</span>
+        <button class="batch-count-btn" id="batchPlus">+</button>
+      </div>
+    </div>
+    <div class="batch-card" id="batchList"></div>
+
+    <!-- History -->
+    <div class="section-header">
+      <span class="section-title">History</span>
+      <button class="clear-history" id="clearHistory">Clear</button>
+    </div>
+    <div class="history-card" id="historyList">
+      <div class="empty-state">No passwords generated yet</div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (function() {
+      const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const LOWER = 'abcdefghijklmnopqrstuvwxyz';
+      const NUMBERS = '0123456789';
+      const SYMBOLS = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+      const AMBIGUOUS = 'Il1O0o';
+
+      const mainPasswordEl = document.getElementById('mainPassword');
+      const generateBtn = document.getElementById('generateBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const lengthSlider = document.getElementById('lengthSlider');
+      const lengthValue = document.getElementById('lengthValue');
+      const strengthLabel = document.getElementById('strengthLabel');
+      const strengthBar = document.getElementById('strengthBar');
+      const entropyDisplay = document.getElementById('entropyDisplay');
+      const batchList = document.getElementById('batchList');
+      const historyList = document.getElementById('historyList');
+      const batchCountValue = document.getElementById('batchCountValue');
+      const batchMinus = document.getElementById('batchMinus');
+      const batchPlus = document.getElementById('batchPlus');
+      const clearHistory = document.getElementById('clearHistory');
+
+      const chkUpper = document.getElementById('chkUpper');
+      const chkLower = document.getElementById('chkLower');
+      const chkNumbers = document.getElementById('chkNumbers');
+      const chkSymbols = document.getElementById('chkSymbols');
+      const chkExcludeAmbiguous = document.getElementById('chkExcludeAmbiguous');
+
+      let batchCount = 5;
+      let history = [];
+
+      function getCharPool() {
+        let pool = '';
+        if (chkUpper.checked) pool += UPPER;
+        if (chkLower.checked) pool += LOWER;
+        if (chkNumbers.checked) pool += NUMBERS;
+        if (chkSymbols.checked) pool += SYMBOLS;
+
+        if (chkExcludeAmbiguous.checked) {
+          pool = pool.split('').filter(c => !AMBIGUOUS.includes(c)).join('');
+        }
+
+        return pool;
+      }
+
+      function generatePassword(length) {
+        const pool = getCharPool();
+        if (!pool) return '';
+        const array = new Uint32Array(length);
+        crypto.getRandomValues(array);
+        let password = '';
+        for (let i = 0; i < length; i++) {
+          password += pool[array[i] % pool.length];
+        }
+        return password;
+      }
+
+      function calcEntropy(length) {
+        const pool = getCharPool();
+        if (!pool || pool.length <= 1) return 0;
+        return Math.floor(length * Math.log2(pool.length));
+      }
+
+      function getStrength(entropy) {
+        if (entropy < 30) return { label: 'Weak', color: '#ff5555', pct: 15 };
+        if (entropy < 50) return { label: 'Fair', color: '#ffa033', pct: 35 };
+        if (entropy < 70) return { label: 'Good', color: '#ffd700', pct: 55 };
+        if (entropy < 100) return { label: 'Strong', color: '#43e97b', pct: 78 };
+        return { label: 'Very Strong', color: '#4facfe', pct: 100 };
+      }
+
+      function updateStrength(length) {
+        const entropy = calcEntropy(length);
+        const s = getStrength(entropy);
+        strengthLabel.textContent = getCharPool() ? s.label : '--';
+        strengthLabel.style.color = getCharPool() ? s.color : '';
+        strengthBar.style.width = getCharPool() ? s.pct + '%' : '0%';
+        strengthBar.style.background = s.color;
+        entropyDisplay.textContent = getCharPool() ? 'Entropy: ' + entropy + ' bits' : 'Entropy: -- bits';
+      }
+
+      function addToHistory(password) {
+        if (!password) return;
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        history.unshift({ password, time });
+        if (history.length > 20) history.pop();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        if (history.length === 0) {
+          historyList.innerHTML = '<div class="empty-state">No passwords generated yet</div>';
+          return;
+        }
+        historyList.innerHTML = history.map((item, i) =>
+          '<div class="history-item">' +
+            '<span class="history-password">' + escapeHtml(item.password) + '</span>' +
+            '<div class="history-meta">' +
+              '<span class="history-time">' + item.time + '</span>' +
+              '<button class="history-copy" data-pw="' + escapeAttr(item.password) + '">Copy</button>' +
+            '</div>' +
+          '</div>'
+        ).join('');
+      }
+
+      function renderBatch(length) {
+        const passwords = [];
+        for (let i = 0; i < batchCount; i++) {
+          passwords.push(generatePassword(length));
+        }
+        if (!passwords[0]) {
+          batchList.innerHTML = '<div class="empty-state">Select at least one character set</div>';
+          return;
+        }
+        batchList.innerHTML = passwords.map(pw =>
+          '<div class="batch-item">' +
+            '<span class="batch-password">' + escapeHtml(pw) + '</span>' +
+            '<button class="batch-copy" data-pw="' + escapeAttr(pw) + '">Copy</button>' +
+          '</div>'
+        ).join('');
+      }
+
+      function escapeHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function escapeAttr(str) {
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = orig;
+            btn.classList.remove('copied');
+          }, 1500);
+        });
+      }
+
+      function generate() {
+        const length = parseInt(lengthSlider.value);
+        const password = generatePassword(length);
+        if (!password) {
+          mainPasswordEl.textContent = 'Select at least one character set';
+          mainPasswordEl.style.color = 'var(--text-muted)';
+          updateStrength(length);
+          renderBatch(length);
+          return;
+        }
+        mainPasswordEl.textContent = password;
+        mainPasswordEl.style.color = '';
+        updateStrength(length);
+        addToHistory(password);
+        renderBatch(length);
+      }
+
+      // Events
+      generateBtn.addEventListener('click', generate);
+
+      copyBtn.addEventListener('click', function() {
+        const text = mainPasswordEl.textContent;
+        if (!text || text === 'Select at least one character set') return;
+        copyToClipboard(text, copyBtn);
+      });
+
+      lengthSlider.addEventListener('input', function() {
+        lengthValue.textContent = this.value;
+        generate();
+      });
+
+      [chkUpper, chkLower, chkNumbers, chkSymbols, chkExcludeAmbiguous].forEach(cb => {
+        cb.addEventListener('change', generate);
+      });
+
+      batchMinus.addEventListener('click', function() {
+        if (batchCount > 5) {
+          batchCount--;
+          batchCountValue.textContent = batchCount;
+          renderBatch(parseInt(lengthSlider.value));
+        }
+      });
+
+      batchPlus.addEventListener('click', function() {
+        if (batchCount < 10) {
+          batchCount++;
+          batchCountValue.textContent = batchCount;
+          renderBatch(parseInt(lengthSlider.value));
+        }
+      });
+
+      clearHistory.addEventListener('click', function() {
+        history = [];
+        renderHistory();
+      });
+
+      // Delegated copy for batch and history
+      batchList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('batch-copy')) {
+          copyToClipboard(e.target.dataset.pw, e.target);
+        }
+      });
+
+      historyList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('history-copy')) {
+          copyToClipboard(e.target.dataset.pw, e.target);
+        }
+      });
+
+      // Init
+      generate();
+    })();
+  </script>
+</body>
+</html>

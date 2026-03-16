@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Minifier - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Free online code minifier and beautifier for HTML, CSS, and JavaScript. Reduce file size instantly. Fast, private, no data sent to servers.">
+  <meta name="keywords" content="code minifier, CSS minifier, HTML minifier, JavaScript minifier, code beautifier, online minify tool">
+  <meta property="og:title" content="Code Minifier - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Minify and beautify HTML, CSS, and JavaScript code online. See size savings instantly.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imseankim.com/tools/minify/">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://imseankim.com/tools/minify/">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .minify-tool {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .minify-tool h1 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .minify-tool .subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .tab-btn {
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-family: var(--font-sans);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      top: 1px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: #141414;
+      border-color: #222;
+      border-bottom-color: #141414;
+      color: var(--text-primary);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .toolbar .separator {
+      width: 1px;
+      height: 24px;
+      background: var(--border-light);
+      margin: 0 4px;
+    }
+
+    /* Panels */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 500px;
+    }
+
+    .panel {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header span {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .panel-header .size-info {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+
+    .code-input {
+      flex: 1;
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+    }
+
+    .code-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .code-output {
+      flex: 1;
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: none;
+      color: #85e89d;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .stat-saved {
+      color: #85e89d;
+      font-weight: 500;
+    }
+
+    .stat-none {
+      color: var(--text-dim);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .minify-tool {
+        padding: 16px;
+      }
+
+      .panels {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .panel {
+        min-height: 250px;
+      }
+
+      .toolbar {
+        gap: 6px;
+      }
+
+      .toolbar .separator {
+        display: none;
+      }
+
+      .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <div class="minify-tool">
+      <h1>Code Minifier</h1>
+      <p class="subtitle">Minify or beautify HTML, CSS, and JavaScript</p>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-lang="html" onclick="switchTab('html')">HTML</button>
+        <button class="tab-btn" data-lang="css" onclick="switchTab('css')">CSS</button>
+        <button class="tab-btn" data-lang="js" onclick="switchTab('js')">JavaScript</button>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="doMinify()">Minify</button>
+        <button class="btn" onclick="doBeautify()">Beautify</button>
+        <div class="separator"></div>
+        <button class="btn" onclick="copyOutput()">Copy</button>
+        <button class="btn" onclick="clearAll()">Clear</button>
+      </div>
+
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-header">
+            <span>Input</span>
+            <span class="size-info" id="inputSize">0 B</span>
+          </div>
+          <textarea class="code-input" id="codeInput" placeholder="Paste your code here..." spellcheck="false"></textarea>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span>Output</span>
+            <span class="size-info" id="outputSize">0 B</span>
+          </div>
+          <textarea class="code-output" id="codeOutput" placeholder="Minified or beautified output will appear here..." spellcheck="false" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-item">Original: <span class="stat-value" id="statOriginal">-</span></div>
+        <div class="stat-item">Minified: <span class="stat-value" id="statMinified">-</span></div>
+        <div class="stat-item">Saved: <span class="stat-none" id="statSaved">-</span></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (function() {
+      const input = document.getElementById('codeInput');
+      const output = document.getElementById('codeOutput');
+      const inputSize = document.getElementById('inputSize');
+      const outputSize = document.getElementById('outputSize');
+      const statOriginal = document.getElementById('statOriginal');
+      const statMinified = document.getElementById('statMinified');
+      const statSaved = document.getElementById('statSaved');
+
+      let currentLang = 'html';
+
+      // -- Tab switching --
+      window.switchTab = function(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        var placeholders = {
+          html: 'Paste your HTML here...',
+          css: 'Paste your CSS here...',
+          js: 'Paste your JavaScript here...'
+        };
+        input.placeholder = placeholders[lang] || 'Paste your code here...';
+      };
+
+      // -- Size formatting --
+      function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+
+      function updateSizeDisplay(original, result) {
+        var origBytes = new Blob([original]).size;
+        var resultBytes = new Blob([result]).size;
+        inputSize.textContent = formatSize(origBytes);
+        outputSize.textContent = formatSize(resultBytes);
+        statOriginal.textContent = formatSize(origBytes);
+        statMinified.textContent = formatSize(resultBytes);
+
+        if (origBytes > 0) {
+          var saved = origBytes - resultBytes;
+          var pct = ((saved / origBytes) * 100).toFixed(1);
+          if (saved > 0) {
+            statSaved.textContent = formatSize(saved) + ' (' + pct + '%)';
+            statSaved.className = 'stat-saved';
+          } else if (saved < 0) {
+            statSaved.textContent = '+' + formatSize(Math.abs(saved)) + ' (expanded)';
+            statSaved.className = 'stat-none';
+          } else {
+            statSaved.textContent = 'No change';
+            statSaved.className = 'stat-none';
+          }
+        } else {
+          statSaved.textContent = '-';
+          statSaved.className = 'stat-none';
+        }
+      }
+
+      // -- Update input size on typing --
+      input.addEventListener('input', function() {
+        inputSize.textContent = formatSize(new Blob([this.value]).size);
+      });
+
+      // ===== CSS Minifier =====
+      function minifyCSS(code) {
+        var result = code;
+        // Remove comments
+        result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+        // Remove newlines and extra whitespace
+        result = result.replace(/\s+/g, ' ');
+        // Remove spaces around special characters
+        result = result.replace(/\s*([{}:;,>~+])\s*/g, '$1');
+        // Remove trailing semicolons before closing brace
+        result = result.replace(/;}/g, '}');
+        // Remove leading/trailing whitespace
+        result = result.trim();
+        return result;
+      }
+
+      // ===== HTML Minifier =====
+      function minifyHTML(code) {
+        var result = code;
+        // Remove HTML comments (but not conditional comments)
+        result = result.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+        // Collapse whitespace between tags
+        result = result.replace(/>\s+</g, '><');
+        // Collapse multiple whitespace inside tags to single space
+        result = result.replace(/\s{2,}/g, ' ');
+        // Remove whitespace around = in attributes
+        result = result.replace(/\s*=\s*/g, '=');
+        // Remove optional closing tags
+        result = result.replace(/<\/(li|dt|dd|p|option|thead|tbody|tfoot|tr|th|td)>/gi, '');
+        // Trim
+        result = result.trim();
+        return result;
+      }
+
+      // ===== JavaScript Minifier =====
+      function minifyJS(code) {
+        var result = '';
+        var i = 0;
+        var len = code.length;
+        var inString = false;
+        var stringChar = '';
+        var inTemplate = false;
+        var templateDepth = 0;
+        var lastNonSpace = '';
+
+        while (i < len) {
+          var ch = code[i];
+          var next = code[i + 1] || '';
+
+          // Handle string literals
+          if (inString) {
+            result += ch;
+            if (ch === '\\') {
+              // Escape: take next char too
+              i++;
+              if (i < len) result += code[i];
+            } else if (ch === stringChar) {
+              inString = false;
+            }
+            i++;
+            continue;
+          }
+
+          // Handle template literals
+          if (inTemplate) {
+            result += ch;
+            if (ch === '\\') {
+              i++;
+              if (i < len) result += code[i];
+            } else if (ch === '`') {
+              inTemplate = false;
+            } else if (ch === '$' && next === '{') {
+              templateDepth++;
+            } else if (ch === '}' && templateDepth > 0) {
+              templateDepth--;
+            }
+            i++;
+            continue;
+          }
+
+          // Start of string
+          if (ch === '"' || ch === "'") {
+            inString = true;
+            stringChar = ch;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          // Start of template literal
+          if (ch === '`') {
+            inTemplate = true;
+            result += ch;
+            i++;
+            continue;
+          }
+
+          // Single-line comment
+          if (ch === '/' && next === '/') {
+            // Skip to end of line
+            i += 2;
+            while (i < len && code[i] !== '\n') i++;
+            continue;
+          }
+
+          // Multi-line comment
+          if (ch === '/' && next === '*') {
+            i += 2;
+            while (i < len && !(code[i] === '*' && code[i + 1] === '/')) i++;
+            i += 2; // skip */
+            continue;
+          }
+
+          // Regex literal - detect after certain tokens
+          if (ch === '/' && /[=(:,;!&|?{}\[\n+\-~^%]/.test(lastNonSpace)) {
+            // Could be regex - check if this looks like a regex
+            var regexStart = i;
+            var regexStr = '/';
+            var valid = true;
+            i++;
+            while (i < len) {
+              var rc = code[i];
+              if (rc === '\\') {
+                regexStr += rc;
+                i++;
+                if (i < len) {
+                  regexStr += code[i];
+                }
+              } else if (rc === '/') {
+                regexStr += rc;
+                i++;
+                // Consume flags
+                while (i < len && /[gimsuy]/.test(code[i])) {
+                  regexStr += code[i];
+                  i++;
+                }
+                result += regexStr;
+                break;
+              } else if (rc === '\n') {
+                // Not a regex, treat slash as division
+                valid = false;
+                break;
+              } else {
+                regexStr += rc;
+              }
+              i++;
+            }
+            if (!valid) {
+              i = regexStart;
+              result += code[i];
+              lastNonSpace = code[i];
+              i++;
+            }
+            continue;
+          }
+
+          // Whitespace handling
+          if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r') {
+            // Collapse whitespace
+            while (i < len && (code[i] === ' ' || code[i] === '\t' || code[i] === '\n' || code[i] === '\r')) {
+              i++;
+            }
+            // Only keep a space if needed between identifiers/keywords/numbers
+            if (result.length > 0 && i < len) {
+              var prevCh = result[result.length - 1];
+              var nextCh = code[i];
+              if (needsSpace(prevCh, nextCh)) {
+                result += ' ';
+              }
+            }
+            continue;
+          }
+
+          // Regular character
+          result += ch;
+          lastNonSpace = ch;
+          i++;
+        }
+
+        return result.trim();
+      }
+
+      function needsSpace(prev, next) {
+        var isIdPrev = /[a-zA-Z0-9_$]/.test(prev);
+        var isIdNext = /[a-zA-Z0-9_$]/.test(next);
+        return isIdPrev && isIdNext;
+      }
+
+      // ===== CSS Beautifier =====
+      function beautifyCSS(code) {
+        // First minify to normalize
+        var min = minifyCSS(code);
+        var result = '';
+        var indent = 0;
+        var tab = '  ';
+
+        for (var i = 0; i < min.length; i++) {
+          var ch = min[i];
+          if (ch === '{') {
+            result += ' {\n';
+            indent++;
+            result += tab.repeat(indent);
+          } else if (ch === '}') {
+            result += '\n';
+            indent = Math.max(0, indent - 1);
+            result += tab.repeat(indent) + '}\n';
+            if (indent === 0) result += '\n';
+            if (i + 1 < min.length && min[i + 1] !== '}') {
+              result += tab.repeat(indent);
+            }
+          } else if (ch === ';') {
+            result += ';\n';
+            if (i + 1 < min.length && min[i + 1] !== '}') {
+              result += tab.repeat(indent);
+            }
+          } else if (ch === ',' && indent === 0) {
+            result += ',\n';
+          } else {
+            result += ch;
+          }
+        }
+        return result.trim();
+      }
+
+      // ===== HTML Beautifier =====
+      function beautifyHTML(code) {
+        // Normalize whitespace first
+        var normalized = code.replace(/>\s+</g, '>\n<').trim();
+        var lines = normalized.split('\n');
+        var result = '';
+        var indent = 0;
+        var tab = '  ';
+        var voidTags = /^<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b/i;
+        var closingTag = /^<\//;
+        var selfClosing = /\/\s*>$/;
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+
+          if (closingTag.test(line)) {
+            indent = Math.max(0, indent - 1);
+          }
+
+          result += tab.repeat(indent) + line + '\n';
+
+          if (!closingTag.test(line) && !voidTags.test(line) && !selfClosing.test(line) && /^<[a-zA-Z]/.test(line)) {
+            indent++;
+          }
+        }
+        return result.trim();
+      }
+
+      // ===== JS Beautifier =====
+      function beautifyJS(code) {
+        // Simple beautifier: add newlines and indentation around braces and semicolons
+        var min = minifyJS(code);
+        var result = '';
+        var indent = 0;
+        var tab = '  ';
+        var inStr = false;
+        var strCh = '';
+        var inTpl = false;
+
+        for (var i = 0; i < min.length; i++) {
+          var ch = min[i];
+          var next = min[i + 1] || '';
+
+          // Track strings
+          if (inStr) {
+            result += ch;
+            if (ch === '\\') {
+              i++;
+              if (i < min.length) result += min[i];
+            } else if (ch === strCh) {
+              inStr = false;
+            }
+            continue;
+          }
+          if (inTpl) {
+            result += ch;
+            if (ch === '\\') {
+              i++;
+              if (i < min.length) result += min[i];
+            } else if (ch === '`') {
+              inTpl = false;
+            }
+            continue;
+          }
+          if (ch === '"' || ch === "'") {
+            inStr = true;
+            strCh = ch;
+            result += ch;
+            continue;
+          }
+          if (ch === '`') {
+            inTpl = true;
+            result += ch;
+            continue;
+          }
+
+          if (ch === '{') {
+            result += ' {\n';
+            indent++;
+            result += tab.repeat(indent);
+          } else if (ch === '}') {
+            result += '\n';
+            indent = Math.max(0, indent - 1);
+            result += tab.repeat(indent) + '}';
+            if (next && next !== ';' && next !== ',' && next !== ')' && next !== '}' && next !== 'e') {
+              result += '\n' + tab.repeat(indent);
+            }
+          } else if (ch === ';') {
+            result += ';\n';
+            if (next && next !== '}') {
+              result += tab.repeat(indent);
+            }
+          } else {
+            result += ch;
+          }
+        }
+        return result.trim();
+      }
+
+      // -- Minify action --
+      window.doMinify = function() {
+        var code = input.value;
+        if (!code.trim()) return;
+
+        var result = '';
+        if (currentLang === 'css') result = minifyCSS(code);
+        else if (currentLang === 'html') result = minifyHTML(code);
+        else if (currentLang === 'js') result = minifyJS(code);
+
+        output.value = result;
+        updateSizeDisplay(code, result);
+      };
+
+      // -- Beautify action --
+      window.doBeautify = function() {
+        var code = input.value;
+        if (!code.trim()) return;
+
+        var result = '';
+        if (currentLang === 'css') result = beautifyCSS(code);
+        else if (currentLang === 'html') result = beautifyHTML(code);
+        else if (currentLang === 'js') result = beautifyJS(code);
+
+        output.value = result;
+        updateSizeDisplay(code, result);
+      };
+
+      // -- Copy output --
+      window.copyOutput = function() {
+        var text = output.value;
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(function() {
+          showToast('Copied to clipboard');
+        });
+      };
+
+      // -- Clear --
+      window.clearAll = function() {
+        input.value = '';
+        output.value = '';
+        inputSize.textContent = '0 B';
+        outputSize.textContent = '0 B';
+        statOriginal.textContent = '-';
+        statMinified.textContent = '-';
+        statSaved.textContent = '-';
+        statSaved.className = 'stat-none';
+      };
+
+      // -- Toast --
+      function showToast(msg) {
+        var toast = document.querySelector('.toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.className = 'toast';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      }
+    })();
+  </script>
+</body>
+</html>

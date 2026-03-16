@@ -1,0 +1,42 @@
+{
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/shared/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/tools/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/colors", "destination": "/tools/colors/index.html" },
+    { "source": "/gradient", "destination": "/tools/gradient/index.html" },
+    { "source": "/fonts", "destination": "/tools/fonts/index.html" },
+    { "source": "/shadow", "destination": "/tools/shadow/index.html" },
+    { "source": "/grid", "destination": "/tools/grid/index.html" },
+    { "source": "/flexbox", "destination": "/tools/flexbox/index.html" },
+    { "source": "/json", "destination": "/tools/json/index.html" },
+    { "source": "/regex", "destination": "/tools/regex/index.html" },
+    { "source": "/base64", "destination": "/tools/base64/index.html" },
+    { "source": "/url-encode", "destination": "/tools/url-encode/index.html" },
+    { "source": "/minify", "destination": "/tools/minify/index.html" },
+    { "source": "/markdown", "destination": "/tools/markdown/index.html" },
+    { "source": "/lorem", "destination": "/tools/lorem/index.html" },
+    { "source": "/qr", "destination": "/tools/qr/index.html" },
+    { "source": "/password", "destination": "/tools/password/index.html" },
+    { "source": "/units", "destination": "/tools/units/index.html" },
+    { "source": "/image-resize", "destination": "/tools/image-resize/index.html" },
+    { "source": "/image-compress", "destination": "/tools/image-compress/index.html" },
+    { "source": "/svg-editor", "destination": "/tools/svg-editor/index.html" },
+    { "source": "/favicon", "destination": "/tools/favicon/index.html" }
+  ]
+}

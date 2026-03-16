@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor - Free Online Tool | imseankim.com</title>
+  <meta name="description" content="Compress images online for free. Adjust quality, resize, convert to JPEG/WebP/PNG. Side-by-side comparison with file size savings. All processing happens in your browser.">
+  <meta property="og:title" content="Image Compressor - Free Online Tool | imseankim.com">
+  <meta property="og:description" content="Compress images with adjustable quality, format conversion, and visual comparison. 100% client-side processing.">
+  <meta property="og:url" content="https://imseankim.com/tools/image-compress">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://imseankim.com/tools/image-compress">
+  <link rel="stylesheet" href="/shared/style.css">
+  <style>
+    .tool-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .tool-title {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .tool-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      background: var(--bg-card);
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 24px;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(79, 172, 254, 0.04);
+    }
+
+    .drop-zone-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .drop-zone-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .drop-zone-hint {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .drop-zone input[type="file"] {
+      display: none;
+    }
+
+    /* Controls */
+    .controls {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      align-items: end;
+    }
+
+    @media (max-width: 640px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .control-group select,
+    .control-group input[type="number"] {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-family: var(--font-sans);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .control-group select:focus,
+    .control-group input[type="number"]:focus {
+      border-color: var(--accent);
+    }
+
+    .quality-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quality-row input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: var(--border-light);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .quality-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg-primary);
+    }
+
+    .quality-row input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--bg-primary);
+    }
+
+    .quality-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-hover);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Results */
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-filename {
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 300px;
+    }
+
+    .result-stats {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .stat {
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    .savings {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+    }
+
+    .savings-positive {
+      color: var(--success);
+      background: rgba(67, 233, 123, 0.1);
+    }
+
+    .savings-negative {
+      color: var(--danger);
+      background: rgba(255, 85, 85, 0.1);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: 12px;
+    }
+
+    .btn-small {
+      padding: 6px 14px;
+      font-size: 0.78rem;
+    }
+
+    /* Comparison Area */
+    .comparison-container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+      user-select: none;
+    }
+
+    .comparison-container img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .comparison-original {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .comparison-original img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .comparison-slider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      cursor: ew-resize;
+      z-index: 10;
+    }
+
+    .comparison-slider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .comparison-label {
+      position: absolute;
+      top: 12px;
+      padding: 4px 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-radius: 4px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .label-original { left: 12px; }
+    .label-compressed { right: 12px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px;
+      font-size: 0.85rem;
+    }
+
+    /* Processing indicator */
+    .processing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-light);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .result-filename {
+        max-width: 100%;
+      }
+
+      .result-stats {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .result-actions {
+        margin-left: 0;
+      }
+
+      .actions {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script src="/shared/header.js"></script>
+
+  <main class="tool-content">
+    <h1 class="tool-title">Image Compressor</h1>
+    <p class="tool-subtitle">Compress and optimize images entirely in your browser</p>
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">&#128444;</div>
+      <div class="drop-zone-text">Drop images here or click to upload</div>
+      <div class="drop-zone-hint">Supports JPEG, PNG, WebP, GIF, BMP, TIFF</div>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Quality</label>
+        <div class="quality-row">
+          <input type="range" id="quality" min="1" max="100" value="80">
+          <span class="quality-value" id="qualityValue">80</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Output Format</label>
+        <select id="format">
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WebP</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Max Dimension (px)</label>
+        <input type="number" id="maxDimension" placeholder="No limit" min="1" max="10000">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="compressBtn" disabled>Compress All</button>
+      <button class="btn" id="downloadAllBtn" disabled>Download All</button>
+      <button class="btn" id="clearBtn" disabled>Clear</button>
+    </div>
+
+    <div id="results" class="results">
+      <div class="empty-state">Upload images to get started</div>
+    </div>
+  </main>
+
+  <script src="/shared/footer.js"></script>
+  <script>
+    (() => {
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+      const qualitySlider = document.getElementById('quality');
+      const qualityValue = document.getElementById('qualityValue');
+      const formatSelect = document.getElementById('format');
+      const maxDimInput = document.getElementById('maxDimension');
+      const compressBtn = document.getElementById('compressBtn');
+      const downloadAllBtn = document.getElementById('downloadAllBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const resultsContainer = document.getElementById('results');
+
+      let uploadedFiles = [];
+      let compressedResults = [];
+
+      // Quality slider
+      qualitySlider.addEventListener('input', () => {
+        qualityValue.textContent = qualitySlider.value;
+      });
+
+      // Drop zone events
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (files.length) addFiles(files);
+      });
+
+      fileInput.addEventListener('change', () => {
+        const files = Array.from(fileInput.files);
+        if (files.length) addFiles(files);
+        fileInput.value = '';
+      });
+
+      function addFiles(files) {
+        uploadedFiles = uploadedFiles.concat(files);
+        compressedResults = [];
+        compressBtn.disabled = false;
+        clearBtn.disabled = false;
+        downloadAllBtn.disabled = true;
+        renderFileList();
+      }
+
+      function renderFileList() {
+        resultsContainer.innerHTML = '';
+        uploadedFiles.forEach((file, i) => {
+          const card = document.createElement('div');
+          card.className = 'result-card';
+          card.innerHTML = `
+            <div class="result-header">
+              <span class="result-filename">${escapeHtml(file.name)}</span>
+              <div class="result-stats">
+                <span class="stat">Original: <span class="stat-value">${formatBytes(file.size)}</span></span>
+              </div>
+            </div>
+          `;
+          resultsContainer.appendChild(card);
+        });
+      }
+
+      // Compress
+      compressBtn.addEventListener('click', async () => {
+        if (!uploadedFiles.length) return;
+        compressBtn.disabled = true;
+        compressBtn.textContent = 'Compressing...';
+        compressedResults = [];
+
+        const quality = parseInt(qualitySlider.value) / 100;
+        const format = formatSelect.value;
+        const maxDim = parseInt(maxDimInput.value) || 0;
+
+        resultsContainer.innerHTML = '';
+
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const file = uploadedFiles[i];
+          const card = document.createElement('div');
+          card.className = 'result-card';
+          card.id = `result-${i}`;
+          card.innerHTML = `
+            <div class="result-header">
+              <span class="result-filename">${escapeHtml(file.name)}</span>
+              <div class="processing"><div class="spinner"></div> Compressing...</div>
+            </div>
+          `;
+          resultsContainer.appendChild(card);
+
+          try {
+            const result = await compressImage(file, quality, format, maxDim);
+            compressedResults.push(result);
+            renderResultCard(card, file, result, i);
+          } catch (err) {
+            card.querySelector('.processing').innerHTML = `<span style="color:var(--danger)">Error: ${escapeHtml(err.message)}</span>`;
+            compressedResults.push(null);
+          }
+        }
+
+        compressBtn.textContent = 'Compress All';
+        compressBtn.disabled = false;
+        downloadAllBtn.disabled = !compressedResults.some(r => r !== null);
+      });
+
+      function compressImage(file, quality, format, maxDim) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+
+          img.onload = () => {
+            let w = img.naturalWidth;
+            let h = img.naturalHeight;
+
+            if (maxDim > 0 && (w > maxDim || h > maxDim)) {
+              const ratio = Math.min(maxDim / w, maxDim / h);
+              w = Math.round(w * ratio);
+              h = Math.round(h * ratio);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+
+            canvas.toBlob((blob) => {
+              URL.revokeObjectURL(url);
+              if (!blob) {
+                reject(new Error('Compression failed'));
+                return;
+              }
+
+              const ext = format === 'image/jpeg' ? '.jpg' : format === 'image/webp' ? '.webp' : '.png';
+              const baseName = file.name.replace(/\.[^.]+$/, '');
+
+              resolve({
+                blob,
+                url: URL.createObjectURL(blob),
+                originalUrl: URL.createObjectURL(file),
+                fileName: baseName + ext,
+                originalSize: file.size,
+                compressedSize: blob.size,
+                width: w,
+                height: h
+              });
+            }, format, format === 'image/png' ? undefined : quality);
+          };
+
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load image'));
+          };
+
+          img.src = url;
+        });
+      }
+
+      function renderResultCard(card, file, result, index) {
+        const savings = ((1 - result.compressedSize / result.originalSize) * 100);
+        const savingsClass = savings >= 0 ? 'savings-positive' : 'savings-negative';
+        const savingsText = savings >= 0 ? `-${savings.toFixed(1)}%` : `+${Math.abs(savings).toFixed(1)}%`;
+
+        card.innerHTML = `
+          <div class="result-header">
+            <span class="result-filename">${escapeHtml(result.fileName)}</span>
+            <div class="result-stats">
+              <span class="stat">Original: <span class="stat-value">${formatBytes(result.originalSize)}</span></span>
+              <span class="stat">Compressed: <span class="stat-value">${formatBytes(result.compressedSize)}</span></span>
+              <span class="savings ${savingsClass}">${savingsText}</span>
+              <div class="result-actions">
+                <button class="btn btn-small btn-primary" onclick="window._downloadResult(${index})">Download</button>
+              </div>
+            </div>
+          </div>
+          <div class="comparison-container" id="compare-${index}">
+            <img src="${result.url}" alt="Compressed" class="comparison-compressed">
+            <div class="comparison-original" style="width:50%">
+              <img src="${result.originalUrl}" alt="Original">
+            </div>
+            <div class="comparison-slider" style="left:50%"></div>
+            <span class="comparison-label label-original">Original</span>
+            <span class="comparison-label label-compressed">Compressed</span>
+          </div>
+        `;
+
+        initComparisonSlider(card.querySelector('.comparison-container'));
+      }
+
+      function initComparisonSlider(container) {
+        const slider = container.querySelector('.comparison-slider');
+        const originalWrap = container.querySelector('.comparison-original');
+        let dragging = false;
+
+        function updatePosition(clientX) {
+          const rect = container.getBoundingClientRect();
+          let x = (clientX - rect.left) / rect.width;
+          x = Math.max(0, Math.min(1, x));
+          const pct = x * 100;
+          slider.style.left = pct + '%';
+          originalWrap.style.width = pct + '%';
+        }
+
+        slider.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          dragging = true;
+        });
+
+        slider.addEventListener('touchstart', (e) => {
+          dragging = true;
+        }, { passive: true });
+
+        window.addEventListener('mousemove', (e) => {
+          if (dragging) updatePosition(e.clientX);
+        });
+
+        window.addEventListener('touchmove', (e) => {
+          if (dragging) updatePosition(e.touches[0].clientX);
+        }, { passive: true });
+
+        window.addEventListener('mouseup', () => { dragging = false; });
+        window.addEventListener('touchend', () => { dragging = false; });
+
+        container.addEventListener('click', (e) => {
+          if (!dragging) updatePosition(e.clientX);
+        });
+      }
+
+      // Download individual
+      window._downloadResult = (index) => {
+        const result = compressedResults[index];
+        if (!result) return;
+        const a = document.createElement('a');
+        a.href = result.url;
+        a.download = result.fileName;
+        a.click();
+      };
+
+      // Download all
+      downloadAllBtn.addEventListener('click', () => {
+        compressedResults.forEach((result, i) => {
+          if (!result) return;
+          setTimeout(() => {
+            const a = document.createElement('a');
+            a.href = result.url;
+            a.download = result.fileName;
+            a.click();
+          }, i * 200);
+        });
+      });
+
+      // Clear
+      clearBtn.addEventListener('click', () => {
+        compressedResults.forEach(r => {
+          if (r) {
+            URL.revokeObjectURL(r.url);
+            URL.revokeObjectURL(r.originalUrl);
+          }
+        });
+        uploadedFiles = [];
+        compressedResults = [];
+        compressBtn.disabled = true;
+        downloadAllBtn.disabled = true;
+        clearBtn.disabled = true;
+        resultsContainer.innerHTML = '<div class="empty-state">Upload images to get started</div>';
+      });
+
+      // Helpers
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      }
+
+      function escapeHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+    })();
+  </script>
+</body>
+</html>
