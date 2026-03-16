@@ -243,7 +243,7 @@
 
       cat.tools.forEach(tool => {
         const a = document.createElement('a');
-        a.href = tool.live ? `/tools/${tool.slug}/` : '#';
+        a.href = tool.live ? `/${tool.slug}` : '#';
         a.className = `tool-card${tool.live ? '' : ' coming-soon'}`;
         a.style.setProperty('--card-accent', cat.accent[0]);
         a.style.setProperty('--card-accent2', cat.accent[1]);

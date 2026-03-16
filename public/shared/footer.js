@@ -3,7 +3,7 @@
    ============================================ */
 (function() {
   const path = window.location.pathname;
-  const currentSlug = path.split('/tools/')[1]?.replace(/\/.*/, '') || '';
+  const currentSlug = path.replace(/^\//, '').replace(/\/.*/, '') || path.split('/tools/')[1]?.replace(/\/.*/, '') || '';
   const tools = window.__TOOLS__ || [];
 
   // Related tools section
@@ -24,7 +24,7 @@
       <h3>Related Tools</h3>
       <div class="related-grid">
         ${related.map(t => `
-          <a href="/tools/${t.slug}/" class="related-card">
+          <a href="/${t.slug}" class="related-card">
             <span class="rc-icon">${t.icon}</span>
             <span class="rc-name">${t.name}</span>
           </a>
@@ -45,7 +45,7 @@
   footer.className = 'site-footer';
   footer.innerHTML = `
     <div class="footer-links">
-      <a href="/designTools">All Tools</a>
+      <a href="/">All Tools</a>
       <a href="https://imseankim.com">Main Site</a>
       <a href="mailto:contact@imseankim.com">Contact</a>
     </div>

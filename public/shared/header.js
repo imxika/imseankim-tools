@@ -34,18 +34,18 @@
   ];
 
   const path = window.location.pathname;
-  const currentSlug = path.split('/tools/')[1]?.replace(/\/.*/, '') || '';
+  const currentSlug = path.replace(/^\//, '').replace(/\/.*/, '') || path.split('/tools/')[1]?.replace(/\/.*/, '') || '';
 
   const navLinks = tools.flatMap(c => c.items).slice(0, 6).map(t =>
-    `<a href="/tools/${t.slug}/" class="${currentSlug === t.slug ? 'active' : ''}">${t.name}</a>`
+    `<a href="/${t.slug}" class="${currentSlug === t.slug ? 'active' : ''}">${t.name}</a>`
   ).join('');
 
   const header = document.createElement('header');
   header.className = 'site-header';
   header.innerHTML = `
-    <a href="/designTools" class="logo"><span>Sean's</span> Tools</a>
+    <a href="/" class="logo"><span>Sean's</span> Tools</a>
     <nav id="mainNav">
-      <a href="/designTools" class="${path.includes('designTools') && !path.includes('tools/') ? 'active' : ''}">All Tools</a>
+      <a href="/" class="${path === '/' ? 'active' : ''}">All Tools</a>
       ${navLinks}
     </nav>
     <button class="hamburger" onclick="document.getElementById('mainNav').classList.toggle('open')" aria-label="Menu">☰</button>
